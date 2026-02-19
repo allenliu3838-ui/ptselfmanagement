@@ -1,9 +1,21 @@
-const CACHE_NAME = "kidney-care-v9.1.1";
+const CACHE_NAME = "kidney-care-v9.2.0";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
-  "./app.js",
+  "./js/constants.js",
+  "./js/utils.js",
+  "./js/state.js",
+  "./js/programs.js",
+  "./js/tasks.js",
+  "./js/db.js",
+  "./js/diet.js",
+  "./js/render.js",
+  "./js/modals.js",
+  "./js/export.js",
+  "./js/ai.js",
+  "./js/ui.js",
+  "./js/app.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
