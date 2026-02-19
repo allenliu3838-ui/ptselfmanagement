@@ -25,6 +25,12 @@ function bindUI(){
   const gb = qs("#btnGuideBack");
   if(gb) gb.addEventListener("click", ()=>overlayBack());
 
+  // Usage guide page
+  const uo = qs("#btnUsageOpen");
+  if(uo) uo.addEventListener("click", ()=>openUsagePage());
+  const ub = qs("#btnUsageBack");
+  if(ub) ub.addEventListener("click", ()=>overlayBack());
+
   // Home: collapse/expand optional cards
   const hm = qs("#btnHomeMoreToggle");
   if(hm) hm.addEventListener("click", ()=>toggleHomeMore());
