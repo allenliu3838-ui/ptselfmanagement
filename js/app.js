@@ -44,6 +44,13 @@ async function registerSW(){
   }
 }
 
+function completeOnboarding(){
+  if(!state.engagement) state.engagement = { onboarded:false, streak:0, lastActiveDate:"", longestStreak:0 };
+  state.engagement.onboarded = true;
+  saveState();
+  navigate("home");
+}
+
 function init(){
   // Ensure at least one program + active program is enabled
   ensureActiveProgramEnabled();
@@ -54,9 +61,27 @@ function init(){
 
   registerSW();
   bindUI();
+
+  // Onboarding buttons
+  const btnStart = qs("#btnOnboardStart");
+  const btnSkip = qs("#btnOnboardSkip");
+  if(btnStart) btnStart.addEventListener("click", ()=>{
+    completeOnboarding();
+    openProfile();
+  });
+  if(btnSkip) btnSkip.addEventListener("click", ()=>{
+    completeOnboarding();
+  });
+
   renderProgramList();
   renderAll();
-  navigate("home");
+
+  // Show onboarding on first launch, otherwise go home
+  if(!state.engagement?.onboarded){
+    navigate("onboard");
+  } else {
+    navigate("home");
+  }
 }
 
 init();

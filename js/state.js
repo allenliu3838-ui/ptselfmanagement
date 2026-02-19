@@ -11,7 +11,8 @@ function defaultState(){
     version: VERSION,
     activeProgram: "kidney",
     enabledPrograms: { kidney: true, stone: false, peds: false, dialysis: false, htn: false, dm: false },
-    ui: { overlayReturn: 'home', explainerId: '', showAI: true, homeMoreDefault: false, },
+    ui: { overlayReturn: 'home', explainerId: '', showAI: true, homeMoreDefault: false },
+    engagement: { onboarded: false, streak: 0, lastActiveDate: "", longestStreak: 0 },
     comorbid: { htn:false, dm:false, masld:false, hf:false, aki:false },
     diet: { favorites: [], lastFilter: "", lastQuery: "" },
     kidney: {
@@ -122,6 +123,10 @@ function loadState(){
     if(!st.markers) st.markers = [];
     if(!st.documents) st.documents = [];
     if(!st.chat) st.chat = defaultState().chat;
+
+    // Engagement migration: add engagement tracking for existing users
+    if(!st.engagement) st.engagement = { onboarded: true, streak: 0, lastActiveDate: "", longestStreak: 0 };
+    if(typeof st.engagement.longestStreak === "undefined") st.engagement.longestStreak = 0;
 
     // Glucose unit migration: old records have no unit -> assume mmol/L
     if(st.vitals && Array.isArray(st.vitals.glucose)){

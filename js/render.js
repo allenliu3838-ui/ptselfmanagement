@@ -180,10 +180,133 @@ function toggleHomeMore(){
   applyHomeMoreUI();
 }
 
+// ===== Engagement helpers =====
+function updateStreak(){
+  if(!state.engagement) state.engagement = { onboarded:false, streak:0, lastActiveDate:"", longestStreak:0 };
+  const today = yyyyMMdd(new Date());
+  if(state.engagement.lastActiveDate === today) return; // already counted today
+  const yesterday = yyyyMMdd(new Date(Date.now() - 86400000));
+  if(state.engagement.lastActiveDate === yesterday){
+    state.engagement.streak += 1;
+  } else if(state.engagement.lastActiveDate && state.engagement.lastActiveDate !== today){
+    state.engagement.streak = 1; // reset
+  } else {
+    state.engagement.streak = 1; // first day
+  }
+  if(state.engagement.streak > (state.engagement.longestStreak||0)){
+    state.engagement.longestStreak = state.engagement.streak;
+  }
+  state.engagement.lastActiveDate = today;
+  saveState();
+}
+
+function getGreeting(){
+  const h = new Date().getHours();
+  if(h < 6) return "夜深了";
+  if(h < 11) return "早上好";
+  if(h < 14) return "中午好";
+  if(h < 18) return "下午好";
+  return "晚上好";
+}
+
+function renderGreeting(){
+  const el = qs("#greetingText");
+  const sub = qs("#greetingSub");
+  if(!el) return;
+  const streak = state.engagement?.streak || 0;
+  el.textContent = getGreeting();
+  const msgs = [
+    "今天的随访从这里开始",
+    "每天花 1 分钟，复诊更从容",
+    "坚持记录，趋势比单次更有价值",
+    "你的健康数据在积累力量",
+  ];
+  const dayIndex = new Date().getDay();
+  sub.innerHTML = escapeHtml(msgs[dayIndex % msgs.length]);
+  if(streak >= 2){
+    sub.innerHTML += ` <span class="streak-badge"><span class="fire">🔥</span>${streak} 天连续</span>`;
+  }
+}
+
+function renderProgressRing(done, total){
+  const box = qs("#progressRing");
+  if(!box) return;
+  if(total === 0){ box.innerHTML = ""; return; }
+  const pct = Math.round(done/total*100);
+  const r = 20, circ = 2 * Math.PI * r;
+  const offset = circ - (done/total) * circ;
+  const complete = done === total;
+  box.innerHTML = `
+    <svg width="50" height="50">
+      <circle class="ring-bg" cx="25" cy="25" r="${r}"/>
+      <circle class="ring-fg${complete?" complete":""}" cx="25" cy="25" r="${r}"
+        stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+    </svg>
+    <div class="ring-text">${pct}%</div>
+  `;
+  const badge = qs("#taskProgress");
+  if(badge) badge.textContent = `${done}/${total}`;
+}
+
+function hasAnyRecordOnDate(dateStr){
+  if(!dateStr) return false;
+  const v = state.vitals || {};
+  if(hasRecordOnDate(v.bp||[], dateStr)) return true;
+  if(hasRecordOnDate(v.weight||[], dateStr)) return true;
+  if(hasRecordOnDate(v.height||[], dateStr)) return true;
+  if(hasRecordOnDate(v.glucose||[], dateStr)) return true;
+  if(hasRecordOnDate(v.temp||[], dateStr)) return true;
+  if((state.labs||[]).some(l => l.date === dateStr)) return true;
+  if(hasRecordOnDate(state.urineTests||[], dateStr, "date")) return true;
+  if(hasRecordOnDate(state.symptoms||[], dateStr)) return true;
+  if(hasRecordOnDate(state.medsLog||[], dateStr)) return true;
+  if(state.tasksDone?.[dateStr] && Object.keys(state.tasksDone[dateStr]).length > 0) return true;
+  return false;
+}
+
+function renderWeekStrip(){
+  const box = qs("#weekStrip");
+  if(!box) return;
+  const today = new Date();
+  const todayStr = yyyyMMdd(today);
+  const days = ["日","一","二","三","四","五","六"];
+  let html = "";
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = yyyyMMdd(d);
+    const dayName = days[d.getDay()];
+    const isToday = key === todayStr;
+    const hasData = hasAnyRecordOnDate(key);
+    const cls = isToday ? "today" : "";
+    const fill = hasData ? "filled" : "";
+    html += `<div class="week-dot"><div class="wd">${dayName}</div><div class="circle ${cls} ${fill}">${hasData?"✓":""}</div></div>`;
+  }
+  box.innerHTML = html;
+}
+
+function renderCelebration(tasks){
+  const box = qs("#celebrateBox");
+  if(!box) return;
+  const total = tasks.length;
+  const done = tasks.filter(t=>t.done).length;
+  if(total > 0 && done === total){
+    box.innerHTML = `<div class="celebrate"><div class="emoji">🎉</div><div class="msg">今日任务全部完成！</div><div class="sub">坚持记录是最好的随访习惯</div></div>`;
+  } else {
+    box.innerHTML = "";
+  }
+}
+
 function renderHome(){
   applyHomeMoreUI();
+  updateStreak();
+  renderGreeting();
   qs("#todayDate").textContent = niceDate(yyyyMMdd(new Date()));
   const tasks = todayTasks();
+  const total = tasks.length;
+  const done = tasks.filter(t=>t.done).length;
+  renderProgressRing(done, total);
+  renderWeekStrip();
   const list = qs("#todayTasks");
   list.innerHTML = "";
   tasks.forEach(t=>{
@@ -241,6 +364,9 @@ function renderHome(){
   qs("#btnMarkAllDone").onclick = ()=>markAllTasksDone(tasks);
   const bPlan = qs("#btnGoPlan");
   if(bPlan) bPlan.onclick = ()=>navigate("followup");
+
+  // Celebration
+  renderCelebration(tasks);
 
   // Safety
   const safety = safetySignals();
@@ -302,7 +428,7 @@ function renderHome(){
   const rec = recommendKnowledge();
   const box = qs("#knowledgeContent");
   if(!rec.length){
-    box.innerHTML = `<div class="note">暂无推荐（示意）。你可以先完善“资料/项目”，或录入一次化验后再看推荐。</div>`;
+    box.innerHTML = `<div class="empty-cta"><div class="emoji">💡</div><div class="msg">完善资料或录入化验后，系统会推荐个性化的健康知识。</div><button class="ghost small" onclick="openProfile()">完善资料</button></div>`;
   }else{
     box.innerHTML = rec.map(a => `
       <div class="list-item">
@@ -618,7 +744,7 @@ function renderRecent(){
       pieces.push(`<div class="list-item"><div class="t">今日饮水（结石）</div><div class="s">${cur} ml · ${niceDate(today)}</div></div>`);
     }
   }
-  if(!pieces.length) return `<div class="note">还没有记录。建议先：填写资料 → 录入一次化验/血压/体重。</div>`;
+  if(!pieces.length) return `<div class="empty-cta"><div class="emoji">📋</div><div class="msg">还没有记录。试试先录入一次血压或体重，30 秒就能完成。</div><button class="primary small" onclick="openQuickBP()">记录血压</button></div>`;
   return pieces.join("");
 }
 
@@ -626,7 +752,7 @@ function renderLabsList(){
   const labsBox = qs("#labsList");
   if(!labsBox) return;
   if(!state.labs?.length){
-    labsBox.innerHTML = `<div class="note">暂无化验。点击“新增”录入一次。</div>`;
+    labsBox.innerHTML = `<div class="empty-cta"><div class="emoji">🔬</div><div class="msg">暂无化验记录。录入一次后，系统会为你生成饮食提醒和安全提示。</div><button class="primary small" onclick="openAddLab()">录入化验</button></div>`;
   } else {
     const sorted = [...state.labs].sort((a,b)=> (a.date||"").localeCompare(b.date||"")).reverse();
     labsBox.innerHTML = sorted.slice(0,8).map(l => {
@@ -652,7 +778,7 @@ function renderUrineList(){
   const urineBox = qs("#urineList");
   if(!urineBox) return;
   if(!state.urineTests?.length){
-    urineBox.innerHTML = `<div class="note">暂无尿检记录。肾小球病/ADPKD 建议做时间线记录（示意）。</div>`;
+    urineBox.innerHTML = `<div class="empty-cta"><div class="emoji">🧪</div><div class="msg">暂无尿检记录。肾小球病/ADPKD 建议做时间线记录。</div><button class="primary small" onclick="openAddUrine()">录入尿检</button></div>`;
   } else {
     const sorted = [...state.urineTests].sort((a,b)=> (a.date||"").localeCompare(b.date||"")).reverse();
     urineBox.innerHTML = sorted.slice(0,8).map(u => `
@@ -667,11 +793,11 @@ function renderUrineList(){
 function renderDialysisSessionsInto(box){
   if(!box) return;
   if(!state.enabledPrograms?.dialysis){
-    box.innerHTML = `<div class="note">未启用透析项目。到“资料”里开启后可记录透析数据（示意）。</div>`;
+    box.innerHTML = `<div class="empty-cta"><div class="emoji">💉</div><div class="msg">未启用透析项目。在"资料"中开启后可记录透析数据。</div><button class="ghost small" onclick="openProfile()">去设置</button></div>`;
     return;
   }
   if(!state.dialysis?.sessions?.length){
-    box.innerHTML = `<div class="note">暂无透析记录。点击“新增”记录一次（血透：透前/透后；腹透：UF/透析液）。</div>`;
+    box.innerHTML = `<div class="empty-cta"><div class="emoji">📝</div><div class="msg">暂无透析记录。点击下方开始记录第一次。</div><button class="primary small" onclick="openDialysisSessionModal()">新增透析记录</button></div>`;
     return;
   }
   const sorted = [...state.dialysis.sessions].sort((a,b)=> (a.dateTime||"").localeCompare(b.dateTime||"")).reverse();
