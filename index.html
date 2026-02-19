@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a5fe6" />
+  <title>肾域随访（内测）</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-home-more="0">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true"></div>
+        <div class="brand-text">
+          <div class="brand-title">肾域随访</div>
+          <div class="brand-subtitle" id="brandSubtitle">项目：肾脏随访</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="ghost" id="btnProgram">项目</button>
+      <button class="primary" id="btnProfile">资料</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <!-- HOME -->
+    <section class="page active" id="page-home" data-page="home" aria-label="首页">
+      <div class="container">
+        <div class="row">
+          <div class="pill">
+            <span class="dot"></span>
+            <span id="versionPill">v7.5.0 · 内测</span>
+          </div>
+          <div class="pill secondary" id="pillIdentity">身份：未设置</div>
+        </div>
+
+        <div class="card" id="cardTodayTasks">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">今日行动</div>
+              <div class="card-subtitle" id="todayDate"></div>
+            </div>
+            <div class="row">
+              <button class="ghost small" id="btnGoPlan">随访计划</button>
+              <button class="ghost small" id="btnMarkAllDone">一键完成</button>
+            </div>
+          </div>
+          <div class="task-list" id="todayTasks"></div>
+          <div class="note subtle" id="todayTasksHint">提示：任务来自“当前项目 + 合并情况 + 最近一次记录/化验”。 <a href="#" id="btnGuideHome" class="inline-link">随访的意义</a></div>
+        </div>
+
+        <div class="grid">
+          <div class="card" id="cardSafety">
+            <div class="card-hd">
+              <div>
+                <div class="card-title">安全提醒</div>
+                <div class="card-subtitle">红旗优先：先保命，再管理</div>
+              </div>
+              <button class="ghost small" id="btnTriage">红旗分诊</button>
+            </div>
+            <div id="safetyContent" class="content"></div>
+          </div>
+
+          <div class="card" id="cardProgramMain">
+            <div class="card-hd">
+              <div>
+                <div class="card-title" id="programMainTitle">项目卡片</div>
+                <div class="card-subtitle" id="programMainSubtitle">根据项目自动变化</div>
+              </div>
+              <button class="ghost small" id="btnProgramMainAction">打开</button>
+            </div>
+            <div id="programMainContent" class="content"></div>
+          </div>
+        </div>
+
+        <div class="row" style="justify-content:center; margin-top:6px;">
+          <button class="ghost small" id="btnHomeMoreToggle">展开更多内容</button>
+        </div>
+
+        <div class="card home-more" id="cardDiet">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">今日饮食提醒</div>
+              <div class="card-subtitle">基于：项目/合并症/电解质与代谢标记（示意）</div>
+            </div>
+            <button class="ghost small" id="btnDiet">饮食中心</button>
+          </div>
+          <div id="dietContent" class="content"></div>
+        </div>
+
+        <div class="card home-more" id="cardKnowledge">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">今日知识推荐</div>
+              <div class="card-subtitle">短内容 + 一个行动</div>
+            </div>
+            <button class="ghost small" id="btnKnowledge">更多</button>
+          </div>
+          <div id="knowledgeContent" class="content"></div>
+        </div>
+
+        <div class="card home-more hidden" id="cardDialysisHome">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">透析记录</div>
+              <div class="card-subtitle">血透/腹透：透前/透后、UF、红旗（示意）</div>
+            </div>
+            <button class="primary small" id="btnAddDialysis">新增</button>
+          </div>
+          <div id="dialysisList" class="content"></div>
+        </div>
+
+        <div class="card home-more" id="cardRecent">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">最近记录</div>
+              <div class="card-subtitle">为复诊准备，一页摘要更清晰</div>
+            </div>
+            <button class="ghost small" id="btnExport">复制一页摘要</button>
+          </div>
+          <div id="recentContent" class="content"></div>
+        </div>
+
+        <div class="disclaimer">
+          <strong>重要提示：</strong>本产品用于健康教育、记录与随访管理，不提供诊断或处方。出现胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等情况，请立即就医或联系随访团队。
+        </div>
+      </div>
+    </section>
+
+    <!-- AI -->
+    <section class="page" id="page-ai" data-page="ai" aria-label="AI 助手">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">AI 随访助手（内测）</div>
+              <div class="card-subtitle">一键：解读化验 / 复诊问题 / 给医生的消息 / 红旗自查（不诊断、不处方）</div>
+            </div>
+            <button class="ghost small" id="btnAIHelp">使用边界</button>
+          </div>
+
+          <div class="grid">
+            <button class="tile" id="aiBtnExplain">解读最近化验</button>
+            <button class="tile" id="aiBtnQuestions">生成复诊问题</button>
+            <button class="tile" id="aiBtnMessage">生成给医生的消息</button>
+            <button class="tile" id="aiBtnTriage">红旗自查</button>
+          </div>
+
+          <div class="chat" id="chatBox"></div>
+          <div class="chat-input">
+            <input id="chatInput" type="text" placeholder="例如：我这次肌酐升高了，应该怎么准备复诊问题？" />
+            <button class="primary" id="chatSend">发送</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECORDS -->
+    <section class="page" id="page-records" data-page="records" aria-label="病历与记录">
+      <div class="container">
+        <!-- DOCUMENT VAULT -->
+        <div class="card home-more" id="cardDocs">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">资料库/检查上传</div>
+              <div class="card-subtitle">肾活检报告/病理图片/基因检测/免疫学指标/影像/出院小结等（内测：本地保存）</div>
+            </div>
+            <div class="row" style="gap:8px; margin:0;">
+              <button class="info-btn small" data-exp="docs_vault" aria-label="为什么要上传">i</button>
+              <button class="ghost small" id="btnViewAllDocs">查看全部</button>
+              <button class="primary small" id="btnUploadDoc">上传</button>
+            </div>
+          </div>
+          <div id="docList" class="content"></div>
+          <div class="note subtle">提示：当前为本地保存（仅当前设备/浏览器）。正式版可接入云端、医生端共享与权限控制。</div>
+        </div>
+
+        <!-- ADVANCED MARKERS -->
+        <div class="card hidden" id="cardMarkers">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">高级监测指标（可选）</div>
+              <div class="card-subtitle">移植：dd-cfDNA/DSA；膜性：anti-PLA2R；狼疮肾：dsDNA/C3/C4；MCD/FSGS：anti-nephrin 等</div>
+            </div>
+            <div class="row" style="gap:8px; margin:0;">
+              <button class="info-btn small" data-exp="markers_advanced" aria-label="为什么要记录高级指标">i</button>
+              <button class="primary small" id="btnAddMarker">新增</button>
+            </div>
+          </div>
+          <div id="markerList" class="content"></div>
+          <div class="note subtle">提示：不同医院方法/单位可能不同；此处用于随访整理与趋势，不替代医生判读。</div>
+        </div>
+
+        <!-- Program-specific record panels (to reduce confusion) -->
+        <div class="card hidden" id="cardDialysisRecords">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">透析记录</div>
+              <div class="card-subtitle">血透/腹透：透前/透后、UF、腹透红旗（示意）</div>
+            </div>
+            <div class="row" style="gap:8px; margin:0;">
+              <button class="info-btn small" data-exp="hd_session" aria-label="为什么要记录透析">i</button>
+              <button class="primary small" id="btnAddDialysisRecord">新增</button>
+            </div>
+          </div>
+          <div id="dialysisRecordsList" class="content"></div>
+        </div>
+
+        <div class="card hidden" id="cardStoneWater">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">饮水记录（结石项目）</div>
+              <div class="card-subtitle">分次策略；如限水请以医嘱为准</div>
+            </div>
+            <div class="row" style="gap:8px;">
+              <button class="info-btn small" data-exp="water_stone" aria-label="为什么要记录饮水">i</button>
+              <button class="ghost small" id="btnWaterCustom">自定义</button>
+              <button class="primary small" id="btnWater250">+250ml</button>
+            </div>
+          </div>
+          <div id="stoneWaterList" class="content"></div>
+        </div>
+
+        <div class="card hidden" id="cardStoneEvents">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">结石发作事件</div>
+              <div class="card-subtitle">腰痛/血尿/发热等时间线，复诊更清晰</div>
+            </div>
+            <div class="row" style="gap:8px; margin:0;">
+              <button class="info-btn small" data-exp="stone_event" aria-label="为什么要记录发作事件">i</button>
+              <button class="primary small" id="btnAddStoneEvent">新增</button>
+            </div>
+          </div>
+          <div id="stoneEventList" class="content"></div>
+        </div>
+
+        <div class="card hidden" id="cardPedsGrowth">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">生长记录（儿肾项目）</div>
+              <div class="card-subtitle">身高/体重趋势；建议每月记录一次身高</div>
+            </div>
+            <div class="row" style="gap:8px;">
+              <button class="info-btn small" data-exp="peds_growth" aria-label="为什么要记录生长">i</button>
+              <button class="ghost small" id="btnPedsRecordWeight">记录体重</button>
+              <button class="primary small" id="btnPedsRecordHeight">记录身高</button>
+            </div>
+          </div>
+          <div id="pedsGrowthContent" class="content"></div>
+        </div>
+
+        <div class="grid" id="groupLabsUrine">
+          <div class="card" id="cardLabs">
+            <div class="card-hd">
+              <div>
+                <div class="card-title">化验录入</div>
+                <div class="card-subtitle">支持肾功、电解质、代谢（示意）</div>
+              </div>
+              <div class="row" style="gap:8px; margin:0;">
+                <button class="info-btn small" data-exp="labs" aria-label="为什么要录入化验">i</button>
+                <button class="primary small" id="btnAddLab">新增</button>
+              </div>
+            </div>
+            <div id="labsList" class="content"></div>
+          </div>
+
+          <div class="card" id="cardUrine">
+            <div class="card-hd">
+              <div>
+                <div class="card-title">尿检/尿蛋白记录</div>
+                <div class="card-subtitle">肾小球病 / ADPKD 常用（示意）</div>
+              </div>
+              <div class="row" style="gap:8px; margin:0;">
+                <button class="info-btn small" data-exp="urine" aria-label="为什么要记录尿检">i</button>
+                <button class="primary small" id="btnAddUrine">新增</button>
+              </div>
+            </div>
+            <div id="urineList" class="content"></div>
+          </div>
+        </div>
+
+        <div class="card" id="cardVitals">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">生命体征与日常记录</div>
+              <div class="card-subtitle">血压/体重/身高/血糖/体温/症状</div>
+            </div>
+            <button class="info-btn small" data-exp="symptoms" aria-label="为什么要做日常记录">i</button>
+          </div>
+          <div class="grid">
+            <button class="tile" id="btnQuickBP">记录血压</button>
+            <button class="tile" id="btnQuickWeight">记录体重</button>
+            <button class="tile" id="btnQuickHeight">记录身高（儿肾）</button>
+            <button class="tile" id="btnQuickGlucose">记录血糖</button>
+            <button class="tile" id="btnQuickTemp">记录体温</button>
+            <button class="tile" id="btnQuickSymptoms">记录症状</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <!-- DOCS -->
+    <section class="page" id="page-docs" data-page="docs" aria-label="资料库">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">资料库</div>
+              <div class="card-subtitle">把报告/活检/基因/影像集中放好，复诊更高效</div>
+            </div>
+            <div class="row">
+              <button class="ghost small" id="btnDocsVisitPack">复诊包</button>
+              <button class="primary small" id="btnDocsUpload">上传</button>
+            </div>
+          </div>
+
+          <div class="content">
+            <div class="note subtle">提示：当前为本地保存（仅当前设备/浏览器）。正式版可接入云端、权限控制、医生端共享。</div>
+
+            <div class="grid">
+              <label class="field">
+                <span>项目</span>
+                <select id="docsProgFilter">
+                  <option value="active">仅当前项目</option>
+                  <option value="all">全部</option>
+                  <option value="kidney">肾脏随访</option>
+                  <option value="dialysis">透析随访</option>
+                  <option value="stone">肾结石管理</option>
+                  <option value="peds">儿肾随访</option>
+                  <option value="htn">高血压随访</option>
+                  <option value="dm">糖尿病随访</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>类别</span>
+                <select id="docsCatFilter">
+                  <option value="all">全部</option>
+                  <option value="biopsy_report">肾活检报告</option>
+                  <option value="biopsy_image">肾活检图片</option>
+                  <option value="genetic_report">基因检测报告</option>
+                  <option value="immune_report">免疫学/高级指标</option>
+                  <option value="imaging">影像检查</option>
+                  <option value="lab_report">化验单</option>
+                  <option value="other">其他</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>搜索</span>
+                <input id="docsSearch" placeholder="例：anti-PLA2R、dd-cfDNA、活检、基因、CT…" />
+              </label>
+            </div>
+
+            <div id="docsMeta" class="chips"></div>
+            <div id="docsVaultList" class="content"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">复诊包（近 90 天）</div>
+              <div class="card-subtitle">给医生：摘要 + 最近资料清单（不含文件本体）</div>
+            </div>
+            <div class="row">
+              <button class="ghost small" id="btnDocsCopyPack">复制</button>
+              <button class="ghost small" id="btnDocsDownloadPack">下载</button>
+              <button class="ghost small" id="btnDocsDownloadJSON">导出JSON</button>
+            </div>
+          </div>
+          <pre class="mono" id="visitPackPreview"></pre>
+          <div class="note subtle">说明：本版本导出的 JSON 不包含文件内容（文件保存在本机 IndexedDB）。正式版接入云端后可实现跨设备同步。</div>
+        </div>
+      </div>
+    </section>
+
+<!-- FOLLOWUP -->
+    <section class="page" id="page-followup" data-page="followup" aria-label="随访计划">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">随访计划</div>
+              <div class="card-subtitle">项目化：你只看与你当前项目相关的内容</div>
+            </div>
+            <button class="ghost small" id="btnConfig">计划配置</button>
+          </div>
+          <div id="planContent" class="content"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">快速记录</div>
+              <div class="card-subtitle">减少点击，提高坚持</div>
+            </div>
+          </div>
+          <div class="grid">
+            <button class="tile" id="btnPlanRecordBP">血压</button>
+            <button class="tile" id="btnPlanRecordWeight">体重</button>
+            <button class="tile" id="btnPlanRecordGlucose">血糖</button>
+            <button class="tile" id="btnPlanRecordUrine">尿检</button>
+            <button class="tile hidden" id="btnPlanRecordDialysis">透析记录</button>
+            <button class="tile" id="btnPlanRecordWater">喝水（结石）</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">趋势（简版）</div>
+              <div class="card-subtitle">内测先做可用，后续接图表与医生端配置</div>
+            </div>
+          </div>
+          <div id="trendContent" class="content"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ME -->
+    <section class="page" id="page-me" data-page="me" aria-label="我的">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">我的</div>
+              <div class="card-subtitle">版本与内测信息</div>
+            </div>
+            <button class="ghost small" id="btnReset">重置演示数据</button>
+          </div>
+          <div class="content">
+            <div class="brand-showcase">
+              <img src="icons/logo-full.png" alt="肾域AI KidneySphere AI" class="brand-full" />
+            </div>
+            <div class="kv"><span>版本</span><span id="meVersion"></span></div>
+            <div class="kv"><span>当前项目</span><span id="meProgram"></span></div>
+            <div class="kv"><span>启用项目</span><span id="meEnabled"></span></div>
+            <div class="kv"><span>内测建议</span><span>先测流程：建档→记录→提醒→摘要→内容</span></div>
+          </div>
+        </div>
+
+
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">随访指南与意义</div>
+              <div class="card-subtitle">建议每位内测患者先看一遍：为什么要随访、每项检查在回答什么问题</div>
+            </div>
+            <button class="primary small" id="btnGuideOpen">查看</button>
+          </div>
+          <div class="content">
+            <div class="note">这会帮助你更愿意坚持随访，也能减少不必要的焦虑（App 解释用于教育与整理，不替代医生）。</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">一页摘要</div>
+              <div class="card-subtitle">给医生/随访护士/家属：少说多做</div>
+            </div>
+            <button class="primary small" id="btnExport2">复制摘要</button>
+          </div>
+          <pre class="mono" id="exportPreview"></pre>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">附近医生/机构</div>
+              <div class="card-subtitle">预留接口：未来可按定位搜索肾科/透析中心</div>
+            </div>
+            <button class="primary small" id="btnFindDoctor">搜索附近</button>
+          </div>
+          <div class="content">
+            <div class="note">内测占位：当前使用示例数据 + 接口占位。上线前需接入医生库/地图服务，并通过合规与质量审核。</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">内测设置</div>
+              <div class="card-subtitle">先把体验跑顺：入口更少、路径更短</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="kv"><span>显示 AI 标签</span><span><input type="checkbox" id="toggleShowAI" /></span></div>
+            <div class="kv"><span>首页默认展开更多内容</span><span><input type="checkbox" id="toggleHomeMoreDefault" /></span></div>
+            <div class="note subtle">提示：不影响数据，只影响界面呈现。建议第一轮患者内测先关闭 AI 标签（减少分心），医生端流程跑顺后再开放。</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">反馈入口</div>
+              <div class="card-subtitle">复制“版本+设备+项目+复现步骤”，定位问题更快</div>
+            </div>
+            <button class="ghost small" id="btnCopyFeedback">复制反馈信息</button>
+          </div>
+          <pre class="mono" id="feedbackPreview"></pre>
+          <div class="content">
+            <button class="primary" id="btnCopyFeedbackWithSummary">复制反馈 + 附带一页摘要</button>
+            <div class="note subtle">把复制内容 + 截图发到内测群即可（推荐格式：发生了什么→我点了哪里→期待看到什么→实际发生什么）。</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">数据备份（内测工具）</div>
+              <div class="card-subtitle">导出/导入本机数据，方便排查与换机迁移（不含文件本体）</div>
+            </div>
+            <button class="ghost small" id="btnExportData">导出JSON</button>
+          </div>
+          <div class="content">
+            <label class="field">
+              <span>导入 JSON</span>
+              <input type="file" id="fileImportData" accept="application/json" />
+            </label>
+            <button class="danger" id="btnWipeData">清空所有数据</button>
+            <div class="note subtle">说明：文件（活检图片/报告等）保存在本机 IndexedDB，导出的 JSON 不包含文件内容。正式版接入云端后可实现跨设备同步。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- GUIDE (Follow-up meaning) -->
+    <section class="page" id="page-guide" data-page="guide" aria-label="随访指南">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">随访指南</div>
+              <div class="card-subtitle">随访的意义 + 怎么用最省力</div>
+            </div>
+            <button class="ghost small" id="btnGuideBack">返回</button>
+          </div>
+          <div id="guideBody" class="content"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPLAIN (Per-item) -->
+    <section class="page" id="page-explain" data-page="explain" aria-label="检查说明">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title" id="expTitle">检查说明</div>
+              <div class="card-subtitle" id="expSubtitle"></div>
+            </div>
+            <button class="ghost small" id="btnExpBack">返回</button>
+          </div>
+          <div id="expBody" class="content"></div>
+          <div class="row" id="expActions"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar" role="navigation" aria-label="底部导航" data-cols="5">
+    <button class="tab active" data-nav="home">首页</button>
+    <button class="tab" data-nav="ai">AI</button>
+    <button class="tab" data-nav="records">记录</button>
+    <button class="tab" data-nav="docs">资料库</button>
+    <button class="tab" data-nav="me">我的</button>
+  </nav>
+
+  <!-- MODALS -->
+  <div class="modal" id="modalProgram" aria-hidden="true">
+    <div class="sheet">
+      <div class="sheet-hd">
+        <div>
+          <div class="sheet-title">切换项目</div>
+          <div class="sheet-subtitle">项目化隔离：避免“病种很多导致混乱”</div>
+        </div>
+        <button class="ghost" data-close="modalProgram">关闭</button>
+      </div>
+      <div class="sheet-body" id="programList"></div>
+      <div class="sheet-footer">
+        <div class="note subtle">提示：你可以在“资料”里启用/关闭项目。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalProfile" aria-hidden="true">
+    <div class="sheet">
+      <div class="sheet-hd">
+        <div>
+          <div class="sheet-title">资料与随访配置</div>
+          <div class="sheet-subtitle">内测：先把“项目/人群/关键字段”跑通</div>
+        </div>
+        <button class="ghost" data-close="modalProfile">关闭</button>
+      </div>
+      <div class="sheet-body">
+        <div class="section">
+          <div class="section-title">项目与人群</div>
+
+          <label class="field">
+            <span>启用项目</span>
+            <div class="chips" id="enabledChips"></div>
+            <div class="note subtle">可按患者情况启用随访项目；<b>至少启用 1 个项目</b>。肾脏随访不再必选：如仅高血压/糖尿病，可关闭肾脏项目。</div>
+          </label>
+
+          <label class="field">
+            <span>合并慢病（可多选）</span>
+            <div class="chips" id="comorbChips"></div>
+          </label>
+        </div>
+
+        <div class="section" id="kidneySection">
+          <div class="section-title">肾脏随访（成人/通用）</div>
+
+          <label class="field">
+            <span>主随访路径</span>
+            <select id="kidneyTrack">
+              <option value="unknown">不确定（推荐上传病历确认）</option>
+              <option value="ckd">肾功能/CKD</option>
+              <option value="glomerular">蛋白尿/肾小球病</option>
+              <option value="adpkd">多囊肾（ADPKD）</option>
+              <option value="genetic">遗传性肾病（如 Alport）</option>
+              <option value="tx">肾移植随访</option>
+            </select>
+          </label>
+
+          <div id="glomerularBox" class="subbox hidden">
+            <label class="field">
+              <span>肾小球病类型（可选）</span>
+              <select id="glomerularSubtype">
+                <option value="unknown">其他/不确定</option>
+                <option value="iga">IgA 肾病</option>
+                <option value="mn">膜性肾病</option>
+                <option value="hbv">乙肝相关肾病</option>
+                <option value="mcd">微小病变（MCD）</option>
+                <option value="fsgs">原发FSGS</option>
+                <option value="ln">狼疮性肾炎</option>
+                <option value="anca">ANCA相关肾损害</option>
+                <option value="c3g">C3肾小球病</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>确诊等级（可选）</span>
+              <select id="dxCertainty">
+                <option value="unknown">不确定</option>
+                <option value="confirmed">病理/医生明确</option>
+                <option value="told">医生口头/出院小结（未核对）</option>
+                <option value="self">患者自述</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="txBox" class="subbox hidden">
+            <label class="field">
+              <span>移植阶段（示意）</span>
+              <select id="txStage">
+                <option value="stable">稳定期</option>
+                <option value="early">术后 0–3 月</option>
+                <option value="mid">术后 3–12 月</option>
+                <option value="unstable">异常/调整期</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">高血压随访（独立项目）</div>
+          <div class="note subtle">聚焦家庭血压趋势与用药依从。阈值与目标请以医生建议为准。此处仅用于随访记录（示意）。</div>
+
+          <label class="field">
+            <span>是否启用高血压项目</span>
+            <select id="enableHTN">
+              <option value="false">否</option>
+              <option value="true">是</option>
+            </select>
+          </label>
+
+          <div id="htnBox" class="subbox hidden">
+            <label class="field">
+              <span>家庭血压频率（示意）</span>
+              <select id="htnFreq">
+                <option value="daily1">每日1次</option>
+                <option value="daily2">每日2次</option>
+              </select>
+            </label>
+
+            <div class="two">
+              <label class="field">
+                <span>目标收缩压（可选）</span>
+                <input id="htnTargetSys" type="number" inputmode="numeric" placeholder="例如：130" />
+              </label>
+              <label class="field">
+                <span>目标舒张压（可选）</span>
+                <input id="htnTargetDia" type="number" inputmode="numeric" placeholder="例如：80" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">糖尿病随访（独立项目）</div>
+          <div class="note subtle">聚焦血糖 + HbA1c 趋势；单位支持 mmol/L 与 mg/dL。此处仅用于随访记录（示意）。</div>
+
+          <label class="field">
+            <span>是否启用糖尿病项目</span>
+            <select id="enableDM">
+              <option value="false">否</option>
+              <option value="true">是</option>
+            </select>
+          </label>
+
+          <div id="dmBox" class="subbox hidden">
+            <div class="two">
+              <label class="field">
+                <span>血糖记录频率（示意）</span>
+                <select id="dmGlucoseFreq">
+                  <option value="daily1">每日1次</option>
+                  <option value="daily2">每日2次</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>血糖单位</span>
+                <select id="dmGlucoseUnit">
+                  <option value="mmolL">mmol/L</option>
+                  <option value="mgdl">mg/dL</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="two">
+              <label class="field">
+                <span>HbA1c 目标（可选，%）</span>
+                <input id="dmA1cTarget" type="number" inputmode="decimal" placeholder="例如：7.0" />
+              </label>
+              <label class="field">
+                <span>治疗方式（可选）</span>
+                <select id="dmTherapy">
+                  <option value="unknown">不确定</option>
+                  <option value="none">暂不使用药物</option>
+                  <option value="oral">口服药</option>
+                  <option value="insulin">胰岛素</option>
+                  <option value="mixed">口服 + 胰岛素</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>糖尿病类型（可选）</span>
+              <select id="dmType">
+                <option value="unknown">不确定</option>
+                <option value="t1">1 型</option>
+                <option value="t2">2 型</option>
+                <option value="gestational">妊娠糖尿病</option>
+                <option value="other">其他</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">透析随访（独立项目）</div>
+          <div class="note subtle">透析项目与 CKD/移植/结石项目隔离：避免“饮水/阈值/提醒”冲突。此处仅用于随访记录与提醒（示意），具体方案以透析中心医嘱为准。</div>
+
+          <label class="field">
+            <span>是否启用透析项目</span>
+            <select id="enableDialysis">
+              <option value="false">否</option>
+              <option value="true">是</option>
+            </select>
+          </label>
+
+          <div id="dialysisBox" class="subbox hidden">
+            <label class="field">
+              <span>透析方式</span>
+              <select id="dialysisModality">
+                <option value="hd">血液透析（HD）</option>
+                <option value="pd">腹膜透析（PD）</option>
+              </select>
+            </label>
+
+            <div class="field" id="hdDaysRow">
+              <span>血透日（可多选）</span>
+              <div class="chips" id="hdDaysChips"></div>
+              <div class="note subtle">用于生成“今日行动”的透析日提示（示意）。</div>
+            </div>
+
+            <label class="field">
+              <span>通路/导管类型（可选）</span>
+              <select id="dialysisAccess">
+                <option value="unknown">不确定</option>
+                <option value="fistula">动静脉内瘘</option>
+                <option value="graft">人工血管</option>
+                <option value="cvc">中心静脉导管</option>
+                <option value="pdcatheter">腹透导管</option>
+              </select>
+            </label>
+
+            <div class="two">
+              <label class="field">
+                <span>干体重（kg，可选）</span>
+                <input id="dryWeightKg" type="number" inputmode="decimal" placeholder="例如：68.0" />
+              </label>
+              <label class="field" id="pdExchangesRow">
+                <span>腹透：交换次数/天（可选）</span>
+                <input id="pdExchanges" type="number" inputmode="numeric" placeholder="例如：4" />
+              </label>
+            </div>
+
+            <div class="two">
+              <label class="field">
+                <span>是否限水（安全闸门）</span>
+                <select id="dialysisFluidRestricted">
+                  <option value="unknown">不确定</option>
+                  <option value="false">否（或无需限水）</option>
+                  <option value="true">是（以医嘱为准）</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>限水目标（ml/天，可选）</span>
+                <input id="dialysisFluidLimitMl" type="number" inputmode="numeric" placeholder="例如：1000" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">儿肾随访（独立项目）</div>
+          <div class="note subtle">儿肾与成人规则不同（血压百分位、eGFR 等），因此单列项目避免误用成人阈值。</div>
+
+          <label class="field">
+            <span>是否启用儿肾项目</span>
+            <select id="enablePeds">
+              <option value="false">否</option>
+              <option value="true">是</option>
+            </select>
+          </label>
+
+          <div id="pedsBox" class="subbox hidden">
+            <label class="field">
+              <span>孩子姓名（或昵称）</span>
+              <input id="childName" type="text" placeholder="例如：小明" />
+            </label>
+
+            <div class="two">
+              <label class="field">
+                <span>出生日期</span>
+                <input id="childDob" type="date" />
+              </label>
+              <label class="field">
+                <span>性别</span>
+                <select id="childSex">
+                  <option value="unknown">不确定</option>
+                  <option value="male">男</option>
+                  <option value="female">女</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="two">
+              <label class="field">
+                <span>身高（cm）</span>
+                <input id="childHeight" type="number" inputmode="decimal" placeholder="例如：128" />
+              </label>
+              <label class="field">
+                <span>体重（kg）</span>
+                <input id="childWeight" type="number" inputmode="decimal" placeholder="例如：28.5" />
+              </label>
+            </div>
+
+            <label class="field">
+              <span>监护人姓名</span>
+              <input id="guardianName" type="text" placeholder="例如：妈妈/爸爸" />
+            </label>
+
+            <label class="field">
+              <span>儿肾主诊断（可选）</span>
+              <select id="pedsDx">
+                <option value="unknown">不确定/待确认</option>
+                <option value="ckd">慢性肾病/肾功能异常</option>
+                <option value="glomerular">蛋白尿/肾小球病</option>
+                <option value="caukt">泌尿系畸形/CAKUT（示意）</option>
+                <option value="tx">肾移植随访</option>
+                <option value="genetic">遗传性肾病</option>
+                <option value="stone">肾结石/结晶（示意）</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">肾结石管理（独立项目）</div>
+
+          <label class="field">
+            <span>是否启用结石项目</span>
+            <select id="enableStone">
+              <option value="false">否</option>
+              <option value="true">是</option>
+            </select>
+          </label>
+
+          <div id="stoneBox" class="subbox hidden">
+            <label class="field">
+              <span>医生是否要求限制饮水（安全闸门）</span>
+              <select id="fluidRestricted">
+                <option value="unknown">不确定</option>
+                <option value="false">没有限水</option>
+                <option value="true">有（限水）</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>喝水目标（ml/天，可选）</span>
+              <input id="waterTarget" type="number" inputmode="numeric" placeholder="例如：2000" />
+              <div class="note subtle">仅用于自我记录与提醒；如限水，请以医嘱为准。</div>
+            </label>
+          </div>
+        </div>
+
+      </div>
+      <div class="sheet-footer">
+        <button class="primary" id="btnSaveProfile">保存</button>
+        <button class="ghost" data-close="modalProfile">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalSimple" aria-hidden="true">
+    <div class="sheet">
+      <div class="sheet-hd">
+        <div>
+          <div class="sheet-title" id="simpleTitle">标题</div>
+          <div class="sheet-subtitle" id="simpleSubtitle"></div>
+        </div>
+        <button class="ghost" data-close="modalSimple">关闭</button>
+      </div>
+      <div class="sheet-body" id="simpleBody"></div>
+      <div class="sheet-footer" id="simpleFooter"></div>
+    </div>
+  </div>
+
+  <!-- Update banner (PWA) -->
+  <div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite">
+    <div class="update-text">
+      <strong>发现新版本</strong>
+      <span class="sub">点击更新以获得最新功能与修复（内测）</span>
+    </div>
+    <div class="update-actions">
+      <button class="ghost small" id="btnDismissUpdate">稍后</button>
+      <button class="primary small" id="btnUpdateNow">立即更新</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
