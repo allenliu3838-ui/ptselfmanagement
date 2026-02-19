@@ -117,6 +117,13 @@ function openGuidePage(){
   navigate("guide");
 }
 
+function openUsagePage(){
+  state.ui = state.ui || { overlayReturn: currentTabKey, explainerId: "" };
+  state.ui.overlayReturn = currentTabKey;
+  saveState();
+  navigate("usage");
+}
+
 function overlayBack(){
   const target = (state.ui && state.ui.overlayReturn) ? state.ui.overlayReturn : (currentTabKey || "home");
   const after = (state.ui && state.ui.afterOverlay) ? state.ui.afterOverlay : null;

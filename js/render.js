@@ -59,6 +59,138 @@ function renderExplainPage(){
   }
 }
 
+function renderUsagePage(){
+  const bodyEl = qs("#usageBody");
+  if(!bodyEl) return;
+
+  bodyEl.innerHTML = `
+    <div class="guide-title">肾域随访 使用说明</div>
+    <div class="note" style="margin-bottom:16px;">本说明帮助你快速了解 App 的所有功能。建议花 3 分钟通读一次，之后随时可在"我的"页面重新查看。</div>
+
+    <div class="guide-section">
+      <div class="guide-h">一、整体介绍</div>
+      <div class="guide-p">肾域随访是一款面向肾病及相关慢病患者的自我管理工具。核心目标：</div>
+      <ul>
+        <li><b>记录</b>：帮你在两次门诊之间持续记录血压、体重、化验、尿检、症状等健康数据</li>
+        <li><b>整理</b>：自动生成"一页摘要"，让复诊沟通更高效</li>
+        <li><b>教育</b>：每项检查旁边都有 <b>i</b> 按钮，点开就能看到"为什么要做、重点看什么、红旗信号"</li>
+        <li><b>提醒</b>：首页会显示今日任务和安全提示（红旗信号置顶）</li>
+      </ul>
+      <div class="note subtle">重要：本工具仅用于记录、教育与复诊整理，不提供诊断或处方。出现红旗症状请立即就医。</div>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">二、支持的项目（疾病方向）</div>
+      <div class="guide-p">App 支持 6 个项目，可同时启用多个：</div>
+      <ul>
+        <li><b>肾脏随访</b>：CKD、肾小球病、ADPKD、遗传性肾病、肾移植</li>
+        <li><b>高血压随访</b>：家庭血压监测、用药依从打卡</li>
+        <li><b>糖尿病随访</b>：血糖追踪、HbA1c、用药打卡</li>
+        <li><b>透析随访</b>：血透(HD)与腹透(PD)记录、干体重、通路/导管管理</li>
+        <li><b>肾结石管理</b>：饮水追踪、结石发作事件时间线</li>
+        <li><b>儿肾随访</b>：生长追踪（身高/体重）、儿科血压百分位</li>
+      </ul>
+      <div class="guide-p">切换方式：点击顶部右上角 <b>"项目"</b> 按钮可切换当前活跃项目；点击 <b>"资料"</b> 按钮可进入设置页面启用/配置多个项目。</div>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">三、底部导航栏（5 个标签页）</div>
+      <ol>
+        <li><b>首页</b>：仪表盘，包含今日任务、安全提醒、项目速览、饮食提醒、知识推荐、最近记录</li>
+        <li><b>AI</b>（可选，可在设置中隐藏）：AI 助手对话，支持化验解读、复诊问题生成等</li>
+        <li><b>记录页</b>（标签名随项目变化）：录入化验、尿检、生命体征、透析记录、饮水记录等</li>
+        <li><b>资料库</b>：上传和管理检查报告（活检报告、基因报告、影像、化验单等）</li>
+        <li><b>我的</b>：个人信息、使用说明、一页摘要、数据备份/恢复、反馈入口</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">四、首页功能详解</div>
+      <ul>
+        <li><b>今日行动</b>：根据你的项目和设置，每天自动生成 1-5 项任务（如"记录血压""上传化验"）。完成后打勾，进度环会更新。连续多天记录会显示 🔥 连续天数</li>
+        <li><b>一键完成</b>：快速标记所有今日任务为已完成</li>
+        <li><b>7 天活动条</b>：直观显示过去一周的记录情况</li>
+        <li><b>安全提醒</b>：基于你的化验数据自动判断（如血钾偏高、eGFR 下降等），红旗级别会置顶</li>
+        <li><b>红旗分诊</b>：点击可查看紧急症状清单，帮你判断是否需要立即就医</li>
+        <li><b>项目卡片</b>：当前项目的关键数据速览（最近化验、血压、体重等）</li>
+        <li><b>展开更多</b>：点击可查看饮食提醒、知识推荐、最近记录等更多内容</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">五、记录页功能</div>
+      <div class="guide-p">记录页的内容会根据当前项目自动调整：</div>
+      <ul>
+        <li><b>生命体征</b>：点击对应方块快速录入血压、体重、身高（儿肾）、血糖、体温、症状</li>
+        <li><b>化验录入</b>：支持肌酐、eGFR、K、Na、Ca、P、Mg、血糖、HbA1c 等</li>
+        <li><b>尿检记录</b>：尿蛋白、潜血等（肾脏/儿肾项目）</li>
+        <li><b>透析记录</b>：HD 透前/透后体重血压、PD 超滤量/透析液等（透析项目）</li>
+        <li><b>饮水记录</b>：每日饮水量追踪、目标达成率（结石项目）</li>
+        <li><b>结石事件</b>：记录腰痛/血尿/发热/就医等发作事件（结石项目）</li>
+        <li><b>生长记录</b>：身高/体重/BMI/生长速度追踪（儿肾项目）</li>
+        <li><b>高级监测指标</b>：dd-cfDNA、DSA、anti-PLA2R 等（肾移植/肾小球病）</li>
+        <li><b>资料库/检查上传</b>：上传活检报告、基因报告、影像、化验单等文件</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">六、资料库</div>
+      <ul>
+        <li>支持上传图片和文件，按类别分类：肾活检报告、基因检测报告、免疫学/高级指标、影像检查、化验单等</li>
+        <li>支持按项目和类别筛选，支持关键词搜索</li>
+        <li><b>复诊包</b>：自动整理最近 90 天的文档和数据摘要，可复制文字或导出 JSON，方便复诊时带给医生</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">七、一页摘要（最有价值的功能之一）</div>
+      <div class="guide-p">自动将你的健康数据整理为一段简洁文字，包含：</div>
+      <ul>
+        <li>最近化验结果、血压/体重趋势、尿检记录</li>
+        <li>症状事件、用药打卡情况</li>
+        <li>安全提醒与红旗信号</li>
+      </ul>
+      <div class="guide-p"><b>使用方法</b>：在"我的"页面点击"复制摘要"，粘贴发给医生/护士/家属即可。<b>建议每次复诊前 1 分钟操作一次。</b></div>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">八、日常使用建议（最省力的做法）</div>
+      <ol>
+        <li><b>每天 1 分钟</b>：打开首页 → 完成"今日行动"中的 1-2 项关键记录</li>
+        <li><b>有报告就上传</b>：拿到检查报告后，立即上传到资料库</li>
+        <li><b>复诊前 1 分钟</b>：在"我的 → 一页摘要"点击复制，发给医生</li>
+        <li><b>遇到 <span style="color:var(--danger)">i</span> 就点</b>：每个任务旁的 i 按钮都能帮你理解"为什么要做这项检查"</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">九、数据安全与备份</div>
+      <ul>
+        <li>所有数据<b>仅保存在你的设备本地</b>（localStorage + IndexedDB），不会上传到云端</li>
+        <li>在"我的"页面底部可以<b>导出 JSON 备份</b>，建议定期备份</li>
+        <li>换设备时可以通过<b>导入 JSON</b>恢复数据</li>
+        <li>清除浏览器数据或卸载 App 会导致数据丢失，请务必提前备份</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">十、常见问题</div>
+      <ul>
+        <li><b>如何切换项目？</b> → 点击顶部右上角"项目"按钮</li>
+        <li><b>如何启用多个项目？</b> → 点击顶部"资料"按钮，在设置中勾选需要的项目</li>
+        <li><b>数据会丢失吗？</b> → 数据存在本地，清除浏览器数据会丢失。建议定期在"我的"页面导出备份</li>
+        <li><b>红旗信号是什么意思？</b> → 需要尽快联系医生或就医的危险信号（如严重高血压、胸痛、意识改变等）</li>
+        <li><b>AI 功能在哪？</b> → 底部"AI"标签页（如未显示，需在"我的 → 内测设置"中开启）</li>
+        <li><b>如何反馈问题？</b> → 在"我的"页面点击"复制反馈信息"，包含版本和设备信息，方便定位问题</li>
+      </ul>
+    </div>
+
+    <div class="disclaimer" style="margin-top:14px;">
+      <strong>免责声明：</strong>本工具用于健康数据记录、教育与复诊整理，不提供诊断、处方或治疗建议。出现红旗症状，请立即就医或联系随访团队。
+    </div>
+  `;
+}
+
 function renderGuidePage(){
   const bodyEl = qs("#guideBody");
   if(!bodyEl) return;
@@ -1170,6 +1302,7 @@ function renderAll(){
   renderAI();
   renderExplainPage();
   renderGuidePage();
+  renderUsagePage();
 }
 
 function navigate(pageKey){
