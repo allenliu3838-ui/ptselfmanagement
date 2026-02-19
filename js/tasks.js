@@ -89,7 +89,7 @@ function todayTasks(){
     const limitTxt = limit ? "（限水：以透析中心医嘱为准）" : "";
 
     add("dialysis_bp", "记录血压", `透析日建议记录透前/透后；非透析日建议固定时间记录。${limitTxt}`, {type:"info", text:"基础"}, "bp", act("去记录", ()=>openQuickBP()), {type:"bp", minCount:1});
-    add("dialysis_weight", "记录体重", `建议记录"干体重/间期体重增长"趋势。${limitTxt}`, {type:"info", text:"基础"}, "weight", act("去记录", ()=>openQuickWeight()), {type:"weight", minCount:1});
+        add("dialysis_weight", "记录体重", `建议记录“干体重/间期体重增长”趋势。${limitTxt}`, {type:"info", text:"基础"}, "weight", act("去记录", ()=>openQuickWeight()), {type:"weight", minCount:1});
 
     if(mod === "hd"){
       const isDay = isDialysisDayToday();

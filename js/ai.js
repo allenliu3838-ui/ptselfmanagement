@@ -18,7 +18,7 @@ function aiQuickExplain(){
   const lines = [];
   lines.push("【解读最近化验（随访整理，不替代医生）】");
   if(!lab){
-    lines.push("- 目前没有化验记录：建议到"记录→化验录入"补充一次。");
+        lines.push("- 目前没有化验记录：建议到“记录→化验录入”补充一次。");
   } else {
     lines.push(`- 日期：${niceDate(lab.date||"—")}`);
     const items = [];
@@ -81,7 +81,7 @@ function aiQuickQuestions(){
     lines.push("3）未来 3–6 个月我们最应该关注的指标是什么？");
   }
   lines.push("");
-  lines.push("我已准备：化验单/记录趋势/一页摘要（可在"我的→复制摘要"获取）。");
+    lines.push("我已准备：化验单/记录趋势/一页摘要（可在“我的→复制摘要”获取）。");
   aiPush("ai", lines.join("\n"));
   aiEnsureOnAIPage();
 }
@@ -124,7 +124,7 @@ function generateAIDemoResponse(text){
   const lab = latestLab();
   const diet = dietSignals().map(t=>t.label).join("、");
   const parts = [];
-  parts.push("我可以帮你把这次情况整理成"复诊更高效"的结构：");
+    parts.push("我可以帮你把这次情况整理成“复诊更高效”的结构：");
   parts.push("1）事实（你记录的数据）：");
   if(lab && (lab.scr || lab.k || lab.glu)){
     const facts = [];
@@ -152,7 +152,7 @@ function generateAIDemoResponse(text){
     parts.push("- 出现哪些情况需要我立即联系团队？");
   }
   parts.push("3）今天你能做的 1 件事：");
-  parts.push("- 在首页"今日行动"把血压/体重/尿检或身高体重记录补齐，然后复制"一页摘要"发给医生。");
+    parts.push("- 在首页“今日行动”把血压/体重/尿检或身高体重记录补齐，然后复制“一页摘要”发给医生。");
   if(diet) parts.push(`4）饮食关注点（示意）：${diet}（仅教育提示，具体以医生/营养师方案为准）`);
   parts.push("如果你现在有胸痛/呼吸困难/意识改变/抽搐/少尿无尿/发热伴剧烈腰痛等红旗，请立即就医或联系团队。");
   return parts.join("\n");

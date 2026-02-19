@@ -32,7 +32,7 @@ function openKnowledgeModal(){
     .slice(0, 12);
   openSimpleModal(
     "知识库（内测）",
-    "建议：短内容 + 一个行动；推送最终应由"阶段/状态"触发，而不仅是病名。",
+        "建议：短内容 + 一个行动；推送最终应由“阶段/状态”触发，而不仅是病名。",
     `
       ${items.map(a=>`
         <div class="list-item">
@@ -155,7 +155,7 @@ function renderDietList(){
   if(metaEl) metaEl.innerHTML = `<div class="row">${chips.join('')}</div>`;
 
   if(!foods.length){
-    listEl.innerHTML = `<div class="note">没有匹配结果。你可以换个关键词（例如"香蕉/番茄/可乐/火锅/代盐"），或切换上方筛选。</div>`;
+        listEl.innerHTML = `<div class="note">没有匹配结果。你可以换个关键词（例如“香蕉/番茄/可乐/火锅/代盐”），或切换上方筛选。</div>`;
     return;
   }
 
@@ -239,14 +239,14 @@ function renderDietFoodDetail(foodId){
     ${food.caution ? `<div class="note subtle">备注：${escapeHtml(food.caution)}</div>` : ``}
 
     <div class="disclaimer" style="margin-top:12px;">
-      <strong>边界：</strong>饮食内容用于健康教育与"避坑提醒"，不替代医生/营养师的个体化方案。
+            <strong>边界：</strong>饮食内容用于健康教育与“避坑提醒”，不替代医生/营养师的个体化方案。
       若你出现心悸、胸痛、呼吸困难、意识异常、抽搐等红旗症状，请立即就医或联系团队。
     </div>
   `;
 
   openSimpleModal(
     food.name,
-    `来源：内测教育库 v${DIET_LIBRARY_VERSION} · 点击"返回列表"继续搜索`,
+        `来源：内测教育库 v${DIET_LIBRARY_VERSION} · 点击“返回列表”继续搜索`,
     body,
     `<button class="ghost" id="btnDietBack">返回列表</button>
      <button class="primary" id="btnDietFav">${favSet.has(food.id) ? "★ 已收藏" : "☆ 收藏"}</button>
@@ -284,7 +284,7 @@ function renderDietGuide(guideId){
   };
 
   const body = `
-    <div class="note subtle">专题指南 v${DIET_GUIDE_VERSION} · 以"少走弯路、容易坚持"为目标（内测教育内容）</div>
+        <div class="note subtle">专题指南 v${DIET_GUIDE_VERSION} · 以“少走弯路、容易坚持”为目标（内测教育内容）</div>
 
     ${state.comorbid?.masld ? `<div class="row"><div class="badge ok">你已标记：脂肪肝/MASLD</div></div>` : ``}
 
@@ -334,17 +334,17 @@ function renderDietModal(){
   const tags = dietSignals();
   const focus = dietFocus();
   const focusLines = [];
-  if(focus.highK) focusLines.push('血钾偏高：优先看"高钾食物/代盐避坑"。');
-  if(focus.highP) focusLines.push('血磷偏高：优先看"磷添加剂避坑"。');
+    if(focus.highK) focusLines.push('血钾偏高：优先看“高钾食物/代盐避坑”。');
+    if(focus.highP) focusLines.push('血磷偏高：优先看“磷添加剂避坑”。');
 
   const hasMasld = !!state.comorbid?.masld;
 
   const tagsHtml = tags.length
     ? `<div class="row">${tags.map(t=>`<div class=\"badge info\">${escapeHtml(t.label)}</div>`).join('')}</div>`
-    : `<div class="note">尚未发现突出饮食关注点（示意）。你仍可以用食物库自查"能不能吃"。</div>`;
+        : `<div class="note">尚未发现突出饮食关注点（示意）。你仍可以用食物库自查“能不能吃”。</div>`;
 
   const body = `
-    <div class="note subtle">提示：点任意食物，查看"为什么要关注 + 替代选择"。（内测教育库，不替代医生/营养师）</div>
+        <div class="note subtle">提示：点任意食物，查看“为什么要关注 + 替代选择”。（内测教育库，不替代医生/营养师）</div>
 
     ${tagsHtml}
 
@@ -352,7 +352,7 @@ function renderDietModal(){
 
     <div class="list-item">
       <div class="t">专题指南</div>
-      <div class="s">${hasMasld ? '你已标记脂肪肝/MASLD：建议按"减重 + 少糖少加工"为核心。' : '如你有脂肪肝/脂肪性肝炎（NASH/MASH），可参考"减重 + 少糖少加工"的饮食思路。'}</div>
+            <div class="s">${hasMasld ? '你已标记脂肪肝/MASLD：建议按“减重 + 少糖少加工”为核心。' : '如你有脂肪肝/脂肪性肝炎（NASH/MASH），可参考“减重 + 少糖少加工”的饮食思路。'}</div>
       <div class="row" style="margin-top:10px;">
         <button class="primary small" data-diet-guide="masld">脂肪肝/MASLD（NASH/MASH）饮食要点</button>
       </div>
@@ -375,7 +375,7 @@ function renderDietModal(){
     <label class="field" style="margin-top:12px;">
       <span>搜索食物</span>
       <input id="dietSearch" type="text" placeholder="输入：香蕉、番茄、可乐、火锅、代盐…" />
-      <div class="note subtle">小技巧：很多患者的坑在"代盐/饮料/汤底/加工肉"。</div>
+            <div class="note subtle">小技巧：很多患者的坑在“代盐/饮料/汤底/加工肉”。</div>
     </label>
 
     <div id="dietMeta"></div>
