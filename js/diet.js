@@ -352,11 +352,13 @@ function renderDietModal(){
 
     <div class="list-item">
       <div class="t">专题指南</div>
-            <div class="s">${hasMasld ? '你已标记脂肪肝/MASLD：建议按“减重 + 少糖少加工”为核心。' : '如你有脂肪肝/脂肪性肝炎（NASH/MASH），可参考“减重 + 少糖少加工”的饮食思路。'}</div>
-      <div class="row" style="margin-top:10px;">
-        <button class="primary small" data-diet-guide="masld">脂肪肝/MASLD（NASH/MASH）饮食要点</button>
+            <div class="s">针对不同健康需求的饮食方案，均已做肾友好适配（限钾/控磷提醒）。</div>
+      <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:8px;">
+        <button class="primary small" data-diet-guide="dash">DASH 得舒饮食（降压）</button>
+        <button class="primary small" data-diet-guide="mediterranean">地中海饮食（心血管保护）</button>
+        <button class="ghost small" data-diet-guide="masld">脂肪肝/MASLD 饮食</button>
       </div>
-      <div class="note subtle">提示：本指南会提醒与肾病限钾/控磷如何兼容，避免照搬导致混乱。</div>
+      <div class="note subtle">提示：所有指南均包含"肾病患者特别注意事项"，帮你避免照搬导致的钾/磷/蛋白质风险。</div>
     </div>
 
     <div class="two" style="margin-top:10px;">
