@@ -147,7 +147,8 @@ function renderTabbar(){
 
 
 function renderHeader(){
-  qs("#versionPill").textContent = `v${VERSION} · 内测`;
+  const vp = qs("#versionPill");
+  if(vp) vp.textContent = `v${VERSION} · 内测`;
   qs("#meVersion").textContent = VERSION;
 
   qs("#brandSubtitle").textContent = `项目：${programLabel(state.activeProgram)}`;
@@ -156,7 +157,8 @@ function renderHeader(){
   const enabled = Object.keys(PROGRAMS).filter(k=>isProgramEnabled(k)).map(k=>programLabel(k)).join("、");
   qs("#meEnabled").textContent = enabled;
 
-  qs("#pillIdentity").textContent = `身份：${identityText()}`;
+  const pi = qs("#pillIdentity");
+  if(pi) pi.textContent = `身份：${identityText()}`;
 
   renderTabbar();
 }
