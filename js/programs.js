@@ -207,7 +207,7 @@ function safetySignals(){
 
   // Program conflict hint (hydration vs fluid restriction)
   if(state.enabledPrograms?.dialysis && state.enabledPrograms?.stone && state.dialysis?.fluidRestricted === "true"){
-    signals.push({level:"info", title:"结石喝水 vs 透析限水可能冲突", detail:"若你同时有结石史与透析限水医嘱，请让透析团队知情并由医生设定"优先级与目标"。App 内测版不会自动替你做医学决策。"});
+        signals.push({level:"info", title:"结石喝水 vs 透析限水可能冲突", detail:"若你同时有结石史与透析限水医嘱，请让透析团队知情并由医生设定“优先级与目标”。App 内测版不会自动替你做医学决策。"});
   }
   if(!signals.length){
     signals.push({level:"ok", title:"暂无突出实验室红旗（示意）", detail:"仍请关注胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等情况。"});

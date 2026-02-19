@@ -58,7 +58,7 @@ function buildExportTextShort(){
   lines.push("");
   lines.push("下一步建议：");
   lines.push("- 按计划完成今日/本周记录（血压/体重/血糖/尿检/透析或结石记录等）");
-  lines.push("- 复诊前可复制"复诊版摘要"并附上资料库清单");
+    lines.push("- 复诊前可复制“复诊版摘要”并附上资料库清单");
   lines.push("- 出现胸痛/气促/意识改变/抽搐/少尿无尿/高热剧痛等红旗请立即就医");
   return lines.join("\n");
 }
@@ -299,7 +299,7 @@ function buildVisitPackText(days=90){
   }
 
   lines.push("");
-  lines.push("提示：本版本资料文件保存在本机（IndexedDB）。若医生需要文件本体，请在"资料库"里打开后截图或使用系统分享。");
+    lines.push("提示：本版本资料文件保存在本机（IndexedDB）。若医生需要文件本体，请在“资料库”里打开后截图或使用系统分享。");
   return lines.join("\n");
 }
 
