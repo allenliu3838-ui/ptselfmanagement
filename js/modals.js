@@ -1,4 +1,14 @@
 /* modals.js - All modal dialogs and quick entry forms */
+
+/* Generate a concise inline tip box for quick-entry modals.
+   Shows a one-line "why" from EXPLAINERS + a link to the full explain page. */
+function whyTip(explainerId){
+  const e = EXPLAINERS[explainerId];
+  if(!e) return "";
+  const why = e.why || "";
+  return `<div class="why-tip"><span class="why-text">${escapeHtml(why)}</span> <button type="button" class="info-btn tiny" data-exp="${escapeHtml(explainerId)}" aria-label="详细说明">i</button></div>`;
+}
+
 function explainerById(id){
   const e = EXPLAINERS[id];
   if(e) return e;
@@ -939,7 +949,8 @@ function saveProfileFromModal(){
 function openAddLab(){
   const lab = latestLab() || {};
   const body = `
-    <div class="note">提示：内测先做“可用”，后续会接拍照识别、置信度、纠错确认与来源定位。</div>
+    ${whyTip("labs")}
+    <div class="note">提示：内测先做"可用"，后续会接拍照识别、置信度、纠错确认与来源定位。</div>
     <div class="two">
       <label class="field"><span>日期</span><input id="labDate" type="date" value="${escapeHtml(lab.date || yyyyMMdd(new Date()))}"></label>
       <label class="field"><span>肌酐单位</span>
@@ -1010,6 +1021,7 @@ function openAddLab(){
 
 function openAddUrine(){
   const body = `
+    ${whyTip("urine")}
     <div class="two">
       <label class="field"><span>日期</span><input id="uDate" type="date" value="${yyyyMMdd(new Date())}"></label>
       <label class="field"><span>备注（可选）</span><input id="uNote" type="text" placeholder="例如：晨尿/发热后/运动后"></label>
@@ -1140,6 +1152,7 @@ function openDocUploadModal(preset={}){
   ];
 
   const body = `
+    ${whyTip("docs_vault")}
     <div class="note">内测：文件仅保存在本机（IndexedDB）。建议只上传非敏感/脱敏资料用于测试流程。</div>
     <label class="field"><span>资料类型</span>
       <select id="docCategory">
@@ -1789,11 +1802,12 @@ function openDialysisSessionModal(){
   const title = "记录透析";
   const subtitle = mod === "pd" ? "腹透：记录 UF/透析液/红旗（示意）" : "血透：记录透前/透后 + 超滤量（示意）";
 
-  const baseNote = `<div class="note">内测版：以“结构化记录 + 复诊整理”为主。任何红旗（胸痛、气促、抽搐、腹透液混浊/腹痛/发热等）请优先联系透析团队/就医。</div>`;
+  const baseNote = `<div class="note">内测版：以"结构化记录 + 复诊整理"为主。任何红旗（胸痛、气促、抽搐、腹透液混浊/腹痛/发热等）请优先联系透析团队/就医。</div>`;
 
   let body = "";
   if(mod === "hd"){
     body = `
+      ${whyTip("hd_session")}
       ${baseNote}
       <div class="two">
         <label class="field"><span>透前体重 (kg)</span><input id="hdPreW" type="number" inputmode="decimal" placeholder="例如：70.2"></label>
@@ -1809,6 +1823,7 @@ function openDialysisSessionModal(){
     `;
   } else {
     body = `
+      ${whyTip("pd_session")}
       ${baseNote}
       <label class="field"><span>超滤量 UF (ml，可选)</span><input id="pdUF" type="number" inputmode="numeric" placeholder="例如：800"></label>
       <label class="field"><span>透析液外观</span>
@@ -1885,6 +1900,7 @@ function parseBPText(s){
 
 function openQuickBP(){
   const body = `
+    ${whyTip("bp")}
     <div class="two">
       <label class="field"><span>收缩压</span><input id="bpSys" type="number" inputmode="numeric" placeholder="例如：120"></label>
       <label class="field"><span>舒张压</span><input id="bpDia" type="number" inputmode="numeric" placeholder="例如：80"></label>
@@ -1910,8 +1926,9 @@ function openQuickBP(){
 
 function openQuickWeight(){
   const body = `
+    ${whyTip("weight")}
     <label class="field"><span>体重（kg）</span><input id="wKg" type="number" inputmode="decimal" placeholder="例如：62.5"></label>
-    <div class="note subtle">水肿/体液变化时，体重趋势很关键（示意）。</div>
+    <div class="note subtle">水肿/体液变化时，体重趋势很关键。</div>
   `;
   openSimpleModal("记录体重","将用于趋势与复诊摘要", body,
     `<button class="primary" id="btnSaveW">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
@@ -1927,8 +1944,9 @@ function openQuickWeight(){
 
 function openQuickHeight(){
   const body = `
+    ${whyTip("peds_growth")}
     <label class="field"><span>身高（cm）</span><input id="hCm" type="number" inputmode="decimal" placeholder="例如：128"></label>
-    <div class="note subtle">儿肾随访建议至少每月记录一次身高（或按医嘱）。身高也用于儿科 eGFR 估算（示意）。</div>
+    <div class="note subtle">儿肾随访建议至少每月记录一次身高（或按医嘱）。身高也用于儿科 eGFR 估算。</div>
   `;
   openSimpleModal("记录身高","儿肾项目核心数据之一", body,
     `<button class="primary" id="btnSaveH">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
@@ -1947,6 +1965,7 @@ function openQuickHeight(){
 function openQuickGlucose(){
   const preferred = state.dm?.glucoseUnit || "mmolL";
   const body = `
+    ${whyTip("glucose")}
     <label class="field"><span>血糖数值</span><input id="gVal" type="number" inputmode="decimal" placeholder="例如：6.1"></label>
     <label class="field"><span>单位</span>
       <select id="gUnit">
@@ -1985,8 +2004,9 @@ function openQuickGlucose(){
 
 function openQuickTemp(){
   const body = `
+    ${whyTip("tx_temp")}
     <label class="field"><span>体温（℃）</span><input id="tVal" type="number" inputmode="decimal" placeholder="例如：36.8"></label>
-    <div class="note subtle">移植/免疫抑制期出现发热请及时联系团队（示意）。</div>
+    <div class="note subtle">移植/免疫抑制期出现发热请及时联系团队。</div>
   `;
   openSimpleModal("记录体温","用于感染风险随访（示意）", body,
     `<button class="primary" id="btnSaveT">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
@@ -2007,6 +2027,7 @@ function openMedsCheckModal(programHint=null){
   const progOptions = ["kidney","htn","dm","dialysis","peds","stone"].filter(k=>PROGRAMS[k]);
 
   const body = `
+    ${whyTip("tx_meds")}
     ${showProgSelect ? `
       <label class="field"><span>归属项目</span>
         <select id="medProg">
@@ -2047,6 +2068,7 @@ function quickSymptoms(opts={}){
   const preset = opts.preset || [];
   const list = ["浮肿","乏力","尿量减少","尿色变红","发热","咳嗽","腹泻","呕吐","胸痛/心悸","呼吸困难","腰痛/绞痛"].sort();
   const body = `
+    ${whyTip("symptoms")}
     <div class="note">选择你的症状（可多选）。红旗症状请优先就医/联系团队。</div>
     <div class="chips" id="symChips">
       ${list.map(s=>`<button type="button" class="chip ${preset.includes(s)?"active":""}" data-sym="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join("")}
@@ -2077,7 +2099,7 @@ function openWaterCustomModal(){
   openSimpleModal(
     "记录饮水",
     "输入本次饮水量（ml）。若医生要求限水，请以医嘱为准。",
-    `<label class="field"><span>饮水量（ml）</span><input id="waterCustomMl" type="number" inputmode="numeric" placeholder="例如 200" /></label>`,
+    `${whyTip("water_stone")}<label class="field"><span>饮水量（ml）</span><input id="waterCustomMl" type="number" inputmode="numeric" placeholder="例如 200" /></label>`,
     `<button class="ghost" data-close="modalSimple">取消</button><button class="primary" id="btnSaveWaterCustom">保存</button>`
   );
   setTimeout(()=>{
@@ -2101,6 +2123,7 @@ function openStoneEventModal(){
     "新增结石发作事件",
     "用于复诊沟通与随访记录（不用于诊断）。出现发热伴腰痛/寒战等红旗，请优先就医/联系团队。",
     `
+      ${whyTip("stone_event")}
       <label class="field"><span>日期</span><input id="stoneEvtDate" type="date" value="${d0}" /></label>
       <label class="field"><span>时间</span><input id="stoneEvtTime" type="time" value="${t0}" /></label>
 

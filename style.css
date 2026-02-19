@@ -120,7 +120,19 @@ a{color:var(--primary);text-decoration:none}
   justify-content:center;
 }
 .info-btn.small{min-height:28px;width:28px;height:28px;font-size:12px;border-radius:999px;}
+.info-btn.tiny{min-height:22px;width:22px;height:22px;font-size:10px;border-radius:999px;flex-shrink:0;}
 .info-btn:active{transform:scale(.99);}
+
+/* Inline "why" tip on quick-entry modals */
+.why-tip{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:var(--radius2);
+  background:#eef4ff;border:1px solid #d6e5ff;
+}
+.why-tip .why-text{
+  flex:1;font-size:13px;line-height:1.5;color:#1145b2;
+}
 
 /* Explainer content list */
 .explain-list ul{margin:6px 0 0 18px;padding:0;}
