@@ -29,30 +29,49 @@
   </header>
 
   <main class="app">
+    <!-- ONBOARDING (shown only on first launch) -->
+    <section class="page" id="page-onboard" data-page="onboard" aria-label="欢迎">
+      <div class="onboard">
+        <div class="emoji">👋</div>
+        <h1>欢迎使用肾域随访</h1>
+        <p>只需 30 秒完成设置，开始你的个人化随访管理。每天花 1 分钟记录，复诊时更从容。</p>
+        <div class="steps"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div></div>
+        <button class="primary" id="btnOnboardStart" style="min-width:200px;">开始设置</button>
+        <button class="ghost" id="btnOnboardSkip" style="margin-top:8px;">跳过，直接进入</button>
+      </div>
+    </section>
+
     <!-- HOME -->
     <section class="page active" id="page-home" data-page="home" aria-label="首页">
       <div class="container">
-        <div class="row">
-          <div class="pill">
-            <span class="dot"></span>
-            <span id="versionPill">v7.5.0 · 内测</span>
-          </div>
-          <div class="pill secondary" id="pillIdentity">身份：未设置</div>
+        <!-- Greeting + streak -->
+        <div id="homeGreeting">
+          <div class="greeting" id="greetingText">你好</div>
+          <div class="greeting-sub" id="greetingSub">今天的随访从这里开始</div>
         </div>
 
         <div class="card" id="cardTodayTasks">
           <div class="card-hd">
-            <div>
-              <div class="card-title">今日行动</div>
+            <div style="flex:1;">
+              <div class="card-title" style="display:flex;align-items:center;gap:10px;">
+                今日行动
+                <span class="badge ok" id="taskProgress" style="font-size:10px;"></span>
+              </div>
               <div class="card-subtitle" id="todayDate"></div>
             </div>
-            <div class="row">
-              <button class="ghost small" id="btnGoPlan">随访计划</button>
-              <button class="ghost small" id="btnMarkAllDone">一键完成</button>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="progress-ring" id="progressRing"></div>
+              <div>
+                <button class="ghost small" id="btnGoPlan">随访计划</button>
+                <button class="ghost small" id="btnMarkAllDone">一键完成</button>
+              </div>
             </div>
           </div>
+          <!-- 7-day activity strip -->
+          <div class="week-strip" id="weekStrip"></div>
           <div class="task-list" id="todayTasks"></div>
-          <div class="note subtle" id="todayTasksHint">提示：任务来自“当前项目 + 合并情况 + 最近一次记录/化验”。 <a href="#" id="btnGuideHome" class="inline-link">随访的意义</a></div>
+          <div id="celebrateBox"></div>
+          <div class="note subtle" id="todayTasksHint">提示：任务来自"当前项目 + 合并情况 + 最近一次记录/化验"。 <a href="#" id="btnGuideHome" class="inline-link">随访的意义</a></div>
         </div>
 
         <div class="grid">
@@ -961,6 +980,19 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <!-- Modular JS (split from app.js) - load order matters -->
+  <script src="js/constants.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/programs.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/diet.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/modals.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
