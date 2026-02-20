@@ -1290,6 +1290,35 @@ function renderMe(){
   const fbPrev = qs("#feedbackPreview");
   if(fbPrev) fbPrev.textContent = buildFeedbackText(false);
 
+  // Visit prep inline preview
+  const vpp = qs("#visitPrepPreview");
+  if(vpp){
+    const lab = latestLab();
+    const bp = latestVital(state.vitals?.bp);
+    const labCount = (state.labs||[]).length;
+    if(lab || bp){
+      let html = "";
+      if(lab) html += `<div class="kv"><span>最近化验</span><span>${niceDate(lab.date||"")} · eGFR ${lab.egfr||"—"}</span></div>`;
+      if(bp) html += `<div class="kv"><span>最近血压</span><span>${bp.sys}/${bp.dia} mmHg</span></div>`;
+      if(labCount >= 2) html += `<div class="note subtle" style="margin-top:4px;">有 ${labCount} 次记录可对比趋势</div>`;
+      else html += `<div class="note subtle" style="margin-top:4px;">再录入 ${2-labCount} 次化验后可对比变化</div>`;
+      vpp.innerHTML = html;
+    } else {
+      vpp.innerHTML = `<div class="note subtle">录入化验/血压后，这里会显示摘要</div>`;
+    }
+  }
+
+  // Family share inline preview
+  const fsp = qs("#familySharePreview");
+  if(fsp){
+    const ss = typeof loadShareState === "function" ? loadShareState() : {};
+    if(ss.enabled && ss.code){
+      fsp.innerHTML = `<div class="kv"><span>状态</span><span style="color:var(--ok);font-weight:700;">已开启</span></div><div class="kv"><span>共享码</span><span style="font-weight:700;letter-spacing:2px;">${escapeHtml(ss.code)}</span></div>`;
+    } else {
+      fsp.innerHTML = `<div class="note subtle">开启后家属可远程查看指标趋势</div>`;
+    }
+  }
+
   // Show last backup time
   const lbi = qs("#lastBackupInfo");
   if(lbi){
