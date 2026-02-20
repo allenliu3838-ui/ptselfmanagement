@@ -159,7 +159,7 @@ function safetySignals(){
     if(sys >= 180 || dia >= 120){
       signals.push({
         level:"danger",
-        title:"血压非常高（示意）",
+        title:"血压非常高",
         detail:"最近一次血压已达较高水平。若伴随胸痛、呼吸困难、剧烈头痛、视物模糊、肢体麻木/言语不清等，请立即就医/联系团队。"
       });
     }
@@ -173,22 +173,22 @@ function safetySignals(){
     if(gMmol <= 3.9){
       signals.push({
         level:"danger",
-        title:"疑似低血糖风险（示意）",
+        title:"疑似低血糖风险",
         detail:"最近一次血糖偏低。若出现出汗、心慌、手抖、意识模糊/晕厥等，请立即按医嘱处理并联系医生/就医。"
       });
     } else if(gMmol >= 16.7){
       signals.push({
         level:"info",
-        title:"血糖偏高（示意）",
+        title:"血糖偏高",
         detail:"最近一次血糖偏高。若伴明显口渴、多尿、呕吐、呼吸深快/意识改变等，请尽快就医/联系团队。"
       });
     }
   }
 
-  if(k !== null && k >= 5.5) signals.push({level:"danger", title:"血钾偏高（示意）", detail:"高钾可能引发心律问题；如出现心悸、胸痛、呼吸困难、明显乏力等红旗症状，请立即就医/联系团队。"});
-  if(na !== null && na < 130) signals.push({level:"danger", title:"血钠偏低（示意）", detail:"严重低钠可出现意识混乱、抽搐等；如有相关症状请立即就医。"});
-  if(mg !== null && mg < 0.65) signals.push({level:"danger", title:"血镁偏低（示意）", detail:"严重低镁可能导致心律异常/抽搐等；出现红旗症状请尽快就医。"});
-  if(ca !== null && (ca < 2.0 || ca > 2.75)) signals.push({level:"info", title:"血钙异常（示意）", detail:"钙磷代谢异常常需结合其他指标评估。不要自行大量补钙或停药，按医嘱复查/咨询。"});
+  if(k !== null && k >= 5.5) signals.push({level:"danger", title:"血钾偏高", detail:"高钾可能引发心律问题；如出现心悸、胸痛、呼吸困难、明显乏力等红旗症状，请立即就医/联系团队。"});
+  if(na !== null && na < 130) signals.push({level:"danger", title:"血钠偏低", detail:"严重低钠可出现意识混乱、抽搐等；如有相关症状请立即就医。"});
+  if(mg !== null && mg < 0.65) signals.push({level:"danger", title:"血镁偏低", detail:"严重低镁可能导致心律异常/抽搐等；出现红旗症状请尽快就医。"});
+  if(ca !== null && (ca < 2.0 || ca > 2.75)) signals.push({level:"info", title:"血钙异常", detail:"钙磷代谢异常常需结合其他指标评估。不要自行大量补钙或停药，按医嘱复查/咨询。"});
 
   // Dialysis-specific red flags (from latest dialysis record)
   if(state.enabledPrograms?.dialysis && state.dialysis?.sessions?.length){
@@ -198,7 +198,7 @@ function safetySignals(){
       if(cloudy || last.fever || last.abdPain){
         signals.unshift({
           level:"danger",
-          title:"腹透红旗（示意）",
+          title:"腹透红旗",
           detail:"最近记录提示：透析液可能混浊/腹痛/发热。存在腹膜炎风险时请立即联系透析团队或就医，不要等待下一次复查。"
         });
       }
@@ -210,7 +210,7 @@ function safetySignals(){
         signals.push({level:"info", title:"结石喝水 vs 透析限水可能冲突", detail:"若你同时有结石史与透析限水医嘱，请让透析团队知情并由医生设定“优先级与目标”。App 内测版不会自动替你做医学决策。"});
   }
   if(!signals.length){
-    signals.push({level:"ok", title:"暂无突出实验室红旗（示意）", detail:"仍请关注胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等情况。"});
+    signals.push({level:"ok", title:"暂无突出实验室红旗", detail:"仍请关注胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等情况。"});
   }
   return signals;
 }

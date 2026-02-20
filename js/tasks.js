@@ -94,10 +94,10 @@ function todayTasks(){
     if(mod === "hd"){
       const isDay = isDialysisDayToday();
       add("dialysis_hd_session", isDay ? "今天透析：记录透前/透后" : "非透析日：关注间期体重增长", isDay ? "建议：透前体重/血压 → 透后体重/血压（可选记录超滤量）。" : "建议：记录体重与饮水/咸食，复诊时更好评估控水策略。", {type:isDay?"danger":"info", text:isDay?"透析日":"间期"}, "hd_session", act("记录一次", ()=>openDialysisSessionModal()), {type:"dialysis_session"});
-      add("dialysis_access", "血管通路自检（示意）", "内瘘/人工血管：有无震颤/杂音改变、红肿痛；导管：有无渗血/发热。异常及时联系透析团队。", {type:"danger", text:"安全"}, "dialysis_access", null, null);
+      add("dialysis_access", "血管通路自检", "内瘘/人工血管：有无震颤/杂音改变、红肿痛；导管：有无渗血/发热。异常及时联系透析团队。", {type:"danger", text:"安全"}, "dialysis_access", null, null);
     } else {
-      add("dialysis_pd_session", "腹透记录（示意）", "记录超滤量/出入量、透析液是否混浊；腹痛/发热/混浊属于红旗，优先联系透析团队。", {type:"danger", text:"腹透"}, "pd_session", act("记录一次", ()=>openDialysisSessionModal()), {type:"dialysis_session"});
-      add("dialysis_pd_exit", "出口护理（示意）", "出口红肿渗液、发热或腹痛需及时处理。", {type:"info", text:"护理"}, "pd_exit", null, null);
+      add("dialysis_pd_session", "腹透记录", "记录超滤量/出入量、透析液是否混浊；腹痛/发热/混浊属于红旗，优先联系透析团队。", {type:"danger", text:"腹透"}, "pd_session", act("记录一次", ()=>openDialysisSessionModal()), {type:"dialysis_session"});
+      add("dialysis_pd_exit", "出口护理", "出口红肿渗液、发热或腹痛需及时处理。", {type:"info", text:"护理"}, "pd_exit", null, null);
     }
 
     add("dialysis_sym", "症状自评", "胸痛/呼吸困难/意识改变/抽搐、少尿无尿、发热寒战等红旗优先就医/联系团队。", {type:"danger", text:"红旗"}, "symptoms", act("去记录", ()=>quickSymptoms()), {type:"symptoms", minCount:1});
@@ -133,7 +133,7 @@ function todayTasks(){
     add("peds_sym", "症状自评", "发热、腹泻、呕吐、尿量减少等；红旗立即就医/联系团队。", {type:"danger", text:"红旗"}, "symptoms", act("去记录", ()=>quickSymptoms()), {type:"symptoms", minCount:1});
     add("peds_upload", "上传/录入化验（如有）", "儿科 eGFR 估算常需要身高与肌酐单位，复诊时以医生判读为准。", null, "labs_upload_peds", act("去录入", ()=>openAddLab()), null);
     if(age !== null && age >= 12){
-      add("peds_transition", "过渡训练：让孩子参与自我管理（示意）", "例如：让孩子自己报症状、记一次血压、准备复诊问题。", {type:"info", text:"过渡"}, "peds_growth", null, null);
+      add("peds_transition", "过渡训练：让孩子参与自我管理", "例如：让孩子自己报症状、记一次血压、准备复诊问题。", {type:"info", text:"过渡"}, "peds_growth", null, null);
     }
   }
 

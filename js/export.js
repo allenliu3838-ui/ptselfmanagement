@@ -229,7 +229,7 @@ function buildExportText(){
   if(ur) lines.push(`- 最近尿检：${niceDate(ur.date)} · 蛋白 ${ur.protein} · 潜血 ${ur.blood}${ur.note?` · 备注：${ur.note}`:""}`);
 
   const diet = dietSignals();
-  if(diet.length) lines.push(`- 饮食关注点（示意）：${diet.map(t=>t.label).join("、")}`);
+  if(diet.length) lines.push(`- 饮食关注点：${diet.map(t=>t.label).join("、")}`);
 
   // recent symptoms (last 3)
   const sym = state.symptoms?.length ? state.symptoms.slice(-3) : [];

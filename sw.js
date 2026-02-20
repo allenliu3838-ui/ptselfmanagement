@@ -1,4 +1,4 @@
-const CACHE_NAME = "kidney-care-v9.3.1";
+const CACHE_NAME = "kidney-care-v9.4.0";
 const ASSETS = [
   "./",
   "./index.html",

@@ -6,15 +6,15 @@
 */
 // Versioning note (Netlify + PWA):
 // - Bump VERSION whenever you deploy to ensure SW cache separation and visible build identity.
-const VERSION = "9.3.1";
+const VERSION = "9.4.0";
 const STORAGE_KEY = "kidneyCareStateV7";
 
 const PROGRAMS = {
   kidney: { key: "kidney", name: "肾脏随访", subtitle: "肾功/尿蛋白/移植等随访整理（可联动慢病）" },
-  htn:    { key: "htn",    name: "高血压随访", subtitle: "家庭血压/用药依从/风险信号（示意）" },
-  dm:     { key: "dm",     name: "糖尿病随访", subtitle: "血糖/HbA1c/低血糖事件（示意）" },
-  dialysis:{ key: "dialysis", name: "透析随访", subtitle: "血透/腹透：控水、电解质、通路/腹透红旗（示意）" },
-  stone:  { key: "stone",  name: "肾结石管理", subtitle: "喝水/发作事件/影像复查提醒（示意）" },
+  htn:    { key: "htn",    name: "高血压随访", subtitle: "家庭血压/用药依从/风险信号" },
+  dm:     { key: "dm",     name: "糖尿病随访", subtitle: "血糖/HbA1c/低血糖事件" },
+  dialysis:{ key: "dialysis", name: "透析随访", subtitle: "血透/腹透：控水、电解质、通路/腹透红旗" },
+  stone:  { key: "stone",  name: "肾结石管理", subtitle: "喝水/发作事件/影像复查提醒" },
   peds:   { key: "peds",   name: "儿肾随访", subtitle: "家长协作 + 生长 + 儿科血压/肾功能" },
 };
 
@@ -487,7 +487,7 @@ const DIET_GUIDES = [
   {
     id: "dash",
     title: "DASH 饮食（得舒饮食）",
-    subtitle: "控制高血压的经典饮食方案 · 肾友好版本（示意）",
+    subtitle: "控制高血压的经典饮食方案 · 肾友好版本",
     sections: [
       {
         t: "什么是 DASH 饮食？",
@@ -540,7 +540,7 @@ const DIET_GUIDES = [
   {
     id: "mediterranean",
     title: "地中海饮食",
-    subtitle: "全球公认的心血管保护饮食模式 · 肾友好版本（示意）",
+    subtitle: "全球公认的心血管保护饮食模式 · 肾友好版本",
     sections: [
       {
         t: "什么是地中海饮食？",
@@ -790,7 +790,7 @@ const EXPLAINERS = {
       "不要仅凭单次值自行调整用药"
     ],
     usedfor: [
-      "触发控糖饮食教育标签（示意）",
+      "触发控糖饮食教育标签",
       "进入一页摘要并可生成复诊问题清单"
     ],
     redflags: ["意识模糊/晕厥疑似严重低血糖", "持续呕吐无法进食"],
@@ -1059,17 +1059,17 @@ const EXPLAINERS = {
     why: "儿肾随访不仅看化验，更要看生长趋势。持续监测可帮助团队更早发现营养或慢病影响。",
     focus: ["每月身高（建议）与体重趋势", "食欲/活动量变化", "与化验（肌酐/eGFR）同步情况"],
     howto: ["固定测量方式：同一尺、同一秤、同一时间段", "尽量每月记录一次身高（或按医嘱）", "监护人可协助记录与备注"],
-    usedfor: ["生成生长趋势摘要，复诊时更容易讨论营养与治疗目标", "与儿科eGFR估算（需要身高）联动（示意）"],
+    usedfor: ["生成生长趋势摘要，复诊时更容易讨论营养与治疗目标", "与儿科eGFR估算（需要身高）联动"],
     redflags: ["发热精神差", "持续呕吐腹泻", "尿量明显减少"],
     action: { label:"去记录身高", fn:"openQuickHeight" }
   },
   height_peds: {
     title: "儿肾：为什么要定期记录身高？",
     subtitle: "身高是生长速度的关键指标，也是部分评估的基础数据",
-    why: "身高能反映生长速度；在儿肾随访中常用于综合评估营养与疾病影响，并可用于部分估算（示意）。",
+    why: "身高能反映生长速度；在儿肾随访中常用于综合评估营养与疾病影响，并可用于部分估算。",
     focus: ["是否有生长速度放缓", "与体重变化是否不匹配", "是否与近期疾病/用药变化相关"],
     howto: ["建议每月记录一次（或按医嘱），同一测量方式更可比", "记录日期与测量环境（晨/晚）", "如有明显变化可备注近期情况"],
-    usedfor: ["进入生长趋势摘要，复诊讨论更具体", "用于儿科eGFR估算的必要字段之一（示意）"],
+    usedfor: ["进入生长趋势摘要，复诊讨论更具体", "用于儿科eGFR估算的必要字段之一"],
     redflags: ["明显消瘦或精神状态明显变差", "持续呕吐腹泻"],
     action: { label:"去记录身高", fn:"openQuickHeight" }
   },
@@ -1089,7 +1089,7 @@ const EXPLAINERS = {
     why: "儿科随访常需要把化验放在生长背景里解读；记录日期、单位与身高信息能显著提升复诊效率。",
     focus: ["肌酐单位与日期", "是否同时有身高记录（便于整理）", "尿检/蛋白尿与症状"],
     howto: ["建议同时记录身高与肌酐单位（医院间差异较大）", "有报告原件可上传资料库", "不要自行解读‘单次异常’决定用药"],
-    usedfor: ["进入儿肾摘要与趋势整理（示意）", "帮助医生调整随访频率与评估计划"],
+    usedfor: ["进入儿肾摘要与趋势整理", "帮助医生调整随访频率与评估计划"],
     redflags: ["明显少尿/无尿", "持续发热精神差"],
     action: { label:"去录入化验", fn:"openAddLab" }
   },
@@ -1124,9 +1124,9 @@ const MARKER_EXPLAINER_MAP = {
 // NOTE: 内测版仅提供“UI + 接口占位 + 示例数据”。正式版需要：医生/机构库、地理编码、
 // 合规与质量审核（避免误导/广告/灰产），并为患者提供透明的信息来源与更新时间。
 const PROVIDER_MOCK = [
-  { id:"p1", name:"示例：某三甲医院 肾内科门诊", specialties:["nephrology"], city:"北京", address:"东城区（示意）", lat:39.9042, lng:116.4074 },
-  { id:"p2", name:"示例：某医院 透析中心", specialties:["dialysis"], city:"北京", address:"西城区（示意）", lat:39.9139, lng:116.3740 },
-  { id:"p3", name:"示例：某医院 泌尿外科结石门诊", specialties:["urology"], city:"上海", address:"浦东（示意）", lat:31.2304, lng:121.4737 },
-  { id:"p4", name:"示例：某儿童医院 儿肾专科", specialties:["peds_nephrology"], city:"广州", address:"越秀（示意）", lat:23.1291, lng:113.2644 },
-  { id:"p5", name:"示例：某肾内科团队（社区/互联网）", specialties:["nephrology"], city:"线上", address:"可按医院/城市检索（示意）", lat:null, lng:null },
+  { id:"p1", name:"示例：某三甲医院 肾内科门诊", specialties:["nephrology"], city:"北京", address:"东城区", lat:39.9042, lng:116.4074 },
+  { id:"p2", name:"示例：某医院 透析中心", specialties:["dialysis"], city:"北京", address:"西城区", lat:39.9139, lng:116.3740 },
+  { id:"p3", name:"示例：某医院 泌尿外科结石门诊", specialties:["urology"], city:"上海", address:"浦东", lat:31.2304, lng:121.4737 },
+  { id:"p4", name:"示例：某儿童医院 儿肾专科", specialties:["peds_nephrology"], city:"广州", address:"越秀", lat:23.1291, lng:113.2644 },
+  { id:"p5", name:"示例：某肾内科团队（社区/互联网）", specialties:["nephrology"], city:"线上", address:"可按医院/城市检索", lat:null, lng:null },
 ];

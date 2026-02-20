@@ -433,6 +433,16 @@ button{transition:transform .12s ease, background .12s ease;}
 .onboard .steps{display:flex;gap:6px;margin-bottom:20px;}
 .onboard .step-dot{width:8px;height:8px;border-radius:999px;background:#e4e9f3;}
 .onboard .step-dot.active{background:var(--primary);}
+.onboard.hidden{display:none !important;}
+.ob-programs{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-bottom:16px;}
+.ob-prog-btn{
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding:14px 16px;border-radius:var(--radius2);
+  border:2px solid var(--border);background:var(--card);
+  text-align:left;cursor:pointer;transition:border-color .15s, background .15s;
+}
+.ob-prog-btn:active,.ob-prog-btn.selected{border-color:var(--primary);background:#eef4ff;}
+.ob-prog-btn span{font-size:12px;color:var(--muted);margin-top:2px;}
 
 /* ===== Empty state CTA ===== */
 .empty-cta{

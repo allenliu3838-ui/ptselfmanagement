@@ -32,7 +32,7 @@ function aiQuickExplain(){
     if(lab.glu) items.push(`血糖 ${lab.glu}`);
     if(lab.hba1c) items.push(`HbA1c ${lab.hba1c}`);
     lines.push(`- 关键项：${items.join(" · ") || "—"}`);
-    if(diet) lines.push(`- 饮食关注点（示意）：${diet}`);
+    if(diet) lines.push(`- 饮食关注点：${diet}`);
   }
   lines.push("");
   lines.push("【建议你带去复诊的 3 个问题】");
@@ -137,7 +137,7 @@ function generateAIDemoResponse(text){
   } else {
     parts.push("- 目前还没有关键化验记录；建议先录入一次化验或上传报告。");
   }
-  parts.push("2）你可以问医生的 3 个问题（示意）：");
+  parts.push("2）你可以问医生的 3 个问题：");
   if(prog==="peds"){
     parts.push("- 这次结果放在孩子的年龄/身高背景下意味着什么？是否需要调整随访频率？");
     parts.push("- 近期生长（身高体重）是否符合预期？是否需要营养/药物方面的进一步评估？");
@@ -153,7 +153,7 @@ function generateAIDemoResponse(text){
   }
   parts.push("3）今天你能做的 1 件事：");
     parts.push("- 在首页“今日行动”把血压/体重/尿检或身高体重记录补齐，然后复制“一页摘要”发给医生。");
-  if(diet) parts.push(`4）饮食关注点（示意）：${diet}（仅教育提示，具体以医生/营养师方案为准）`);
+  if(diet) parts.push(`4）饮食关注点：${diet}（仅教育提示，具体以医生/营养师方案为准）`);
   parts.push("如果你现在有胸痛/呼吸困难/意识改变/抽搐/少尿无尿/发热伴剧烈腰痛等红旗，请立即就医或联系团队。");
   return parts.join("\n");
 }

@@ -245,9 +245,21 @@ function bindUI(){
 
 
 
+  // demo data
+  const btnDemo = qs("#btnLoadDemo");
+  if(btnDemo) btnDemo.addEventListener("click", ()=>{
+    if(confirm("将加载示例患者数据（IgA肾病，含3周血压/化验/尿检等），你现有的数据会被替换。继续？")){
+      state = seedDemoData();
+      saveState();
+      renderAll();
+      navigate("home");
+      toast("已加载示例数据，可以体验完整功能");
+    }
+  });
+
   // reset
   qs("#btnReset").addEventListener("click", ()=>{
-    if(confirm("确认重置本地数据？（只影响当前手机/浏览器）")){
+    if(confirm("确认清空所有本地数据？（不可恢复）")){
       localStorage.removeItem(STORAGE_KEY);
       state = defaultState();
       saveState();
