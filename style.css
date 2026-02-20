@@ -76,6 +76,9 @@ a{color:var(--primary);text-decoration:none}
 /* OCR loading spinner */
 .spinner-small{width:18px;height:18px;border:2px solid #e4e9f3;border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
 @keyframes spin{to{transform:rotate(360deg);}}
+/* OCR upload area interaction */
+#ocrUploadArea:hover{border-color:var(--primary) !important;background:#f0f7ff !important;}
+#ocrUploadArea:active{border-color:var(--primary) !important;background:#e0efff !important;transform:scale(.98);}
 
 .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
 .pill{

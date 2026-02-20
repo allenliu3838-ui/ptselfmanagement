@@ -1,5 +1,8 @@
 /* ocr.js - Lab report photo recognition (OCR) */
 
+const OCR_MAX_FILE_MB = 10;
+const OCR_ALLOWED_TYPES = ["image/jpeg","image/png","image/webp","image/heic","image/heif"];
+
 // ====== OCR Usage Tracking ======
 const OCR_KEY = "kidneyCareOCR";
 const OCR_FREE_LIMIT = 3;
@@ -82,14 +85,33 @@ function openOCREntry(){
     if(fileInput) fileInput.onchange = (e)=>{
       const file = e.target.files?.[0];
       if(!file) return;
-      selectedFile = file;
 
+      // Validate file type
+      if(!file.type.startsWith("image/")){
+        toast("请选择图片文件（JPG/PNG）");
+        fileInput.value = "";
+        return;
+      }
+
+      // Validate file size
+      const sizeMB = file.size / (1024*1024);
+      if(sizeMB > OCR_MAX_FILE_MB){
+        toast(`图片过大（${sizeMB.toFixed(1)}MB），请选择 ${OCR_MAX_FILE_MB}MB 以内的图片`);
+        fileInput.value = "";
+        return;
+      }
+
+      selectedFile = file;
       const reader = new FileReader();
       reader.onload = (ev)=>{
         if(previewImg) previewImg.src = ev.target.result;
         if(uploadArea) uploadArea.style.display = "none";
         if(previewArea) previewArea.style.display = "block";
         if(btnProcess) btnProcess.disabled = false;
+      };
+      reader.onerror = ()=>{
+        toast("图片读取失败，请重试或换一张图片");
+        fileInput.value = "";
       };
       reader.readAsDataURL(file);
     };
@@ -264,7 +286,8 @@ function saveOCRResult(){
   // Track OCR usage
   const ocrState = loadOCRState();
   ocrState.usedCount++;
-  ocrState.history.push({ date: nowISO(), fieldsCount: Object.values(entry).filter(v=>v && v !== "ocr").length });
+  const populated = ["scr","egfr","k","na","p","ca","mg","glu","hba1c"].filter(f=>entry[f]);
+  ocrState.history.push({ date: nowISO(), fields: populated });
   saveOCRState(ocrState);
 
   closeModal("modalSimple");

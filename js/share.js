@@ -260,13 +260,24 @@ function openVisitPrepModal(){
       questions.push("是否需要开始为透析/移植做准备？");
     }
 
+    // Empty state check
+    const hasAnyData = lab || bp || wt || insights.length || changes.length;
+
     // Build body HTML
     let bodyHtml = `<div class="note subtle" style="margin-bottom:10px;">覆盖范围：${niceDate(sinceDate)} 至今</div>`;
+
+    if(!hasAnyData){
+      bodyHtml += `<div class="list-item" style="margin-bottom:8px;text-align:center;padding:20px 12px;">
+        <div class="t">暂无足够数据</div>
+        <div class="s">至少录入一次化验和血压后，复诊准备包会自动整理变化趋势。<br>先去"记录"页录入数据吧！</div>
+      </div>`;
+    }
 
     // Changes table
     if(changes.length){
       bodyHtml += `<div class="list-item" style="margin-bottom:8px;"><div class="t">指标变化</div><div class="s">`;
-      bodyHtml += `<table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:4px;">`;
+      bodyHtml += `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">`;
+      bodyHtml += `<table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:4px;min-width:260px;">`;
       bodyHtml += `<tr style="color:var(--muted);"><td>指标</td><td>上次</td><td>本次</td><td>变化</td></tr>`;
       changes.forEach(c=>{
         const color = c.arrow === "↑" && (c.label==="肌酐"||c.label==="血钾"||c.label==="血磷"||c.label==="血糖") ? "var(--danger)"
@@ -276,7 +287,9 @@ function openVisitPrepModal(){
           : "var(--text)";
         bodyHtml += `<tr style="border-top:1px solid #f0f0f0;"><td>${escapeHtml(c.label)}</td><td>${c.prev}</td><td><b>${c.curr}</b></td><td style="color:${color};font-weight:700;">${c.arrow} ${c.diff}</td></tr>`;
       });
-      bodyHtml += `</table></div></div>`;
+      bodyHtml += `</table></div></div></div>`;
+    } else if(prevLabs.length === 1){
+      bodyHtml += `<div class="list-item" style="margin-bottom:8px;"><div class="t">指标变化</div><div class="s">目前只有 1 次化验记录，再录入一次后会自动对比变化。</div></div>`;
     }
 
     // Current status
@@ -284,6 +297,7 @@ function openVisitPrepModal(){
     if(lab) bodyHtml += `最近化验（${niceDate(lab.date||"")}）：eGFR ${lab.egfr||"—"} · Scr ${lab.scr||"—"}<br>`;
     if(bp) bodyHtml += `最近血压：${bp.sys}/${bp.dia} mmHg<br>`;
     if(wt) bodyHtml += `最近体重：${wt.kg} kg<br>`;
+    if(!lab && !bp && !wt) bodyHtml += `暂无记录<br>`;
     bodyHtml += `</div></div>`;
 
     // Trend insights

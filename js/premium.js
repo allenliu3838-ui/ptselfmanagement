@@ -45,7 +45,7 @@ function activatePremium(plan="yearly"){
 // ====== Premium Feature Gating ======
 
 const PREMIUM_FEATURES = {
-  ocrScan:       { label:"拍照录入", desc:"拍摄化验单自动识别提取指标数据（免费3次/月）", free: true, freeTrial: true },
+  ocrScan:       { label:"拍照录入", desc:"拍摄化验单自动识别提取指标数据（免费3次，会员无限）", free: true },
   trendCharts:   { label:"趋势图表", desc:"化验/血压/体重的可视化趋势图", free: true },
   trendAnalysis: { label:"智能趋势解读", desc:"通俗语言分析指标变化，给出就医建议", free: false },
   visitPrep:     { label:"复诊准备包", desc:"自动生成指标变化+建议问医生的问题清单", free: false },

@@ -911,8 +911,9 @@ function renderLabsList(){
       if(l.glu) items.push(`Glu ${l.glu}`);
       if(l.hba1c) items.push(`HbA1c ${l.hba1c}`);
       const spark = (idx===0 && egfrSpark) ? ` ${egfrSpark}` : "";
+      const ocrBadge = l.source === "ocr" ? ` <span style="display:inline-block;font-size:9px;padding:1px 5px;background:#e0f2fe;color:#0369a1;border-radius:4px;vertical-align:middle;">📷 拍照</span>` : "";
       return `<div class="list-item">
-        <div class="t">${niceDate(l.date||"")}${spark}</div>
+        <div class="t">${niceDate(l.date||"")}${ocrBadge}${spark}</div>
         <div class="s">${escapeHtml(items.join(" · ") || "—")}</div>
       </div>`;
     }).join("");
