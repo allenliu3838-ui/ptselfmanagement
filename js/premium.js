@@ -29,10 +29,17 @@ function premiumTierLabel(){
   return isPremium() ? "会员版" : "免费版";
 }
 
-function activatePremium(days=365){
+// Pricing config
+const PRICING = {
+  monthly: { label:"月付", price: 8, unit:"月", days: 30 },
+  yearly:  { label:"年付（8折）", price: 76.8, unit:"年", days: 365, discount:"8折", originalPrice: 96 },
+};
+
+function activatePremium(plan="yearly"){
+  const p = PRICING[plan] || PRICING.yearly;
   const now = new Date();
-  const expires = new Date(now.getTime() + days*24*3600*1000);
-  savePremiumState({ tier:"member", activatedAt: now.toISOString(), expiresAt: expires.toISOString() });
+  const expires = new Date(now.getTime() + p.days*24*3600*1000);
+  savePremiumState({ tier:"member", plan, activatedAt: now.toISOString(), expiresAt: expires.toISOString() });
 }
 
 // ====== Premium Feature Gating ======
@@ -83,32 +90,62 @@ function openUpgradeModal(featureKey){
       <b>"${escapeHtml(triggerLabel)}"</b> 是会员功能。升级后解锁全部高级功能：
     </div>
     ${featListHtml}
-    <div style="text-align:center;margin-top:14px;">
-      <div style="font-size:28px;font-weight:900;color:var(--primary);">¥1<span style="font-size:14px;color:var(--muted);font-weight:400;">/年</span></div>
-      <div class="note subtle" style="margin-top:4px;">一杯水的价格，守护全年健康数据</div>
+    <div style="margin-top:14px;">
+      <div class="plan-picker" style="display:flex;gap:10px;justify-content:center;">
+        <label class="plan-option" id="planMonthly" style="flex:1;max-width:140px;text-align:center;padding:12px 8px;border-radius:12px;border:2px solid var(--border);cursor:pointer;transition:border-color .2s;">
+          <input type="radio" name="premiumPlan" value="monthly" style="display:none;">
+          <div style="font-size:22px;font-weight:900;color:var(--text);">¥8<span style="font-size:13px;color:var(--muted);font-weight:400;">/月</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">按月订阅</div>
+        </label>
+        <label class="plan-option selected" id="planYearly" style="flex:1;max-width:140px;text-align:center;padding:12px 8px;border-radius:12px;border:2px solid var(--primary);cursor:pointer;background:#f0f7ff;transition:border-color .2s;position:relative;">
+          <input type="radio" name="premiumPlan" value="yearly" checked style="display:none;">
+          <div style="position:absolute;top:-8px;right:-4px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;">省 ¥19.2</div>
+          <div style="font-size:22px;font-weight:900;color:var(--primary);">¥76.8<span style="font-size:13px;color:var(--muted);font-weight:400;">/年</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;"><s>¥96</s> 8折</div>
+        </label>
+      </div>
+      <div class="note subtle" style="text-align:center;margin-top:8px;">年付更划算，相当于每月只需 ¥6.4</div>
     </div>
   `;
 
   openSimpleModal("升级会员版", "解锁更多健康管理功能", bodyHtml, `
-    <button class="primary" id="btnUpgradeNow">立即升级 ¥1/年</button>
+    <button class="primary" id="btnUpgradeNow">立即升级</button>
     <button class="ghost" data-close="modalSimple">暂不升级</button>
   `);
 
   setTimeout(()=>{
-    const btn = qs("#btnUpgradeNow");
-    if(btn) btn.onclick = ()=>{
-      // In real production, this would invoke a payment API (WeChat Pay / Alipay)
-      // For now, simulate successful activation
-      openPaymentFlow();
+    // Plan picker toggle
+    const pm = qs("#planMonthly");
+    const py = qs("#planYearly");
+    const btnUp = qs("#btnUpgradeNow");
+
+    function selectPlan(el, other){
+      el.style.borderColor = "var(--primary)";
+      el.style.background = "#f0f7ff";
+      other.style.borderColor = "var(--border)";
+      other.style.background = "";
+    }
+    if(pm) pm.onclick = ()=>{ pm.querySelector("input").checked=true; selectPlan(pm,py); };
+    if(py) py.onclick = ()=>{ py.querySelector("input").checked=true; selectPlan(py,pm); };
+
+    if(btnUp) btnUp.onclick = ()=>{
+      const selected = document.querySelector('input[name="premiumPlan"]:checked');
+      const plan = selected ? selected.value : "yearly";
+      openPaymentFlow(plan);
     };
     qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
   }, 0);
 }
 
-function openPaymentFlow(){
+function openPaymentFlow(plan="yearly"){
+  const p = PRICING[plan];
   closeModal("modalSimple");
   openSimpleModal("支付确认", "内测版", `
-    <div class="note" style="text-align:center;">
+    <div style="text-align:center;">
+      <div style="margin-bottom:8px;">
+        <span style="font-size:12px;color:var(--muted);">已选：</span>
+        <span style="font-weight:700;">${escapeHtml(p.label)} ¥${p.price}/${p.unit}</span>
+      </div>
       <div style="font-size:16px;margin-bottom:12px;">内测期间免费体验全部会员功能</div>
       <div class="note subtle">正式版将接入微信支付/支付宝，敬请期待</div>
     </div>
@@ -119,7 +156,7 @@ function openPaymentFlow(){
   setTimeout(()=>{
     const btn = qs("#btnActivateFree");
     if(btn) btn.onclick = ()=>{
-      activatePremium(365);
+      activatePremium(plan);
       closeModal("modalSimple");
       toast("已激活会员版（内测体验），全部功能已解锁");
       renderAll();
@@ -277,8 +314,10 @@ function renderPremiumBadge(){
 function showPremiumInfo(){
   const ps = loadPremiumState();
   const exp = ps.expiresAt ? new Date(ps.expiresAt).toLocaleDateString("zh-CN") : "永久";
+  const planInfo = PRICING[ps.plan] || PRICING.yearly;
   openSimpleModal("会员状态", "", `
     <div class="list-item"><div class="t">⭐ 会员版</div><div class="s">已解锁全部高级功能</div></div>
+    <div class="list-item"><div class="t">当前方案</div><div class="s">${escapeHtml(planInfo.label)} · ¥${planInfo.price}/${planInfo.unit}</div></div>
     <div class="list-item"><div class="t">有效期至</div><div class="s">${exp}</div></div>
     <div class="list-item"><div class="t">激活时间</div><div class="s">${ps.activatedAt ? new Date(ps.activatedAt).toLocaleDateString("zh-CN") : "—"}</div></div>
   `, `<button class="ghost" data-close="modalSimple">关闭</button>`);
