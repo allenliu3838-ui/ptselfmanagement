@@ -45,11 +45,14 @@ function activatePremium(plan="yearly"){
 // ====== Premium Feature Gating ======
 
 const PREMIUM_FEATURES = {
+  ocrScan:       { label:"拍照录入", desc:"拍摄化验单自动识别提取指标数据（免费3次/月）", free: true, freeTrial: true },
   trendCharts:   { label:"趋势图表", desc:"化验/血压/体重的可视化趋势图", free: true },
   trendAnalysis: { label:"智能趋势解读", desc:"通俗语言分析指标变化，给出就医建议", free: false },
-  dietPersonal:  { label:"个性化饮食建议", desc:"根据最新化验结果动态生成每日饮食方案", free: false },
-  cloudSync:     { label:"云端同步", desc:"多设备同步 + 亲属远程查看", free: false, upcoming: true },
+  visitPrep:     { label:"复诊准备包", desc:"自动生成指标变化+建议问医生的问题清单", free: false },
+  familyShare:   { label:"家属共享", desc:"生成共享码，家人远程查看你的健康概况", free: false },
+  dietPersonal:  { label:"个性化饮食建议", desc:"根据最新化验结果动态生成饮食方案", free: false },
   weeklyReport:  { label:"周报摘要", desc:"每周自动生成健康管理报告", free: false },
+  cloudSync:     { label:"云端同步", desc:"多设备同步 + 数据加密备份", free: false, upcoming: true },
   exportPDF:     { label:"PDF 导出", desc:"一键导出美观的复诊报告 PDF", free: false, upcoming: true },
 };
 

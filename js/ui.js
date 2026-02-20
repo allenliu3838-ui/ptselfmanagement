@@ -60,6 +60,18 @@ function bindUI(){
   const bAllTrends = qs("#btnAllTrends");
   if(bAllTrends) bAllTrends.addEventListener("click", ()=>openAllTrendsModal());
 
+  // OCR photo lab entry
+  const bOCR = qs("#btnOCRLab");
+  if(bOCR) bOCR.addEventListener("click", ()=>openOCREntry());
+
+  // Visit prep + family sharing
+  const bVisitPrep = qs("#btnVisitPrep");
+  if(bVisitPrep) bVisitPrep.addEventListener("click", ()=>openVisitPrepModal());
+  const bFamilyShare = qs("#btnFamilyShare");
+  if(bFamilyShare) bFamilyShare.addEventListener("click", ()=>openFamilySharingModal());
+  const bFamilyView = qs("#btnFamilyView");
+  if(bFamilyView) bFamilyView.addEventListener("click", ()=>openFamilyViewEntry());
+
   // document vault + advanced markers
   const bUp = qs("#btnUploadDoc");
   if(bUp) bUp.addEventListener("click", ()=>openDocUploadModal());
