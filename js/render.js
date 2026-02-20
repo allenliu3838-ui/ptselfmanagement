@@ -602,7 +602,7 @@ function renderProgramMainCard(){
 
   if(state.activeProgram === "kidney"){
     title.textContent = "肾脏随访速览";
-    subtitle.textContent = "关键趋势：肾功/尿检/血压（示意）";
+    subtitle.textContent = "关键趋势：肾功/尿检/血压";
     const lab = latestLab();
     const bp = latestVital(state.vitals.bp);
     const wt = latestVital(state.vitals.weight);
@@ -659,7 +659,7 @@ function renderProgramMainCard(){
     actionBtn.textContent = "去录入化验";
   } else if(state.activeProgram === "htn"){
     title.textContent = "高血压随访速览";
-    subtitle.textContent = "家庭血压趋势 + 用药依从（示意）";
+    subtitle.textContent = "家庭血压趋势 + 用药依从";
 
     const bp = latestVital(state.vitals.bp);
     const bpSorted = [...(state.vitals.bp||[])].sort((a,b)=> (a.dateTime||"").localeCompare(b.dateTime||""));
@@ -691,7 +691,7 @@ function renderProgramMainCard(){
     actionBtn.textContent = "记录一次血压";
   } else if(state.activeProgram === "dm"){
     title.textContent = "糖尿病随访速览";
-    subtitle.textContent = "血糖趋势 + HbA1c（示意）";
+    subtitle.textContent = "血糖趋势 + HbA1c";
 
     const unit = state.dm?.glucoseUnit === "mgdl" ? "mg/dL" : "mmol/L";
     const toUnit = (mmol)=>{
@@ -735,7 +735,7 @@ function renderProgramMainCard(){
     actionBtn.textContent = "记录一次血糖";
   } else if(state.activeProgram === "stone"){
     title.textContent = "结石管理速览";
-    subtitle.textContent = "喝水 + 发作事件 + 红旗分诊（示意）";
+    subtitle.textContent = "喝水 + 发作事件 + 红旗分诊";
     const today = yyyyMMdd(new Date());
     const cur = toNum(state.stone.intakeLog?.[today]) || 0;
     const tgt = toNum(state.stone.targetMl);
@@ -760,7 +760,7 @@ function renderProgramMainCard(){
     }, 0);
   } else if(state.activeProgram === "dialysis"){
     title.textContent = "透析随访速览";
-    subtitle.textContent = "血透/腹透：体重、血压、通路/腹透红旗（示意）";
+    subtitle.textContent = "血透/腹透：体重、血压、通路/腹透红旗";
 
     const mod = state.dialysis?.modality || "hd";
     const modTxt = labelDialysisModality(mod);
@@ -799,7 +799,7 @@ function renderProgramMainCard(){
     },0);
   } else if(state.activeProgram === "peds"){
     title.textContent = "儿肾随访速览";
-    subtitle.textContent = "生长 + 儿科血压/肾功能（示意）";
+    subtitle.textContent = "生长 + 儿科血压/肾功能";
     const age = computeAgeYears(state.peds.dob);
     const lab = latestLab();
     const lastH = latestVital(state.vitals.height);
@@ -949,7 +949,7 @@ function renderStoneWater(){
   const box = qs("#stoneWaterList");
   if(!box) return;
   if(!state.enabledPrograms?.stone){
-    box.innerHTML = `<div class="note">未启用结石项目。到“资料”里开启后可记录饮水与发作事件（示意）。</div>`;
+    box.innerHTML = `<div class="note">未启用结石项目。到“资料”里开启后可记录饮水与发作事件。</div>`;
     return;
   }
   const today = yyyyMMdd(new Date());
@@ -1085,13 +1085,13 @@ function renderRecords(){
   if(labsTitle && labsSub){
     if(showDialysis){
       labsTitle.textContent = "关键化验（可选）";
-      labsSub.textContent = "透析常用：K/Na/Ca/P/血糖等（示意）";
+      labsSub.textContent = "透析常用：K/Na/Ca/P/血糖等";
     } else if(showPeds){
       labsTitle.textContent = "化验录入";
-      labsSub.textContent = "儿科：肌酐单位 + 身高用于 eGFR（示意）";
+      labsSub.textContent = "儿科：肌酐单位 + 身高用于 eGFR";
     } else {
       labsTitle.textContent = "化验录入";
-      labsSub.textContent = "支持肾功、电解质、代谢（示意）";
+      labsSub.textContent = "支持肾功、电解质、代谢";
     }
   }
 
@@ -1132,16 +1132,16 @@ function renderFollowup(){
   // ===== Plan =====
   if(prog === "kidney"){
     const lines = [];
-    lines.push(`<div class="list-item"><div class="t">本周建议（示意）</div><div class="s">1）至少记录 3 次血压（更看趋势）；2）如有蛋白尿/水肿，补充体重与尿检；3）复诊前复制“一页摘要”。</div></div>`);
+    lines.push(`<div class="list-item"><div class="t">本周建议</div><div class="s">1）至少记录 3 次血压（更看趋势）；2）如有蛋白尿/水肿，补充体重与尿检；3）复诊前复制“一页摘要”。</div></div>`);
     if(state.kidney.track === "tx"){
-      lines.push(`<div class="list-item"><div class="t">移植提醒（示意）</div><div class="s">如需测药物谷浓度，请遵循中心流程（通常抽血前不先服药，抽完再服）。具体以移植中心宣教为准。</div></div>`);
+      lines.push(`<div class="list-item"><div class="t">移植提醒</div><div class="s">如需测药物谷浓度，请遵循中心流程（通常抽血前不先服药，抽完再服）。具体以移植中心宣教为准。</div></div>`);
     }
     planBox.innerHTML = lines.join("");
   } else if(prog === "htn"){
     const freqTxt = (state.htn?.bpFreq === "daily2") ? "每日2次" : "每日1次";
     const tgt = (state.htn?.targetSys || state.htn?.targetDia) ? `${state.htn?.targetSys||"—"}/${state.htn?.targetDia||"—"}` : "未设置";
     planBox.innerHTML = `
-      <div class="list-item"><div class="t">本周建议（示意）</div><div class="s">1）按计划记录家庭血压（${escapeHtml(freqTxt)}），固定时段更有价值；2）把“场景/症状/漏服”记下来；3）复诊前复制摘要，医生更容易判断波动与药物方案。</div></div>
+      <div class="list-item"><div class="t">本周建议</div><div class="s">1）按计划记录家庭血压（${escapeHtml(freqTxt)}），固定时段更有价值；2）把“场景/症状/漏服”记下来；3）复诊前复制摘要，医生更容易判断波动与药物方案。</div></div>
       <div class="list-item"><div class="t">目标（可选）</div><div class="s">当前：${escapeHtml(tgt)}。目标与阈值请以医生建议为准。</div></div>
     `;
   } else if(prog === "dm"){
@@ -1149,7 +1149,7 @@ function renderFollowup(){
     const unitTxt = (state.dm?.glucoseUnit === "mgdl") ? "mg/dL" : "mmol/L";
     const a1cTxt = lab?.hba1c ? `${lab.hba1c}%` : "暂无";
     planBox.innerHTML = `
-      <div class="list-item"><div class="t">本周建议（示意）</div><div class="s">1）按计划记录血糖（${escapeHtml(freqTxt)} · ${escapeHtml(unitTxt)}）并打标签（空腹/餐后/睡前/随机）；2）每 3 个月关注一次 HbA1c（如有）；3）出现低血糖/严重高血糖红旗，优先就医/联系医生。</div></div>
+      <div class="list-item"><div class="t">本周建议</div><div class="s">1）按计划记录血糖（${escapeHtml(freqTxt)} · ${escapeHtml(unitTxt)}）并打标签（空腹/餐后/睡前/随机）；2）每 3 个月关注一次 HbA1c（如有）；3）出现低血糖/严重高血糖红旗，优先就医/联系医生。</div></div>
       <div class="list-item"><div class="t">HbA1c</div><div class="s">最近：${escapeHtml(a1cTxt)}；目标（可选）：${escapeHtml(state.dm?.a1cTarget?state.dm.a1cTarget+"%":"未设置")}。</div></div>
     `;
   } else if(prog === "stone"){
@@ -1159,7 +1159,7 @@ function renderFollowup(){
     const limit = state.stone.fluidRestricted === "true";
     planBox.innerHTML = `
       <div class="list-item"><div class="t">今日喝水</div><div class="s">${cur} ml${tgt?` / 目标 ${tgt} ml`:``}${limit?"（限水模式）":""}</div></div>
-      <div class="list-item"><div class="t">本周建议（示意）</div><div class="s">保持分次饮水；如出现发热伴腰痛/寒战、无尿/少尿明显等红旗，优先就医。</div></div>
+      <div class="list-item"><div class="t">本周建议</div><div class="s">保持分次饮水；如出现发热伴腰痛/寒战、无尿/少尿明显等红旗，优先就医。</div></div>
     `;
   } else if(prog === "dialysis"){
     const mod = state.dialysis?.modality || "hd";
@@ -1171,14 +1171,14 @@ function renderFollowup(){
     planBox.innerHTML = `
       <div class="list-item"><div class="t">方式</div><div class="s">${escapeHtml(modTxt)} · ${mod==="hd"?`透析日：${escapeHtml(daysTxt)}${isDay?"（今日）":""}`:"频率：每日"}</div></div>
       <div class="list-item"><div class="t">控水/限水</div><div class="s">${limit?`已标记：${escapeHtml(limitMl)}（以透析中心医嘱为准）`:"不确定/未标记"}</div></div>
-      <div class="list-item"><div class="t">本周建议（示意）</div><div class="s">透析日：记录透前/透后体重与血压（可选超滤量）；非透析日：关注间期体重增长、咸食与饮水。出现通路/腹透红旗、胸痛/气促/抽搐等，请优先联系透析团队/就医。</div></div>
+      <div class="list-item"><div class="t">本周建议</div><div class="s">透析日：记录透前/透后体重与血压（可选超滤量）；非透析日：关注间期体重增长、咸食与饮水。出现通路/腹透红旗、胸痛/气促/抽搐等，请优先联系透析团队/就医。</div></div>
     `;
   } else if(prog === "peds"){
     const age = computeAgeYears(state.peds.dob);
     planBox.innerHTML = `
-      <div class="list-item"><div class="t">儿肾随访重点（示意）</div><div class="s">生长（身高/体重）、血压记录、症状事件、化验（肌酐单位与身高配合）。复诊时以儿肾医生判读为准。</div></div>
+      <div class="list-item"><div class="t">儿肾随访重点</div><div class="s">生长（身高/体重）、血压记录、症状事件、化验（肌酐单位与身高配合）。复诊时以儿肾医生判读为准。</div></div>
       <div class="list-item"><div class="t">本周任务建议</div><div class="s">至少记录 2–3 次血压；每周记录体重；每月记录身高一次（或按医嘱）。</div></div>
-      <div class="list-item"><div class="t">孩子 ${age===null?"—":age+"岁"} 的过渡建议（示意）</div><div class="s">逐步让孩子参与：自己描述症状、准备复诊三问、在家测一次血压。</div></div>
+      <div class="list-item"><div class="t">孩子 ${age===null?"—":age+"岁"} 的过渡建议</div><div class="s">逐步让孩子参与：自己描述症状、准备复诊三问、在家测一次血压。</div></div>
     `;
   } else {
     planBox.innerHTML = `<div class="note">请选择项目。</div>`;

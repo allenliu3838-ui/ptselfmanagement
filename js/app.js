@@ -44,11 +44,14 @@ async function registerSW(){
   }
 }
 
-function completeOnboarding(){
+function completeOnboarding(prog){
   if(!state.engagement) state.engagement = { onboarded:false, streak:0, lastActiveDate:"", longestStreak:0 };
   state.engagement.onboarded = true;
+  if(prog && PROGRAMS[prog]){
+    state.activeProgram = prog;
+    state.enabledPrograms[prog] = true;
+  }
   saveState();
-  navigate("home");
 }
 
 function init(){
@@ -62,15 +65,51 @@ function init(){
   registerSW();
   bindUI();
 
-  // Onboarding buttons
-  const btnStart = qs("#btnOnboardStart");
-  const btnSkip = qs("#btnOnboardSkip");
-  if(btnStart) btnStart.addEventListener("click", ()=>{
-    completeOnboarding();
-    openProfile();
+  // ===== 3-step onboarding wizard =====
+  let obProg = "kidney"; // default selection
+
+  // Step 1: Welcome
+  const btnOb1Next = qs("#btnOb1Next");
+  const btnOb1Demo = qs("#btnOb1Demo");
+  if(btnOb1Next) btnOb1Next.addEventListener("click", ()=>{
+    qs("#obStep1").classList.add("hidden");
+    qs("#obStep2").classList.remove("hidden");
   });
-  if(btnSkip) btnSkip.addEventListener("click", ()=>{
-    completeOnboarding();
+  if(btnOb1Demo) btnOb1Demo.addEventListener("click", ()=>{
+    state = seedDemoData();
+    saveState();
+    renderAll();
+    navigate("home");
+    toast("已加载示例数据，可以体验完整功能");
+  });
+
+  // Step 2: Choose program
+  qsa(".ob-prog-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      qsa(".ob-prog-btn").forEach(b=>b.classList.remove("selected"));
+      btn.classList.add("selected");
+      obProg = btn.getAttribute("data-ob-prog") || "kidney";
+      // Auto advance after a brief delay
+      setTimeout(()=>{
+        qs("#obStep2").classList.add("hidden");
+        qs("#obStep3").classList.remove("hidden");
+      }, 300);
+    });
+  });
+
+  // Step 3: First record or skip
+  const btnOb3Record = qs("#btnOb3Record");
+  const btnOb3Skip = qs("#btnOb3Skip");
+  if(btnOb3Record) btnOb3Record.addEventListener("click", ()=>{
+    completeOnboarding(obProg);
+    renderAll();
+    navigate("home");
+    setTimeout(()=>openQuickBP(), 200);
+  });
+  if(btnOb3Skip) btnOb3Skip.addEventListener("click", ()=>{
+    completeOnboarding(obProg);
+    renderAll();
+    navigate("home");
   });
 
   renderProgramList();

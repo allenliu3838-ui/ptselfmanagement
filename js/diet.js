@@ -227,12 +227,12 @@ function renderDietFoodDetail(foodId){
     </div>
 
     <div class="list-item">
-      <div class="t">怎么做更省力（示意）</div>
+      <div class="t">怎么做更省力</div>
       ${lines(food.tips)}
     </div>
 
     <div class="list-item">
-      <div class="t">可替代的选择（示意）</div>
+      <div class="t">可替代的选择</div>
       ${alt(food.alternatives)}
     </div>
 
@@ -341,7 +341,7 @@ function renderDietModal(){
 
   const tagsHtml = tags.length
     ? `<div class="row">${tags.map(t=>`<div class=\"badge info\">${escapeHtml(t.label)}</div>`).join('')}</div>`
-        : `<div class="note">尚未发现突出饮食关注点（示意）。你仍可以用食物库自查“能不能吃”。</div>`;
+        : `<div class="note">尚未发现突出饮食关注点。你仍可以用食物库自查“能不能吃”。</div>`;
 
   const body = `
         <div class="note subtle">提示：点任意食物，查看“为什么要关注 + 替代选择”。（内测教育库，不替代医生/营养师）</div>

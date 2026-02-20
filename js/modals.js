@@ -195,7 +195,7 @@ function openTriageModal(){
     `).join("")}
   `;
   openSimpleModal(
-    "红旗分诊（示意）",
+    "红旗分诊",
     "出现红旗：请立即就医/联系随访团队。App 只做提醒与整理。",
     body,
     `<button class="primary" id="btnTriageSubmit">生成行动卡</button>
@@ -366,7 +366,7 @@ async function providerSearch(params){
 
 function openDoctorFinderModal(){
   const options = [
-    {key:"all", label:"全部（示意）"},
+    {key:"all", label:"全部"},
     {key:"nephrology", label:"肾内科"},
     {key:"dialysis", label:"透析中心/血透室"},
     {key:"urology", label:"泌尿外科/结石"},
@@ -428,7 +428,7 @@ function openDoctorFinderModal(){
     const render = (arr)=>{
       if(!results) return;
       if(!arr || !arr.length){
-        results.innerHTML = `<div class="note">暂无匹配结果（示意）。你可以尝试调整范围/关键词/城市。</div>`;
+        results.innerHTML = `<div class="note">暂无匹配结果。你可以尝试调整范围/关键词/城市。</div>`;
         return;
       }
       results.innerHTML = arr.map(p=>{
@@ -454,7 +454,7 @@ function openDoctorFinderModal(){
       };
       if(status) status.textContent = locHint || "正在搜索（示意数据）...";
       const arr = await providerSearch(params);
-      if(status) status.textContent = locHint ? `${locHint} · 返回 ${arr.length} 条（示意）` : `返回 ${arr.length} 条（示意）`;
+      if(status) status.textContent = locHint ? `${locHint} · 返回 ${arr.length} 条` : `返回 ${arr.length} 条`;
       render(arr);
     };
 
@@ -983,7 +983,7 @@ function openAddLab(){
 
     <label class="field"><span>HbA1c（%）</span><input id="labHbA1c" type="number" inputmode="decimal" placeholder="例如：6.5"></label>
   `;
-  openSimpleModal("新增化验（内测）","录入后会触发：饮食提醒/安全提醒/计划建议（示意）", body,
+  openSimpleModal("新增化验（内测）","录入后会触发：饮食提醒/安全提醒/计划建议", body,
     `<button class="primary" id="btnSaveLab">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   qs("#scrUnit").value = lab.scrUnit || "umolL";
 
@@ -1049,7 +1049,7 @@ function openAddUrine(){
     </div>
     <div class="note subtle">提示：仅做随访记录；如出现肉眼血尿、少尿、明显水肿等，请及时联系医生。</div>
   `;
-  openSimpleModal("新增尿检记录","肾小球病/ADPKD 建议做时间线记录（示意）", body,
+  openSimpleModal("新增尿检记录","肾小球病/ADPKD 建议做时间线记录", body,
     `<button class="primary" id="btnSaveUrine">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   qs("#btnSaveUrine").onclick = ()=>{
     state.urineTests.push({
@@ -1800,7 +1800,7 @@ function openDialysisSessionModal(){
 
   const mod = state.dialysis?.modality || "hd";
   const title = "记录透析";
-  const subtitle = mod === "pd" ? "腹透：记录 UF/透析液/红旗（示意）" : "血透：记录透前/透后 + 超滤量（示意）";
+  const subtitle = mod === "pd" ? "腹透：记录 UF/透析液/红旗" : "血透：记录透前/透后 + 超滤量";
 
   const baseNote = `<div class="note">内测版：以"结构化记录 + 复诊整理"为主。任何红旗（胸痛、气促、抽搐、腹透液混浊/腹痛/发热等）请优先联系透析团队/就医。</div>`;
 
@@ -1908,7 +1908,7 @@ function openQuickBP(){
     <label class="field"><span>场景（可选）</span><input id="bpCtx" type="text" placeholder="例如：早晨、服药前、运动后"></label>
     <div class="note subtle">${state.activeProgram==="peds" ? "儿童血压通常需要按年龄/性别/身高百分位解读；本内测版先做记录与整理。" : "不建议仅看单次数值；更推荐周均值与波动。"} </div>
   `;
-  openSimpleModal("记录血压","将自动进入随访摘要（示意）", body,
+  openSimpleModal("记录血压","将自动进入随访摘要", body,
     `<button class="primary" id="btnSaveBP">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   qs("#btnSaveBP").onclick = ()=>{
     const sys = toNum(qs("#bpSys").value);
@@ -1984,7 +1984,7 @@ function openQuickGlucose(){
     </label>
     <div class="note subtle">仅用于随访记录与复诊沟通；不提供用药调整建议。目标与阈值以医生建议为准。</div>
   `;
-  openSimpleModal("记录血糖","适用于糖尿病/移植激素相关血糖波动（示意）", body,
+  openSimpleModal("记录血糖","适用于糖尿病/移植激素相关血糖波动", body,
     `<button class="primary" id="btnSaveG">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   const unitEl = qs("#gUnit");
   if(unitEl) unitEl.value = preferred;
@@ -2008,7 +2008,7 @@ function openQuickTemp(){
     <label class="field"><span>体温（℃）</span><input id="tVal" type="number" inputmode="decimal" placeholder="例如：36.8"></label>
     <div class="note subtle">移植/免疫抑制期出现发热请及时联系团队。</div>
   `;
-  openSimpleModal("记录体温","用于感染风险随访（示意）", body,
+  openSimpleModal("记录体温","用于感染风险随访", body,
     `<button class="primary" id="btnSaveT">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   qs("#btnSaveT").onclick = ()=>{
     const v = toNum(qs("#tVal").value);
@@ -2046,7 +2046,7 @@ function openMedsCheckModal(programHint=null){
     <label class="field"><span>备注（可选）</span><input id="medNote" type="text" placeholder="例如：今早外出忘带药，已补服"></label>
     <div class="note subtle">本功能仅用于随访记录与复诊整理，不提供用药调整建议。</div>
   `;
-  openSimpleModal("用药打卡","记录依从性（示意）", body,
+  openSimpleModal("用药打卡","记录依从性", body,
     `<button class="primary" id="btnSaveMeds">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   qs("#btnSaveMeds").onclick = ()=>{
     const prog = showProgSelect ? (qs("#medProg")?.value || defaultProg) : defaultProg;

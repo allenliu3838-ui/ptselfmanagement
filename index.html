@@ -31,13 +31,36 @@
   <main class="app">
     <!-- ONBOARDING (shown only on first launch) -->
     <section class="page" id="page-onboard" data-page="onboard" aria-label="欢迎">
-      <div class="onboard">
+      <!-- Step 1: Welcome -->
+      <div class="onboard" id="obStep1">
         <div class="emoji">👋</div>
         <h1>欢迎使用肾域随访</h1>
-        <p>只需 30 秒完成设置，开始你的个人化随访管理。每天花 1 分钟记录，复诊时更从容。</p>
+        <p>帮你记录健康数据、整理复诊摘要、提醒安全信号。<br>所有数据仅保存在你的设备上，不会上传。</p>
         <div class="steps"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div></div>
-        <button class="primary" id="btnOnboardStart" style="min-width:200px;">开始设置</button>
-        <button class="ghost" id="btnOnboardSkip" style="margin-top:8px;">跳过，直接进入</button>
+        <button class="primary" id="btnOb1Next" style="min-width:200px;">开始（30秒）</button>
+        <button class="ghost" id="btnOb1Demo" style="margin-top:8px;">先看示例数据</button>
+      </div>
+      <!-- Step 2: Choose program -->
+      <div class="onboard hidden" id="obStep2">
+        <h1>你主要想管理什么？</h1>
+        <p>选一个开始，之后随时可以在设置中增加其他项目。</p>
+        <div class="steps"><div class="step-dot"></div><div class="step-dot active"></div><div class="step-dot"></div></div>
+        <div class="ob-programs">
+          <button class="ob-prog-btn" data-ob-prog="kidney">肾脏随访<span>CKD / 肾小球病 / 移植 / ADPKD</span></button>
+          <button class="ob-prog-btn" data-ob-prog="htn">高血压随访<span>家庭血压 / 用药依从</span></button>
+          <button class="ob-prog-btn" data-ob-prog="dm">糖尿病随访<span>血糖 / HbA1c / 用药</span></button>
+          <button class="ob-prog-btn" data-ob-prog="dialysis">透析随访<span>血透 / 腹透 / 通路管理</span></button>
+          <button class="ob-prog-btn" data-ob-prog="stone">肾结石管理<span>饮水追踪 / 发作记录</span></button>
+          <button class="ob-prog-btn" data-ob-prog="peds">儿肾随访<span>生长追踪 / 儿科肾功能</span></button>
+        </div>
+      </div>
+      <!-- Step 3: First action -->
+      <div class="onboard hidden" id="obStep3">
+        <h1>开始你的第一次记录</h1>
+        <p>试试记录一次血压，只需 10 秒。也可以跳过，稍后再来。</p>
+        <div class="steps"><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot active"></div></div>
+        <button class="primary" id="btnOb3Record" style="min-width:200px;">记录一次血压</button>
+        <button class="ghost" id="btnOb3Skip" style="margin-top:8px;">跳过，进入首页</button>
       </div>
     </section>
 
@@ -106,7 +129,7 @@
           <div class="card-hd">
             <div>
               <div class="card-title">今日饮食提醒</div>
-              <div class="card-subtitle">基于：项目/合并症/电解质与代谢标记（示意）</div>
+              <div class="card-subtitle">基于：项目/合并症/电解质与代谢标记</div>
             </div>
             <button class="ghost small" id="btnDiet">饮食中心</button>
           </div>
@@ -128,7 +151,7 @@
           <div class="card-hd">
             <div>
               <div class="card-title">透析记录</div>
-              <div class="card-subtitle">血透/腹透：透前/透后、UF、红旗（示意）</div>
+              <div class="card-subtitle">血透/腹透：透前/透后、UF、红旗</div>
             </div>
             <button class="primary small" id="btnAddDialysis">新增</button>
           </div>
@@ -221,7 +244,7 @@
           <div class="card-hd">
             <div>
               <div class="card-title">透析记录</div>
-              <div class="card-subtitle">血透/腹透：透前/透后、UF、腹透红旗（示意）</div>
+              <div class="card-subtitle">血透/腹透：透前/透后、UF、腹透红旗</div>
             </div>
             <div class="row" style="gap:8px; margin:0;">
               <button class="info-btn small" data-exp="hd_session" aria-label="为什么要记录透析">i</button>
@@ -280,7 +303,7 @@
             <div class="card-hd">
               <div>
                 <div class="card-title">化验录入</div>
-                <div class="card-subtitle">支持肾功、电解质、代谢（示意）</div>
+                <div class="card-subtitle">支持肾功、电解质、代谢</div>
               </div>
               <div class="row" style="gap:8px; margin:0;">
                 <button class="info-btn small" data-exp="labs" aria-label="为什么要录入化验">i</button>
@@ -294,7 +317,7 @@
             <div class="card-hd">
               <div>
                 <div class="card-title">尿检/尿蛋白记录</div>
-                <div class="card-subtitle">肾小球病 / ADPKD 常用（示意）</div>
+                <div class="card-subtitle">肾小球病 / ADPKD 常用</div>
               </div>
               <div class="row" style="gap:8px; margin:0;">
                 <button class="info-btn small" data-exp="urine" aria-label="为什么要记录尿检">i</button>
@@ -454,7 +477,8 @@
               <div class="card-title">我的</div>
               <div class="card-subtitle">版本与内测信息</div>
             </div>
-            <button class="ghost small" id="btnReset">重置演示数据</button>
+            <button class="ghost small" id="btnLoadDemo">查看示例数据</button>
+            <button class="ghost small" id="btnReset">清空数据</button>
           </div>
           <div class="content">
             <div class="brand-showcase">
@@ -712,7 +736,7 @@
 
           <div id="txBox" class="subbox hidden">
             <label class="field">
-              <span>移植阶段（示意）</span>
+              <span>移植阶段</span>
               <select id="txStage">
                 <option value="stable">稳定期</option>
                 <option value="early">术后 0–3 月</option>
@@ -725,7 +749,7 @@
 
         <div class="section">
           <div class="section-title">高血压随访（独立项目）</div>
-          <div class="note subtle">聚焦家庭血压趋势与用药依从。阈值与目标请以医生建议为准。此处仅用于随访记录（示意）。</div>
+          <div class="note subtle">聚焦家庭血压趋势与用药依从。阈值与目标请以医生建议为准。此处仅用于随访记录。</div>
 
           <label class="field">
             <span>是否启用高血压项目</span>
@@ -737,7 +761,7 @@
 
           <div id="htnBox" class="subbox hidden">
             <label class="field">
-              <span>家庭血压频率（示意）</span>
+              <span>家庭血压频率</span>
               <select id="htnFreq">
                 <option value="daily1">每日1次</option>
                 <option value="daily2">每日2次</option>
@@ -759,7 +783,7 @@
 
         <div class="section">
           <div class="section-title">糖尿病随访（独立项目）</div>
-          <div class="note subtle">聚焦血糖 + HbA1c 趋势；单位支持 mmol/L 与 mg/dL。此处仅用于随访记录（示意）。</div>
+          <div class="note subtle">聚焦血糖 + HbA1c 趋势；单位支持 mmol/L 与 mg/dL。此处仅用于随访记录。</div>
 
           <label class="field">
             <span>是否启用糖尿病项目</span>
@@ -772,7 +796,7 @@
           <div id="dmBox" class="subbox hidden">
             <div class="two">
               <label class="field">
-                <span>血糖记录频率（示意）</span>
+                <span>血糖记录频率</span>
                 <select id="dmGlucoseFreq">
                   <option value="daily1">每日1次</option>
                   <option value="daily2">每日2次</option>
@@ -819,7 +843,7 @@
 
         <div class="section">
           <div class="section-title">透析随访（独立项目）</div>
-          <div class="note subtle">透析项目与 CKD/移植/结石项目隔离：避免“饮水/阈值/提醒”冲突。此处仅用于随访记录与提醒（示意），具体方案以透析中心医嘱为准。</div>
+          <div class="note subtle">透析项目与 CKD/移植/结石项目隔离：避免“饮水/阈值/提醒”冲突。此处仅用于随访记录与提醒，具体方案以透析中心医嘱为准。</div>
 
           <label class="field">
             <span>是否启用透析项目</span>
@@ -841,7 +865,7 @@
             <div class="field" id="hdDaysRow">
               <span>血透日（可多选）</span>
               <div class="chips" id="hdDaysChips"></div>
-              <div class="note subtle">用于生成“今日行动”的透析日提示（示意）。</div>
+              <div class="note subtle">用于生成“今日行动”的透析日提示。</div>
             </div>
 
             <label class="field">
@@ -938,10 +962,10 @@
                 <option value="unknown">不确定/待确认</option>
                 <option value="ckd">慢性肾病/肾功能异常</option>
                 <option value="glomerular">蛋白尿/肾小球病</option>
-                <option value="caukt">泌尿系畸形/CAKUT（示意）</option>
+                <option value="caukt">泌尿系畸形/CAKUT</option>
                 <option value="tx">肾移植随访</option>
                 <option value="genetic">遗传性肾病</option>
-                <option value="stone">肾结石/结晶（示意）</option>
+                <option value="stone">肾结石/结晶</option>
               </select>
             </label>
           </div>
