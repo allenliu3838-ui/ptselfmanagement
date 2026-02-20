@@ -54,6 +54,12 @@ function bindUI(){
   qs("#btnAddLab").addEventListener("click", ()=>openAddLab());
   qs("#btnAddUrine").addEventListener("click", ()=>openAddUrine());
 
+  // Trend analysis card buttons
+  const bWeekly = qs("#btnWeeklyReport");
+  if(bWeekly) bWeekly.addEventListener("click", ()=>openWeeklyReportModal());
+  const bAllTrends = qs("#btnAllTrends");
+  if(bAllTrends) bAllTrends.addEventListener("click", ()=>openAllTrendsModal());
+
   // document vault + advanced markers
   const bUp = qs("#btnUploadDoc");
   if(bUp) bUp.addEventListener("click", ()=>openDocUploadModal());
@@ -129,13 +135,9 @@ function bindUI(){
     catch(e){ prompt("复制下面内容：", text); }
   };
 
-  // Data backup (metadata only; files stay in IndexedDB)
+  // Data backup (full: state + IndexedDB files)
   const bExportData = qs("#btnExportData");
-  if(bExportData) bExportData.onclick = ()=>{
-    const payload = buildFullBackupJSON();
-    downloadTextFile(`kidney-care-backup-${yyyyMMdd(new Date())}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
-    toast("已导出本机数据 JSON（不含文件本体）");
-  };
+  if(bExportData) bExportData.onclick = ()=> doFullBackupDownload();
 
   const fileImport = qs("#fileImportData");
   if(fileImport) fileImport.onchange = async ()=>{
@@ -143,8 +145,9 @@ function bindUI(){
     if(!f) return;
     try{
       const text = await f.text();
-      importBackupFromJSONText(text);
-      toast("已导入数据，页面将刷新");
+      await importBackupFromJSONText(text);
+      recordBackupTimestamp();
+      toast("已导入数据（含文件），页面将刷新");
       setTimeout(()=>location.reload(), 600);
     }catch(e){
       console.error(e);

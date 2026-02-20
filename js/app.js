@@ -120,6 +120,8 @@ function init(){
     navigate("onboard");
   } else {
     navigate("home");
+    // Check backup reminder after a short delay (avoid blocking initial render)
+    setTimeout(()=>checkBackupReminder(), 2000);
   }
 }
 

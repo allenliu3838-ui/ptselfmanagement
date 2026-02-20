@@ -47,6 +47,26 @@ async function idbGetFile(fileId){
   });
 }
 
+async function idbGetAllFiles(){
+  const db = await openFilesDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction(FILE_STORE, "readonly");
+    const store = tx.objectStore(FILE_STORE);
+    const req = store.getAll();
+    req.onsuccess = ()=>{ try{ db.close(); }catch(_e){} resolve(req.result || []); };
+    req.onerror = ()=>{ try{ db.close(); }catch(_e){} reject(req.error || new Error("IDB 读取全部文件失败")); };
+  });
+}
+
+function blobToBase64(blob){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = ()=> reject(reader.error || new Error("FileReader 失败"));
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function idbDeleteFile(fileId){
   const db = await openFilesDB();
   return new Promise((resolve, reject)=>{

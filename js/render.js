@@ -167,9 +167,10 @@ function renderUsagePage(){
       <div class="guide-h">九、数据安全与备份</div>
       <ul>
         <li>所有数据<b>仅保存在你的设备本地</b>（localStorage + IndexedDB），不会上传到云端</li>
-        <li>在"我的"页面底部可以<b>导出 JSON 备份</b>，建议定期备份</li>
-        <li>换设备时可以通过<b>导入 JSON</b>恢复数据</li>
+        <li>在"我的"页面底部可以<b>导出完整备份</b>（含所有记录和资料库文件），建议每周至少备份一次</li>
+        <li>换设备时可以通过<b>导入备份</b>恢复全部数据和文件</li>
         <li>清除浏览器数据或卸载 App 会导致数据丢失，请务必提前备份</li>
+        <li>超过 7 天未备份时，系统会自动弹窗提醒；关闭浏览器时也会提示</li>
       </ul>
     </div>
 
@@ -178,7 +179,7 @@ function renderUsagePage(){
       <ul>
         <li><b>如何切换项目？</b> → 点击顶部右上角"项目"按钮</li>
         <li><b>如何启用多个项目？</b> → 点击顶部"资料"按钮，在设置中勾选需要的项目</li>
-        <li><b>数据会丢失吗？</b> → 数据存在本地，清除浏览器数据会丢失。建议定期在"我的"页面导出备份</li>
+        <li><b>数据会丢失吗？</b> → 数据存在本地，清除浏览器数据会丢失。系统每 7 天提醒备份，请在"我的"页面定期导出完整备份（含文件）</li>
         <li><b>红旗信号是什么意思？</b> → 需要尽快联系医生或就医的危险信号（如严重高血压、胸痛、意识改变等）</li>
         <li><b>AI 功能在哪？</b> → 底部"AI"标签页（如未显示，需在"我的 → 内测设置"中开启）</li>
         <li><b>如何反馈问题？</b> → 在"我的"页面点击"复制反馈信息"，包含版本和设备信息，方便定位问题</li>
@@ -357,8 +358,9 @@ function renderGreeting(){
   ];
   const dayIndex = new Date().getDay();
   sub.innerHTML = escapeHtml(msgs[dayIndex % msgs.length]);
-  if(streak >= 2){
-    sub.innerHTML += ` <span class="streak-badge"><span class="fire">🔥</span>${streak} 天连续</span>`;
+  const badge = streakBadgeHTML();
+  if(badge){
+    sub.innerHTML += ` <span class="streak-badge">${badge}</span>`;
   }
 }
 
@@ -547,8 +549,12 @@ function renderHome(){
       <button class="ghost small" data-diet-open="both">钾+磷双高</button>
       <button class="ghost small" data-diet-open="additiveP">磷添加剂避坑</button>
     </div>
+    <div style="margin-top:8px;"><button class="primary small" id="btnPersonalDiet">今日个性化建议 ⭐</button></div>
     <div class="note subtle">提示：饮食仅做健康教育与避坑提醒；具体限制与目标请以医生/营养师个体化方案为准。</div>
   `;
+
+  const btnPD = qs("#btnPersonalDiet");
+  if(btnPD) btnPD.onclick = ()=> requirePremium("dietPersonal", ()=> openPersonalDietModal());
 
   qsa('#dietContent [data-diet-open]').forEach(btn=>{
     btn.onclick = (e)=>{
@@ -889,7 +895,11 @@ function renderLabsList(){
     labsBox.innerHTML = `<div class="empty-cta"><div class="emoji">🔬</div><div class="msg">暂无化验记录。录入一次后，系统会为你生成饮食提醒和安全提示。</div><button class="primary small" onclick="openAddLab()">录入化验</button></div>`;
   } else {
     const sorted = [...state.labs].sort((a,b)=> (a.date||"").localeCompare(b.date||"")).reverse();
-    labsBox.innerHTML = sorted.slice(0,8).map(l => {
+    // Build sparkline data for eGFR
+    const egfrSpark = sorted.length >= 2
+      ? sparklineSVG(sorted.slice().reverse().map(l=>l.egfr).filter(Boolean), {width:50, height:16})
+      : "";
+    labsBox.innerHTML = sorted.slice(0,8).map((l,idx) => {
       const items = [];
       if(l.scr) items.push(`Scr ${l.scr}${l.scrUnit==="mgdl"?"mg/dL":"μmol/L"}`);
       if(l.egfr) items.push(`eGFR ${l.egfr}`);
@@ -900,8 +910,9 @@ function renderLabsList(){
       if(l.mg) items.push(`Mg ${l.mg}`);
       if(l.glu) items.push(`Glu ${l.glu}`);
       if(l.hba1c) items.push(`HbA1c ${l.hba1c}`);
+      const spark = (idx===0 && egfrSpark) ? ` ${egfrSpark}` : "";
       return `<div class="list-item">
-        <div class="t">${niceDate(l.date||"")}</div>
+        <div class="t">${niceDate(l.date||"")}${spark}</div>
         <div class="s">${escapeHtml(items.join(" · ") || "—")}</div>
       </div>`;
     }).join("");
@@ -1277,6 +1288,21 @@ function renderMe(){
 
   const fbPrev = qs("#feedbackPreview");
   if(fbPrev) fbPrev.textContent = buildFeedbackText(false);
+
+  // Show last backup time
+  const lbi = qs("#lastBackupInfo");
+  if(lbi){
+    const last = getLastBackupTime();
+    if(last){
+      const d = new Date(last);
+      const days = daysSinceLastBackup();
+      const timeStr = d.toLocaleString("zh-CN");
+      const warn = days >= 7 ? " ⚠ 建议尽快备份" : "";
+      lbi.textContent = `上次备份：${timeStr}（${days} 天前）${warn}`;
+    } else {
+      lbi.textContent = "尚未备份过，建议立即导出一份完整备份";
+    }
+  }
 }
 
 
@@ -1294,8 +1320,10 @@ function renderAI(){
 
 function renderAll(){
   renderHeader();
+  renderPremiumBadge();
   renderHome();
   renderRecords();
+  renderTrendCard();
   renderDocsPage();
   renderFollowup();
   renderMe();

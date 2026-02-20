@@ -375,21 +375,100 @@ function buildFeedbackText(withSummary=false){
   return lines.join("\n");
 }
 
-function buildFullBackupJSON(){
-  // NOTE: 文件本体存在 IndexedDB；这里只导出元数据与记录。
+async function buildFullBackupJSON(){
+  // 完整备份：结构化数据 + IndexedDB 文件（base64 编码）
+  let files = [];
+  try{
+    const allFiles = await idbGetAllFiles();
+    for(const rec of allFiles){
+      const entry = { id: rec.id, name: rec.name, type: rec.type, size: rec.size, createdAt: rec.createdAt };
+      if(rec.blob){
+        try{ entry.data = await blobToBase64(rec.blob); }catch(_e){ entry.data = null; }
+      }
+      files.push(entry);
+    }
+  }catch(_e){ /* IndexedDB 不可用时仍导出结构化数据 */ }
   return {
     exportedAt: nowISO(),
     appVersion: VERSION,
     storageKey: STORAGE_KEY,
-    state
+    state,
+    files
   };
 }
 
-function importBackupFromJSONText(text){
+async function importBackupFromJSONText(text){
   const obj = JSON.parse(text);
   const st = obj && obj.state ? obj.state : obj;
   if(!st || typeof st !== "object") throw new Error("Invalid backup");
   localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
+
+  // Restore IndexedDB files if present
+  if(obj.files && Array.isArray(obj.files)){
+    try{
+      const db = await openFilesDB();
+      for(const f of obj.files){
+        if(!f.id || !f.data) continue;
+        try{
+          const resp = await fetch(f.data);
+          const blob = await resp.blob();
+          const tx = db.transaction(FILE_STORE, "readwrite");
+          const store = tx.objectStore(FILE_STORE);
+          store.put({ id: f.id, name: f.name || "", type: f.type || "application/octet-stream", size: f.size || blob.size, createdAt: f.createdAt || Date.now(), blob });
+          await new Promise((ok, fail)=>{ tx.oncomplete = ok; tx.onerror = fail; });
+        }catch(_e){ /* skip individual file errors */ }
+      }
+      try{ db.close(); }catch(_e){}
+    }catch(_e){ /* IndexedDB 不可用时忽略 */ }
+  }
+}
+
+function recordBackupTimestamp(){
+  try{ localStorage.setItem("kidneyCareLastBackup", new Date().toISOString()); }catch(_e){}
+}
+
+function getLastBackupTime(){
+  try{ return localStorage.getItem("kidneyCareLastBackup") || ""; }catch(_e){ return ""; }
+}
+
+function daysSinceLastBackup(){
+  const last = getLastBackupTime();
+  if(!last) return Infinity;
+  const d = new Date(last);
+  if(isNaN(d.getTime())) return Infinity;
+  return Math.floor((Date.now() - d.getTime()) / (24*3600*1000));
+}
+
+function shouldShowBackupReminder(){
+  // Show reminder if: data exists and last backup > 7 days ago (or never)
+  const hasData = (state.labs?.length || state.vitals?.bp?.length || state.symptoms?.length ||
+                   state.urineTests?.length || state.documents?.length || state.markers?.length ||
+                   state.medsLog?.length || state.vitals?.glucose?.length);
+  if(!hasData) return false;
+  return daysSinceLastBackup() >= 7;
+}
+
+function checkBackupReminder(){
+  if(!shouldShowBackupReminder()) return;
+  const days = daysSinceLastBackup();
+  const msg = days === Infinity
+    ? "你还没有备份过数据。建议现在导出一份完整备份，防止数据丢失。"
+    : `距上次备份已过 ${days} 天。建议定期备份，防止数据丢失。`;
+  openSimpleModal("备份提醒", "保护你的健康数据", `
+    <div class="note">${escapeHtml(msg)}</div>
+    <div class="note subtle" style="margin-top:8px;">备份包含所有记录和资料库文件，可用于换机迁移或数据恢复。</div>
+  `, `
+    <button class="primary" id="btnBackupNow">立即备份</button>
+    <button class="ghost" data-close="modalSimple">稍后再说</button>
+  `);
+  setTimeout(()=>{
+    const btn = qs("#btnBackupNow");
+    if(btn) btn.onclick = async ()=>{
+      closeModal("modalSimple");
+      await doFullBackupDownload();
+    };
+    qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
+  }, 0);
 }
 
 function deleteIndexedDB(dbName){
@@ -425,6 +504,35 @@ async function copyExport(mode="short"){
   }
   qs("#exportPreview").textContent = text;
 }
+
+async function doFullBackupDownload(){
+  try{
+    toast("正在打包备份（含文件），请稍候…");
+    const payload = await buildFullBackupJSON();
+    const fileCount = payload.files?.length || 0;
+    downloadTextFile(
+      `kidney-care-full-backup-${yyyyMMdd(new Date())}.json`,
+      JSON.stringify(payload),
+      "application/json;charset=utf-8"
+    );
+    recordBackupTimestamp();
+    // Update the last-backup display if visible
+    const el = qs("#lastBackupInfo");
+    if(el) el.textContent = `上次备份：${new Date().toLocaleString("zh-CN")}`;
+    toast(fileCount
+      ? `完整备份已导出（含 ${fileCount} 个文件）`
+      : "完整备份已导出");
+  }catch(e){
+    console.error("Backup failed:", e);
+    toast("备份导出失败，请重试");
+  }
+}
+
+// beforeunload: warn if significant unbacked-up data
+window.addEventListener("beforeunload", (e)=>{
+  if(!shouldShowBackupReminder()) return;
+  e.preventDefault();
+});
 
 function toast(msg){
   openSimpleModal("提示", "", `<div class="note">${escapeHtml(msg)}</div>`, `<button class="primary" data-close="modalSimple">知道了</button>`);
