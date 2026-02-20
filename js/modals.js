@@ -950,7 +950,7 @@ function openAddLab(){
   const lab = latestLab() || {};
   const body = `
     ${whyTip("labs")}
-    <div class="note">提示：内测先做"可用"，后续会接拍照识别、置信度、纠错确认与来源定位。</div>
+    <div class="note">提示：也可以用📷 拍照录入，自动识别化验单数据。</div>
     <div class="two">
       <label class="field"><span>日期</span><input id="labDate" type="date" value="${escapeHtml(lab.date || yyyyMMdd(new Date()))}"></label>
       <label class="field"><span>肌酐单位</span>

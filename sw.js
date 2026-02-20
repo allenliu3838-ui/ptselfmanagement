@@ -1,4 +1,4 @@
-const CACHE_NAME = "kidney-care-v9.5.0";
+const CACHE_NAME = "kidney-care-v9.6.1";
 const ASSETS = [
   "./",
   "./index.html",
@@ -15,6 +15,8 @@ const ASSETS = [
   "./js/export.js",
   "./js/trends.js",
   "./js/premium.js",
+  "./js/ocr.js",
+  "./js/share.js",
   "./js/ai.js",
   "./js/ui.js",
   "./js/app.js",
