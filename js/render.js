@@ -167,9 +167,10 @@ function renderUsagePage(){
       <div class="guide-h">九、数据安全与备份</div>
       <ul>
         <li>所有数据<b>仅保存在你的设备本地</b>（localStorage + IndexedDB），不会上传到云端</li>
-        <li>在"我的"页面底部可以<b>导出 JSON 备份</b>，建议定期备份</li>
-        <li>换设备时可以通过<b>导入 JSON</b>恢复数据</li>
+        <li>在"我的"页面底部可以<b>导出完整备份</b>（含所有记录和资料库文件），建议每周至少备份一次</li>
+        <li>换设备时可以通过<b>导入备份</b>恢复全部数据和文件</li>
         <li>清除浏览器数据或卸载 App 会导致数据丢失，请务必提前备份</li>
+        <li>超过 7 天未备份时，系统会自动弹窗提醒；关闭浏览器时也会提示</li>
       </ul>
     </div>
 
@@ -178,7 +179,7 @@ function renderUsagePage(){
       <ul>
         <li><b>如何切换项目？</b> → 点击顶部右上角"项目"按钮</li>
         <li><b>如何启用多个项目？</b> → 点击顶部"资料"按钮，在设置中勾选需要的项目</li>
-        <li><b>数据会丢失吗？</b> → 数据存在本地，清除浏览器数据会丢失。建议定期在"我的"页面导出备份</li>
+        <li><b>数据会丢失吗？</b> → 数据存在本地，清除浏览器数据会丢失。系统每 7 天提醒备份，请在"我的"页面定期导出完整备份（含文件）</li>
         <li><b>红旗信号是什么意思？</b> → 需要尽快联系医生或就医的危险信号（如严重高血压、胸痛、意识改变等）</li>
         <li><b>AI 功能在哪？</b> → 底部"AI"标签页（如未显示，需在"我的 → 内测设置"中开启）</li>
         <li><b>如何反馈问题？</b> → 在"我的"页面点击"复制反馈信息"，包含版本和设备信息，方便定位问题</li>
@@ -1277,6 +1278,21 @@ function renderMe(){
 
   const fbPrev = qs("#feedbackPreview");
   if(fbPrev) fbPrev.textContent = buildFeedbackText(false);
+
+  // Show last backup time
+  const lbi = qs("#lastBackupInfo");
+  if(lbi){
+    const last = getLastBackupTime();
+    if(last){
+      const d = new Date(last);
+      const days = daysSinceLastBackup();
+      const timeStr = d.toLocaleString("zh-CN");
+      const warn = days >= 7 ? " ⚠ 建议尽快备份" : "";
+      lbi.textContent = `上次备份：${timeStr}（${days} 天前）${warn}`;
+    } else {
+      lbi.textContent = "尚未备份过，建议立即导出一份完整备份";
+    }
+  }
 }
 
 
