@@ -504,36 +504,37 @@
             <div class="kv"><span>当前项目</span><span id="meProgram"></span></div>
             <div class="kv"><span>启用项目</span><span id="meEnabled"></span></div>
             <div class="kv"><span>内测建议</span><span>先测流程：建档→记录→提醒→摘要→内容</span></div>
-          </div>
-        </div>
-
-
-
-        <div class="card">
-          <div class="card-hd">
-            <div>
-              <div class="card-title">使用说明</div>
-              <div class="card-subtitle">第一次使用？3 分钟了解全部功能</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <button class="ghost small" id="btnUsageOpen">使用说明</button>
+              <button class="ghost small" id="btnGuideOpen">随访指南</button>
             </div>
-            <button class="primary small" id="btnUsageOpen">查看</button>
-          </div>
-          <div class="content">
-            <div class="note">详细说明每个页面的功能、操作步骤和使用技巧，帮助你快速上手。</div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-hd">
-            <div>
-              <div class="card-title">随访指南与意义</div>
-              <div class="card-subtitle">建议每位内测患者先看一遍：为什么要随访、每项检查在回答什么问题</div>
+        <!-- Visit Prep + Family Share: compact grid with live previews -->
+        <div class="grid">
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <div class="card-title">复诊准备包</div>
+                <div class="card-subtitle">指标变化 + 问医生的问题</div>
+              </div>
+              <button class="primary small" id="btnVisitPrep">生成</button>
             </div>
-            <button class="primary small" id="btnGuideOpen">查看</button>
+            <div class="content" id="visitPrepPreview"></div>
           </div>
-          <div class="content">
-            <div class="note">这会帮助你更愿意坚持随访，也能减少不必要的焦虑（App 解释用于教育与整理，不替代医生）。</div>
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <div class="card-title">家属共享</div>
+                <div class="card-subtitle">让家人远程查看</div>
+              </div>
+              <button class="primary small" id="btnFamilyShare">开启</button>
+            </div>
+            <div class="content" id="familySharePreview"></div>
           </div>
         </div>
+
         <div class="card">
           <div class="card-hd">
             <div>
@@ -545,74 +546,24 @@
           <pre class="mono" id="exportPreview"></pre>
         </div>
 
-        <!-- Family Sharing + Visit Prep -->
-        <div class="grid">
-          <div class="card">
-            <div class="card-hd">
-              <div>
-                <div class="card-title">复诊准备包 ⭐</div>
-                <div class="card-subtitle">自动整理：指标变化 + 建议问医生的问题</div>
-              </div>
-              <button class="primary small" id="btnVisitPrep">生成</button>
-            </div>
-            <div class="content">
-              <div class="note">复诊前点一下，自动汇总上次至今的所有变化，不再脑子一片空白。</div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-hd">
-              <div>
-                <div class="card-title">家属共享 ⭐</div>
-                <div class="card-subtitle">让子女/家人远程查看你的健康概况</div>
-              </div>
-              <button class="primary small" id="btnFamilyShare">开启</button>
-            </div>
-            <div class="content">
-              <div class="note">生成共享码发给家属，他们就能看到你的指标趋势和安全提醒。</div>
-              <button class="ghost small" id="btnFamilyView" style="margin-top:8px;">我是家属，输入共享码</button>
-            </div>
-          </div>
-        </div>
-
         <div class="card">
           <div class="card-hd">
             <div>
-              <div class="card-title">附近医生/机构</div>
-              <div class="card-subtitle">预留接口：未来可按定位搜索肾科/透析中心</div>
-            </div>
-            <button class="primary small" id="btnFindDoctor">搜索附近</button>
-          </div>
-          <div class="content">
-            <div class="note">内测占位：当前使用示例数据 + 接口占位。上线前需接入医生库/地图服务，并通过合规与质量审核。</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-hd">
-            <div>
-              <div class="card-title">内测设置</div>
-              <div class="card-subtitle">先把体验跑顺：入口更少、路径更短</div>
+              <div class="card-title">设置与工具</div>
+              <div class="card-subtitle">界面偏好、反馈、备份</div>
             </div>
           </div>
           <div class="content">
             <div class="kv"><span>显示 AI 标签</span><span><input type="checkbox" id="toggleShowAI" /></span></div>
             <div class="kv"><span>首页默认展开更多内容</span><span><input type="checkbox" id="toggleHomeMoreDefault" /></span></div>
-            <div class="note subtle">提示：不影响数据，只影响界面呈现。建议第一轮患者内测先关闭 AI 标签（减少分心），医生端流程跑顺后再开放。</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-hd">
-            <div>
-              <div class="card-title">反馈入口</div>
-              <div class="card-subtitle">复制“版本+设备+项目+复现步骤”，定位问题更快</div>
+            <div style="border-top:1px solid var(--border);margin:10px 0;padding-top:10px;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="ghost small" id="btnCopyFeedback">复制反馈信息</button>
+                <button class="ghost small" id="btnCopyFeedbackWithSummary">反馈+摘要</button>
+                <button class="ghost small" id="btnFindDoctor">附近医生</button>
+                <button class="ghost small" id="btnFamilyView">我是家属</button>
+              </div>
             </div>
-            <button class="ghost small" id="btnCopyFeedback">复制反馈信息</button>
-          </div>
-          <pre class="mono" id="feedbackPreview"></pre>
-          <div class="content">
-            <button class="primary" id="btnCopyFeedbackWithSummary">复制反馈 + 附带一页摘要</button>
-            <div class="note subtle">把复制内容 + 截图发到内测群即可（推荐格式：发生了什么→我点了哪里→期待看到什么→实际发生什么）。</div>
           </div>
         </div>
 
@@ -631,7 +582,7 @@
               <input type="file" id="fileImportData" accept="application/json" />
             </label>
             <button class="danger" id="btnWipeData">清空所有数据</button>
-            <div class="note subtle">说明：完整备份包含所有结构化数据和资料库文件（base64 编码）。建议每周至少备份一次，系统会自动提醒。</div>
+            <div class="note subtle">建议每周至少备份一次，系统会自动提醒。</div>
           </div>
         </div>
       </div>
