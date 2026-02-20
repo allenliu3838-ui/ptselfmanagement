@@ -67,7 +67,11 @@ a{color:var(--primary);text-decoration:none}
 
 /* Tiny inline trend sparkline */
 .spark{display:inline-block;vertical-align:middle}
-.spark polyline{fill:none;stroke:var(--primary);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
+.spark polyline{fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
+
+/* Trend card items */
+.trend-item{transition:background .15s ease;}
+.trend-item:hover,.trend-item:active{background:#f0f7ff;}
 
 .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
 .pill{

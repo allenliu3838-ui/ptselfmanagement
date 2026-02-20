@@ -358,8 +358,9 @@ function renderGreeting(){
   ];
   const dayIndex = new Date().getDay();
   sub.innerHTML = escapeHtml(msgs[dayIndex % msgs.length]);
-  if(streak >= 2){
-    sub.innerHTML += ` <span class="streak-badge"><span class="fire">🔥</span>${streak} 天连续</span>`;
+  const badge = streakBadgeHTML();
+  if(badge){
+    sub.innerHTML += ` <span class="streak-badge">${badge}</span>`;
   }
 }
 
@@ -548,8 +549,12 @@ function renderHome(){
       <button class="ghost small" data-diet-open="both">钾+磷双高</button>
       <button class="ghost small" data-diet-open="additiveP">磷添加剂避坑</button>
     </div>
+    <div style="margin-top:8px;"><button class="primary small" id="btnPersonalDiet">今日个性化建议 ⭐</button></div>
     <div class="note subtle">提示：饮食仅做健康教育与避坑提醒；具体限制与目标请以医生/营养师个体化方案为准。</div>
   `;
+
+  const btnPD = qs("#btnPersonalDiet");
+  if(btnPD) btnPD.onclick = ()=> requirePremium("dietPersonal", ()=> openPersonalDietModal());
 
   qsa('#dietContent [data-diet-open]').forEach(btn=>{
     btn.onclick = (e)=>{
@@ -890,7 +895,11 @@ function renderLabsList(){
     labsBox.innerHTML = `<div class="empty-cta"><div class="emoji">🔬</div><div class="msg">暂无化验记录。录入一次后，系统会为你生成饮食提醒和安全提示。</div><button class="primary small" onclick="openAddLab()">录入化验</button></div>`;
   } else {
     const sorted = [...state.labs].sort((a,b)=> (a.date||"").localeCompare(b.date||"")).reverse();
-    labsBox.innerHTML = sorted.slice(0,8).map(l => {
+    // Build sparkline data for eGFR
+    const egfrSpark = sorted.length >= 2
+      ? sparklineSVG(sorted.slice().reverse().map(l=>l.egfr).filter(Boolean), {width:50, height:16})
+      : "";
+    labsBox.innerHTML = sorted.slice(0,8).map((l,idx) => {
       const items = [];
       if(l.scr) items.push(`Scr ${l.scr}${l.scrUnit==="mgdl"?"mg/dL":"μmol/L"}`);
       if(l.egfr) items.push(`eGFR ${l.egfr}`);
@@ -901,8 +910,9 @@ function renderLabsList(){
       if(l.mg) items.push(`Mg ${l.mg}`);
       if(l.glu) items.push(`Glu ${l.glu}`);
       if(l.hba1c) items.push(`HbA1c ${l.hba1c}`);
+      const spark = (idx===0 && egfrSpark) ? ` ${egfrSpark}` : "";
       return `<div class="list-item">
-        <div class="t">${niceDate(l.date||"")}</div>
+        <div class="t">${niceDate(l.date||"")}${spark}</div>
         <div class="s">${escapeHtml(items.join(" · ") || "—")}</div>
       </div>`;
     }).join("");
@@ -1310,8 +1320,10 @@ function renderAI(){
 
 function renderAll(){
   renderHeader();
+  renderPremiumBadge();
   renderHome();
   renderRecords();
+  renderTrendCard();
   renderDocsPage();
   renderFollowup();
   renderMe();

@@ -17,7 +17,7 @@
       <div class="brand">
         <div class="brand-logo" aria-hidden="true"></div>
         <div class="brand-text">
-          <div class="brand-title">肾域随访</div>
+          <div class="brand-title">肾域随访 <span id="premiumBadge" style="display:inline;vertical-align:middle;"></span></div>
           <div class="brand-subtitle" id="brandSubtitle">项目：肾脏随访</div>
         </div>
       </div>
@@ -206,6 +206,21 @@
     <!-- RECORDS -->
     <section class="page" id="page-records" data-page="records" aria-label="病历与记录">
       <div class="container">
+        <!-- TREND ANALYSIS CARD -->
+        <div class="card" id="cardTrends">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">趋势分析</div>
+              <div class="card-subtitle">化验/血压/体重的智能解读与图表</div>
+            </div>
+            <div class="row" style="gap:8px; margin:0;">
+              <button class="ghost small" id="btnWeeklyReport">周报</button>
+              <button class="ghost small" id="btnAllTrends">总览</button>
+            </div>
+          </div>
+          <div id="trendContent" class="content"></div>
+        </div>
+
         <!-- DOCUMENT VAULT -->
         <div class="card home-more" id="cardDocs">
           <div class="card-hd">
@@ -1045,6 +1060,8 @@
   <script src="js/render.js"></script>
   <script src="js/modals.js"></script>
   <script src="js/export.js"></script>
+  <script src="js/trends.js"></script>
+  <script src="js/premium.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/app.js"></script>

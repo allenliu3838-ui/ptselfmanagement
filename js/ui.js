@@ -54,6 +54,12 @@ function bindUI(){
   qs("#btnAddLab").addEventListener("click", ()=>openAddLab());
   qs("#btnAddUrine").addEventListener("click", ()=>openAddUrine());
 
+  // Trend analysis card buttons
+  const bWeekly = qs("#btnWeeklyReport");
+  if(bWeekly) bWeekly.addEventListener("click", ()=>openWeeklyReportModal());
+  const bAllTrends = qs("#btnAllTrends");
+  if(bAllTrends) bAllTrends.addEventListener("click", ()=>openAllTrendsModal());
+
   // document vault + advanced markers
   const bUp = qs("#btnUploadDoc");
   if(bUp) bUp.addEventListener("click", ()=>openDocUploadModal());
