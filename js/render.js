@@ -63,131 +63,121 @@ function renderUsagePage(){
   const bodyEl = qs("#usageBody");
   if(!bodyEl) return;
 
+  const prog = state.activeProgram;
+  const progName = programLabel(prog);
+
+  // Quick-start scenario based on whether user has any data
+  const hasLabs = (state.labs||[]).length > 0;
+  const hasBP = (state.vitals?.bp||[]).length > 0;
+  const hasAnyData = hasLabs || hasBP;
+
+  const quickStartHtml = hasAnyData
+    ? `<div class="guide-p" style="background:#e8f5e9;padding:10px 12px;border-radius:10px;"><b>你已经开始了！</b>已有 ${(state.labs||[]).length} 次化验、${(state.vitals?.bp||[]).length} 次血压记录。继续保持，每天 1 分钟就够。</div>`
+    : `<div class="guide-p" style="background:#fff8e1;padding:10px 12px;border-radius:10px;"><b>你还没有任何记录。</b>建议现在就完成第一步：回到首页，录入一次血压或体重（30 秒）。有了第一条数据，后面的功能才会"活"起来。</div>`;
+
   bodyEl.innerHTML = `
-    <div class="guide-title">肾域随访 使用说明</div>
-    <div class="note" style="margin-bottom:16px;">本说明帮助你快速了解 App 的所有功能。建议花 3 分钟通读一次，之后随时可在"我的"页面重新查看。</div>
+    <div class="guide-title">3 分钟学会使用肾域随访</div>
+    ${quickStartHtml}
 
     <div class="guide-section">
-      <div class="guide-h">一、整体介绍</div>
-      <div class="guide-p">肾域随访是一款面向肾病及相关慢病患者的自我管理工具。核心目标：</div>
-      <ul>
-        <li><b>记录</b>：帮你在两次门诊之间持续记录血压、体重、化验、尿检、症状等健康数据</li>
-        <li><b>整理</b>：自动生成"一页摘要"，让复诊沟通更高效</li>
-        <li><b>教育</b>：每项检查旁边都有 <b>i</b> 按钮，点开就能看到"为什么要做、重点看什么、红旗信号"</li>
-        <li><b>提醒</b>：首页会显示今日任务和安全提示（红旗信号置顶）</li>
-      </ul>
-      <div class="note subtle">重要：本工具仅用于记录、教育与复诊整理，不提供诊断或处方。出现红旗症状请立即就医。</div>
+      <div class="guide-h">30 秒了解：这个 App 帮你做什么？</div>
+      <div class="guide-p">在两次门诊之间，帮你<b>记录数据 → 发现变化 → 整理摘要 → 带去复诊</b>。</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin:8px 0;">
+        <span style="flex:1;min-width:70px;text-align:center;padding:8px 4px;background:#f0f7ff;border-radius:8px;font-size:12px;"><b>记录</b><br><span style="color:var(--muted);">血压/体重<br>化验/尿检</span></span>
+        <span style="color:var(--primary);display:flex;align-items:center;">→</span>
+        <span style="flex:1;min-width:70px;text-align:center;padding:8px 4px;background:#f0f7ff;border-radius:8px;font-size:12px;"><b>分析</b><br><span style="color:var(--muted);">趋势图表<br>安全提醒</span></span>
+        <span style="color:var(--primary);display:flex;align-items:center;">→</span>
+        <span style="flex:1;min-width:70px;text-align:center;padding:8px 4px;background:#f0f7ff;border-radius:8px;font-size:12px;"><b>整理</b><br><span style="color:var(--muted);">一页摘要<br>复诊准备包</span></span>
+        <span style="color:var(--primary);display:flex;align-items:center;">→</span>
+        <span style="flex:1;min-width:70px;text-align:center;padding:8px 4px;background:#e8f5e9;border-radius:8px;font-size:12px;"><b>复诊</b><br><span style="color:var(--muted);">给医生看<br>问对问题</span></span>
+      </div>
     </div>
 
     <div class="guide-section">
-      <div class="guide-h">二、支持的项目（疾病方向）</div>
-      <div class="guide-p">App 支持 6 个项目，可同时启用多个：</div>
-      <ul>
-        <li><b>肾脏随访</b>：CKD、肾小球病、ADPKD、遗传性肾病、肾移植</li>
-        <li><b>高血压随访</b>：家庭血压监测、用药依从打卡</li>
-        <li><b>糖尿病随访</b>：血糖追踪、HbA1c、用药打卡</li>
-        <li><b>透析随访</b>：血透(HD)与腹透(PD)记录、干体重、通路/导管管理</li>
-        <li><b>肾结石管理</b>：饮水追踪、结石发作事件时间线</li>
-        <li><b>儿肾随访</b>：生长追踪（身高/体重）、儿科血压百分位</li>
-      </ul>
-      <div class="guide-p">切换方式：点击顶部右上角 <b>"项目"</b> 按钮可切换当前活跃项目；点击 <b>"资料"</b> 按钮可进入设置页面启用/配置多个项目。</div>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">三、底部导航栏（5 个标签页）</div>
+      <div class="guide-h">场景一：刚确诊 / 第一次用</div>
       <ol>
-        <li><b>首页</b>：仪表盘，包含今日任务、安全提醒、项目速览、饮食提醒、知识推荐、最近记录</li>
-        <li><b>AI</b>（可选，可在设置中隐藏）：AI 助手对话，支持化验解读、复诊问题生成等</li>
-        <li><b>记录页</b>（标签名随项目变化）：录入化验、尿检、生命体征、透析记录、饮水记录等</li>
-        <li><b>资料库</b>：上传和管理检查报告（活检报告、基因报告、影像、化验单等）</li>
-        <li><b>我的</b>：个人信息、使用说明、一页摘要、数据备份/恢复、反馈入口</li>
+        <li><b>建档</b>：点首页顶部「资料」→ 填写基本信息（年龄、身份、诊断）</li>
+        <li><b>录入最近一次化验</b>：底部「记录」→「化验录入」→ 新增（如果手边有化验单，可以直接用📷 拍照）</li>
+        <li><b>录入今天的血压和体重</b>：「记录」→ 点对应方块，填数字，保存</li>
+        <li><b>上传手头的报告</b>：底部「资料库」→ 上传活检/基因/影像报告</li>
       </ol>
+      <div class="guide-p">完成以上 4 步，系统就能开始为你生成趋势分析和安全提醒了。</div>
     </div>
 
     <div class="guide-section">
-      <div class="guide-h">四、首页功能详解</div>
-      <ul>
-        <li><b>今日行动</b>：根据你的项目和设置，每天自动生成 1-5 项任务（如"记录血压""上传化验"）。完成后打勾，进度环会更新。连续多天记录会显示 🔥 连续天数</li>
-        <li><b>一键完成</b>：快速标记所有今日任务为已完成</li>
-        <li><b>7 天活动条</b>：直观显示过去一周的记录情况</li>
-        <li><b>安全提醒</b>：基于你的化验数据自动判断（如血钾偏高、eGFR 下降等），红旗级别会置顶</li>
-        <li><b>红旗分诊</b>：点击可查看紧急症状清单，帮你判断是否需要立即就医</li>
-        <li><b>项目卡片</b>：当前项目的关键数据速览（最近化验、血压、体重等）</li>
-        <li><b>展开更多</b>：点击可查看饮食提醒、知识推荐、最近记录等更多内容</li>
-      </ul>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">五、记录页功能</div>
-      <div class="guide-p">记录页的内容会根据当前项目自动调整：</div>
-      <ul>
-        <li><b>生命体征</b>：点击对应方块快速录入血压、体重、身高（儿肾）、血糖、体温、症状</li>
-        <li><b>化验录入</b>：支持肌酐、eGFR、K、Na、Ca、P、Mg、血糖、HbA1c 等</li>
-        <li><b>尿检记录</b>：尿蛋白、潜血等（肾脏/儿肾项目）</li>
-        <li><b>透析记录</b>：HD 透前/透后体重血压、PD 超滤量/透析液等（透析项目）</li>
-        <li><b>饮水记录</b>：每日饮水量追踪、目标达成率（结石项目）</li>
-        <li><b>结石事件</b>：记录腰痛/血尿/发热/就医等发作事件（结石项目）</li>
-        <li><b>生长记录</b>：身高/体重/BMI/生长速度追踪（儿肾项目）</li>
-        <li><b>高级监测指标</b>：dd-cfDNA、DSA、anti-PLA2R 等（肾移植/肾小球病）</li>
-        <li><b>资料库/检查上传</b>：上传活检报告、基因报告、影像、化验单等文件</li>
-      </ul>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">六、资料库</div>
-      <ul>
-        <li>支持上传图片和文件，按类别分类：肾活检报告、基因检测报告、免疫学/高级指标、影像检查、化验单等</li>
-        <li>支持按项目和类别筛选，支持关键词搜索</li>
-        <li><b>复诊包</b>：自动整理最近 90 天的文档和数据摘要，可复制文字或导出 JSON，方便复诊时带给医生</li>
-      </ul>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">七、一页摘要（最有价值的功能之一）</div>
-      <div class="guide-p">自动将你的健康数据整理为一段简洁文字，包含：</div>
-      <ul>
-        <li>最近化验结果、血压/体重趋势、尿检记录</li>
-        <li>症状事件、用药打卡情况</li>
-        <li>安全提醒与红旗信号</li>
-      </ul>
-      <div class="guide-p"><b>使用方法</b>：在"我的"页面点击"复制摘要"，粘贴发给医生/护士/家属即可。<b>建议每次复诊前 1 分钟操作一次。</b></div>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">八、日常使用建议（最省力的做法）</div>
+      <div class="guide-h">场景二：日常使用（每天 1 分钟）</div>
       <ol>
-        <li><b>每天 1 分钟</b>：打开首页 → 完成"今日行动"中的 1-2 项关键记录</li>
-        <li><b>有报告就上传</b>：拿到检查报告后，立即上传到资料库</li>
-        <li><b>复诊前 1 分钟</b>：在"我的 → 一页摘要"点击复制，发给医生</li>
-        <li><b>遇到 <span style="color:var(--danger)">i</span> 就点</b>：每个任务旁的 i 按钮都能帮你理解"为什么要做这项检查"</li>
+        <li>打开 App → 首页显示<b>「今日行动」</b></li>
+        <li>完成 1–2 项打勾（通常是血压 + 体重）</li>
+        <li>看一眼<b>安全提醒</b>（如果是绿色就不用管）</li>
       </ol>
+      <div class="guide-p" style="color:var(--muted);font-size:12px;">小技巧：固定一个时间点（如起床后、睡前）测量并记录，更容易养成习惯。连续记录会点亮 🔥 连续天数。</div>
     </div>
 
     <div class="guide-section">
-      <div class="guide-h">九、数据安全与备份</div>
+      <div class="guide-h">场景三：拿到新化验单</div>
+      <ol>
+        <li>底部「记录」→ 化验卡片 → 点<b>「📷 拍照」</b>或「新增」</li>
+        <li>拍照：对准化验单拍一张 → 系统识别 → 核对数字 → 保存</li>
+        <li>手动：直接填数字 → 保存</li>
+      </ol>
+      <div class="guide-p">保存后自动触发：趋势更新、饮食建议刷新、安全提醒重新计算。</div>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">场景四：复诊前（最重要！）</div>
+      <ol>
+        <li>底部「我的」→ 点<b>「复诊准备包 → 生成」</b></li>
+        <li>查看：指标变化对比、建议问医生的问题清单</li>
+        <li>点「复制全部」→ 粘贴到备忘录/微信，或者直接让医生看手机屏幕</li>
+      </ol>
+      <div class="guide-p"><b>效果</b>：医生能在 30 秒内看完你的全部变化，不用你一项项回忆。这会让门诊时间更有效率。</div>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">场景五：家人想了解你的情况</div>
+      <ol>
+        <li>底部「我的」→ 点<b>「家属共享 → 开启」</b></li>
+        <li>生成 6 位共享码 → 发给家人</li>
+        <li>家人打开 App 输入共享码 → 能看到你的指标趋势和安全提醒</li>
+      </ol>
+      <div class="guide-p" style="color:var(--muted);font-size:12px;">家属只能查看，不能修改你的数据。你可以随时关闭共享或更换共享码。</div>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">5 个标签页，各管什么</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr style="background:#f8f9fa;"><td style="padding:6px;font-weight:700;">标签</td><td style="padding:6px;font-weight:700;">用途</td><td style="padding:6px;font-weight:700;">使用频率</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">首页</td><td style="padding:6px;">今日任务、安全提醒、关键数据速览</td><td style="padding:6px;">每天</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">记录</td><td style="padding:6px;">录入血压/体重/化验/尿检/透析/饮水等</td><td style="padding:6px;">每天</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">资料库</td><td style="padding:6px;">上传管理检查报告（活检/基因/影像等）</td><td style="padding:6px;">有报告时</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">我的</td><td style="padding:6px;">摘要、复诊包、家属共享、设置、备份</td><td style="padding:6px;">复诊前</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">AI</td><td style="padding:6px;">AI 助手（化验解读、问题生成）</td><td style="padding:6px;">按需</td></tr>
+      </table>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-h">数据安全</div>
       <ul>
-        <li>所有数据<b>仅保存在你的设备本地</b>（localStorage + IndexedDB），不会上传到云端</li>
-        <li>在"我的"页面底部可以<b>导出完整备份</b>（含所有记录和资料库文件），建议每周至少备份一次</li>
-        <li>换设备时可以通过<b>导入备份</b>恢复全部数据和文件</li>
-        <li>清除浏览器数据或卸载 App 会导致数据丢失，请务必提前备份</li>
-        <li>超过 7 天未备份时，系统会自动弹窗提醒；关闭浏览器时也会提示</li>
+        <li>所有数据<b>只存在你的手机/电脑上</b>，不上传云端</li>
+        <li>建议<b>每周备份一次</b>：「我的」→「数据备份」→「完整备份」</li>
+        <li>清除浏览器数据或卸载会丢失数据 — 请务必先备份</li>
+        <li>超过 7 天未备份系统会自动提醒</li>
       </ul>
     </div>
 
     <div class="guide-section">
-      <div class="guide-h">十、常见问题</div>
+      <div class="guide-h">常见问题</div>
       <ul>
-        <li><b>如何切换项目？</b> → 点击顶部右上角"项目"按钮</li>
-        <li><b>如何启用多个项目？</b> → 点击顶部"资料"按钮，在设置中勾选需要的项目</li>
-        <li><b>数据会丢失吗？</b> → 数据存在本地，清除浏览器数据会丢失。系统每 7 天提醒备份，请在"我的"页面定期导出完整备份（含文件）</li>
-        <li><b>红旗信号是什么意思？</b> → 需要尽快联系医生或就医的危险信号（如严重高血压、胸痛、意识改变等）</li>
-        <li><b>AI 功能在哪？</b> → 底部"AI"标签页（如未显示，需在"我的 → 内测设置"中开启）</li>
-        <li><b>如何反馈问题？</b> → 在"我的"页面点击"复制反馈信息"，包含版本和设备信息，方便定位问题</li>
+        <li><b>Q：我不懂那些医学指标怎么办？</b><br>A：每个指标旁边都有 <b>i</b> 按钮，点开就有通俗解释。你不需要记住数值含义，系统会自动判断并提醒。</li>
+        <li><b>Q：数据填错了怎么改？</b><br>A：目前需要在「我的 → 数据备份」导出后手动修改 JSON。后续会加入直接编辑功能。</li>
+        <li><b>Q：换新手机了怎么办？</b><br>A：在旧手机上导出完整备份 → 在新手机上导入即可恢复全部数据和文件。</li>
+        <li><b>Q：家人帮忙录入可以吗？</b><br>A：完全可以。子女帮父母录入是最常见的使用方式。</li>
       </ul>
     </div>
 
     <div class="disclaimer" style="margin-top:14px;">
-      <strong>免责声明：</strong>本工具用于健康数据记录、教育与复诊整理，不提供诊断、处方或治疗建议。出现红旗症状，请立即就医或联系随访团队。
+      <strong>重要提醒：</strong>本工具用于健康数据记录和复诊整理，不提供诊断或处方。出现胸痛、气促、意识改变、少尿无尿、高热剧痛等红旗症状，请<b>立即就医</b>。
     </div>
   `;
 }
@@ -197,54 +187,288 @@ function renderGuidePage(){
   if(!bodyEl) return;
 
   const prog = state.activeProgram;
-  const progName = programLabel(prog);
 
-  const headline = {
-    kidney: "肾脏随访的意义：把‘零散检查’变成‘可行动的趋势’",
-    dialysis: "透析随访的意义：少出意外、少折腾、复诊更高效",
-    stone: "结石随访的意义：减少复发、把发作变成可解释的时间线",
-    peds: "儿肾随访的意义：把生长与肾功能放在同一条时间线上",
-  }[prog] || "随访的意义";
-
-  bodyEl.innerHTML = `
-    <div class="guide-title">${escapeHtml(headline)}</div>
-
+  // ====== Common sections (shared across all programs) ======
+  const commonIntro = `
     <div class="guide-section">
-      <div class="guide-h">为什么要随访？（一句话）</div>
-      <div class="guide-p">随访不是“多做检查”，而是“更早发现风险 → 更早沟通 → 少住院/少并发症”。</div>
+      <div class="guide-h">随访是什么？</div>
+      <div class="guide-p">随访 = 两次门诊之间，<b>你自己记录</b> + <b>系统帮你看趋势</b>。</div>
+      <div class="guide-p">目标不是"多做检查"，而是<b>更早发现变化 → 更早沟通 → 少住院、少并发症</b>。</div>
+      <div class="guide-p" style="background:#f0f7ff;padding:8px 10px;border-radius:8px;margin-top:8px;">
+        类比：汽车每 5000 公里保养一次，但你每天会看仪表盘。随访就是你身体的"仪表盘"——不需要懂发动机，只需要在指针异常时及时去4S店。
+      </div>
     </div>
-
     <div class="guide-section">
-      <div class="guide-h">你能得到什么？（最重要的 3 件事）</div>
+      <div class="guide-h">你每天需要做什么？</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;">
+        <tr style="background:#f8f9fa;"><td style="padding:6px;font-weight:700;">频率</td><td style="padding:6px;font-weight:700;">做什么</td><td style="padding:6px;font-weight:700;">花多久</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">每天</td><td style="padding:6px;">测血压 + 称体重 → 在 App 记录</td><td style="padding:6px;">1 分钟</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">拿到化验单时</td><td style="padding:6px;">拍照录入或手动填写</td><td style="padding:6px;">2 分钟</td></tr>
+        <tr style="border-top:1px solid #eee;"><td style="padding:6px;">复诊前 1 天</td><td style="padding:6px;">打开"复诊准备包"，复制给医生</td><td style="padding:6px;">1 分钟</td></tr>
+      </table>
+      <div class="guide-p" style="color:var(--muted);font-size:12px;margin-top:6px;">就这些。不需要每天花半小时。养成习惯后跟刷牙一样自然。</div>
+    </div>`;
+
+  const commonRedFlag = `
+    <div class="guide-section">
+      <div class="guide-h">什么时候必须立即就医？（红旗信号）</div>
+      <div class="guide-p" style="background:#fef2f2;padding:10px 12px;border-radius:8px;border-left:3px solid var(--danger);">以下情况<b>不要等下次复诊</b>，请立即去急诊或联系你的医生：</div>
       <ul>
-        <li><b>更早发现变化</b>：趋势比单次数值更可靠（血压/体重/尿检/化验）。</li>
-        <li><b>复诊更高效</b>：一页摘要把“最近变化点”整理好，医生更容易抓重点。</li>
-        <li><b>更安全</b>：红旗优先（胸痛、气促、意识异常、少尿/无尿、发热+剧烈腰痛等）会被置顶提醒。</li>
+        <li><b>胸痛、气促</b> — 可能是心脏或肺的急症</li>
+        <li><b>意识改变</b>（嗜睡、意识模糊）— 可能是电解质紊乱或脑血管事件</li>
+        <li><b>少尿/无尿</b>（24小时尿量 &lt; 400ml）— 可能是急性肾损伤</li>
+        <li><b>高热（&gt;38.5°C）+ 剧烈腰痛/腹痛</b> — 可能是感染</li>
+        <li><b>肉眼血尿</b>（洗肉水色/鲜红色尿）</li>
+        <li><b>严重水肿</b>（眼睑/下肢突然明显肿胀）</li>
+        <li><b>血压 &gt; 180/120</b> 或伴头痛/视物模糊</li>
+        <li><b>剧烈恶心呕吐</b>无法进食进水</li>
+      </ul>
+      <div class="guide-p" style="font-size:12px;color:var(--muted);">App 会在首页置顶显示红旗提醒。但如果你感觉"不对劲"，即使 App 没提醒，也请联系医生。相信自己的感觉。</div>
+    </div>`;
+
+  const commonEnding = `
+    <div class="guide-section">
+      <div class="guide-h">坚持不下去怎么办？</div>
+      <ul>
+        <li><b>忘了记录？</b>没关系。明天继续就行，不需要补。趋势看的是长期。</li>
+        <li><b>看不懂数据？</b>不需要懂。系统会用绿/黄/红告诉你"好/注意/危险"。</li>
+        <li><b>觉得没用？</b>当你下次复诊，直接把"复诊准备包"给医生看的时候，你会感受到区别。</li>
+        <li><b>家人帮忙也行</b>：子女帮父母操作、配偶互相记录，都是最常见的用法。</li>
       </ul>
     </div>
-
-    <div class="guide-section">
-      <div class="guide-h">我们希望你怎么用？（最省力的做法）</div>
-      <ol>
-        <li>每天打开一次 <b>首页 → 今日行动</b>，完成 1–2 项关键记录。</li>
-        <li>有检查报告就上传到 <b>资料库</b>（活检/基因/影像/免疫学报告）。</li>
-        <li>复诊前 1 分钟：在 <b>我的 → 一页摘要</b> 复制发给医生/随访护士。</li>
-      </ol>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">为什么每一项都要解释“意义”？</div>
-      <ul>
-        <li>因为每个检查都在回答一个问题：例如“肾功能稳定吗？”“蛋白尿有没有改善？”“水分管理是否合适？”</li>
-        <li>当你理解“目的”，你更容易坚持，也更不焦虑。</li>
-        <li>所以你会在每个任务旁看到 <b>i</b>：点开就是该项的独立说明页。</li>
-      </ul>
-    </div>
-
     <div class="disclaimer" style="margin-top:14px;">
-      <strong>边界：</strong>本工具用于记录、教育与复诊整理，不提供诊断或处方。出现红旗症状，请立即就医或联系随访团队。
-    </div>
-  `;
+      <strong>边界：</strong>本工具用于记录、教育和复诊整理，<b>不提供诊断或处方</b>。所有内容仅供参考，请以你的主治医生意见为准。
+    </div>`;
+
+  // ====== Disease-specific content ======
+  const diseaseContent = {
+    kidney: `
+      <div class="guide-title">肾脏随访指南</div>
+      <div class="guide-p" style="font-size:14px;margin-bottom:14px;">把"零散检查"变成"看得见的趋势"，让医生用 30 秒就能抓住重点。</div>
+      ${commonIntro}
+      <div class="guide-section">
+        <div class="guide-h">肾脏随访重点关注什么？</div>
+        <div class="guide-p">肾脏病的核心是<b>慢</b>——变化往往以月、年为单位。单次化验说明不了问题，<b>趋势才有意义</b>。</div>
+        <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:6px;">
+          <tr style="background:#f8f9fa;"><td style="padding:6px;font-weight:700;">指标</td><td style="padding:6px;font-weight:700;">它在回答什么问题</td><td style="padding:6px;font-weight:700;">你需要做什么</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">肌酐 / eGFR</td><td style="padding:6px;">肾功能还剩多少？稳定还是在下降？</td><td style="padding:6px;">每次化验后录入</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">尿蛋白</td><td style="padding:6px;">肾脏的"屏障"漏不漏？治疗有没有效果？</td><td style="padding:6px;">每次尿检后录入</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">血压</td><td style="padding:6px;">肾脏最怕高血压。控制得好不好？</td><td style="padding:6px;">每天在家测一次</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">血钾 / 血磷</td><td style="padding:6px;">电解质安全吗？需要调整饮食吗？</td><td style="padding:6px;">化验后录入</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">体重</td><td style="padding:6px;">有没有水肿？营养状况如何？</td><td style="padding:6px;">每天称一次</td></tr>
+        </table>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">不同阶段，关注重点不同</div>
+        <ul>
+          <li><b>CKD 1-3 期（早中期）</b>：重点是延缓进展。关注 eGFR 趋势、血压达标率、蛋白尿变化。每 3-6 个月化验。</li>
+          <li><b>CKD 4-5 期（晚期）</b>：重点是准备和过渡。关注 eGFR 下降速度、电解质、营养。每 1-3 个月化验。可能需要讨论透析/移植时机。</li>
+          <li><b>肾小球病（IgA/膜性/微小病变等）</b>：重点是疗效评估。关注蛋白尿变化趋势（缓解/复发）、免疫抑制剂副作用监测。</li>
+          <li><b>ADPKD（多囊肾）</b>：重点是长期趋势。关注 eGFR、肾脏体积（影像）、血压。</li>
+          <li><b>肾移植</b>：重点是排斥和感染。关注肌酐稳定性、免疫抑制剂浓度、dd-cfDNA/DSA 等指标。</li>
+        </ul>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">饮食与肾脏</div>
+        <div class="guide-p">肾病的饮食管理不是"什么都不能吃"，而是<b>根据化验结果动态调整</b>：</div>
+        <ul>
+          <li><b>血钾高</b> → 少吃高钾食物（香蕉、橙子、土豆、菌菇）。App 会根据化验自动提醒。</li>
+          <li><b>血磷高</b> → 注意加工食品、动物内脏、碳酸饮料。</li>
+          <li><b>蛋白尿明显</b> → 蛋白质摄入不宜过多（具体量请遵医嘱）。</li>
+          <li><b>水肿/少尿</b> → 可能需要限制水和盐的摄入。</li>
+        </ul>
+        <div class="guide-p" style="font-size:12px;color:var(--muted);">App 的"饮食提醒"会根据最新化验自动调整建议，在首页展开更多内容即可看到。</div>
+      </div>
+      ${commonRedFlag}
+      ${commonEnding}`,
+
+    dialysis: `
+      <div class="guide-title">透析随访指南</div>
+      <div class="guide-p" style="font-size:14px;margin-bottom:14px;">少出意外、少折腾，让每次透析和复诊都更高效。</div>
+      ${commonIntro}
+      <div class="guide-section">
+        <div class="guide-h">透析随访重点关注什么？</div>
+        <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:6px;">
+          <tr style="background:#f8f9fa;"><td style="padding:6px;font-weight:700;">指标</td><td style="padding:6px;font-weight:700;">为什么重要</td><td style="padding:6px;font-weight:700;">记录频率</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">透前/透后体重</td><td style="padding:6px;">判断超滤量是否合适，避免低血压/水肿</td><td style="padding:6px;">每次透析</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">透前/透后血压</td><td style="padding:6px;">评估容量状态和心血管风险</td><td style="padding:6px;">每次透析</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">干体重</td><td style="padding:6px;">目标体重，超过太多=水太多</td><td style="padding:6px;">医生调整时更新</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">血钾</td><td style="padding:6px;">透析间期钾升高是最常见的危险</td><td style="padding:6px;">化验后录入</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">通路/导管状态</td><td style="padding:6px;">瘘管通畅吗？导管有没有感染迹象？</td><td style="padding:6px;">有异常时记录</td></tr>
+        </table>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">血透 vs 腹透</div>
+        <ul>
+          <li><b>血透患者</b>：重点记录每次透前/透后体重和血压、超滤量。注意透析日和非透析日的血压差异。</li>
+          <li><b>腹透患者</b>：重点记录每日超滤量、透析液颜色（浑浊=可能感染）、出口处状况。腹膜炎是最大威胁——腹痛+浑浊透析液→立即联系中心。</li>
+        </ul>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">透析患者饮食要点</div>
+        <ul>
+          <li><b>两次透析之间体重增长不超过干体重的 3-5%</b>（例如 60kg，增长不超过 1.8-3kg）</li>
+          <li><b>限钾</b>：透析间期钾会升高，少吃高钾水果/蔬菜</li>
+          <li><b>限磷</b>：磷升高会导致骨病和血管钙化，注意加工食品</li>
+          <li><b>充足蛋白质</b>：透析会丢失蛋白，反而需要比透析前吃得稍多</li>
+        </ul>
+      </div>
+      ${commonRedFlag}
+      <div class="guide-section">
+        <div class="guide-h">透析特有的紧急情况</div>
+        <ul>
+          <li><b>瘘管无震颤/杂音</b> → 可能血栓形成，24小时内联系透析中心</li>
+          <li><b>导管处红肿/分泌物/发热</b> → 可能导管感染，立即联系</li>
+          <li><b>腹透液浑浊 + 腹痛</b> → 疑似腹膜炎，立即联系</li>
+          <li><b>透析后持续头晕/黑朦</b> → 可能低血压，卧位休息并报告医生</li>
+        </ul>
+      </div>
+      ${commonEnding}`,
+
+    stone: `
+      <div class="guide-title">肾结石随访指南</div>
+      <div class="guide-p" style="font-size:14px;margin-bottom:14px;">结石复发率很高——做好记录是减少复发的第一步。</div>
+      ${commonIntro}
+      <div class="guide-section">
+        <div class="guide-h">为什么结石需要随访？</div>
+        <div class="guide-p">肾结石不是"排掉就好了"。<b>5 年内复发率高达 50%</b>。随访的核心目标是<b>预防复发</b>。</div>
+        <ul>
+          <li><b>饮水量</b>是最重要的可控因素 — 每天 2000-2500ml，保持尿色淡黄</li>
+          <li><b>发作事件记录</b>帮你和医生发现规律：什么季节容易发？和饮食/运动有关吗？</li>
+          <li><b>结石成分分析</b>（如果做过）决定饮食调整方向</li>
+        </ul>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">结石随访重点</div>
+        <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:6px;">
+          <tr style="background:#f8f9fa;"><td style="padding:6px;font-weight:700;">记录项</td><td style="padding:6px;font-weight:700;">意义</td><td style="padding:6px;font-weight:700;">频率</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">每日饮水量</td><td style="padding:6px;">预防复发的第一道防线</td><td style="padding:6px;">每天</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">发作事件</td><td style="padding:6px;">腰痛/血尿/发热/急诊/手术，建立时间线</td><td style="padding:6px;">发生时</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">影像报告</td><td style="padding:6px;">结石大小/位置变化</td><td style="padding:6px;">复查时上传</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">24小时尿液分析</td><td style="padding:6px;">找出代谢异常，指导精准预防</td><td style="padding:6px;">医生安排时</td></tr>
+        </table>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">不同结石的饮食方向</div>
+        <ul>
+          <li><b>草酸钙结石</b>（最常见）：少吃高草酸食物（菠菜、坚果、浓茶、巧克力），适量补钙反而有益</li>
+          <li><b>尿酸结石</b>：少吃高嘌呤食物（海鲜、内脏、酒），碱化尿液</li>
+          <li><b>磷酸钙/感染性结石</b>：控制尿路感染是关键</li>
+          <li><b>不确定成分</b>：最重要的是<b>多喝水</b>，这对所有类型都有效</li>
+        </ul>
+      </div>
+      ${commonRedFlag}
+      ${commonEnding}`,
+
+    peds: `
+      <div class="guide-title">儿肾随访指南</div>
+      <div class="guide-p" style="font-size:14px;margin-bottom:14px;">把生长发育和肾功能放在同一条时间线上，让主治医生一眼看清。</div>
+      ${commonIntro}
+      <div class="guide-section">
+        <div class="guide-h">为什么儿童肾病需要特别的随访？</div>
+        <div class="guide-p">和成人不同，孩子在<b>长身体</b>。肾病可能影响生长发育，生长数据也能反映肾功能状况。所以儿肾随访必须同时追踪<b>肾功能 + 生长</b>。</div>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">儿肾随访重点</div>
+        <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:6px;">
+          <tr style="background:#f8f9fa;"><td style="padding:6px;font-weight:700;">记录项</td><td style="padding:6px;font-weight:700;">为什么重要</td><td style="padding:6px;font-weight:700;">频率</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">身高 / 体重</td><td style="padding:6px;">评估生长速度，是否符合预期</td><td style="padding:6px;">每月至少 1 次</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">血压</td><td style="padding:6px;">儿童高血压标准不同（看百分位）</td><td style="padding:6px;">每周 1-2 次</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">尿蛋白</td><td style="padding:6px;">肾病综合征最关注，判断缓解/复发</td><td style="padding:6px;">每次尿检后</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">肌酐 / eGFR</td><td style="padding:6px;">儿童用 Schwartz 公式（和身高相关），App 自动算</td><td style="padding:6px;">化验后录入</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">用药记录</td><td style="padding:6px;">激素减量节奏、免疫抑制剂调整</td><td style="padding:6px;">调整时记录</td></tr>
+        </table>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">家长常见问题</div>
+        <ul>
+          <li><b>Q：孩子长得慢是肾病的原因吗？</b><br>A：有可能。慢性肾病、长期激素使用都可能影响生长。App 会追踪生长速度（cm/年），复诊时给医生参考。</li>
+          <li><b>Q：尿蛋白反复怎么办？</b><br>A：肾病综合征复发很常见（尤其感冒后）。记录每次复发的时间和诱因，帮医生找规律。</li>
+          <li><b>Q：可以让孩子运动吗？</b><br>A：大多数情况可以正常活动。具体限制请遵医嘱。</li>
+          <li><b>Q：该孩子操作还是家长操作？</b><br>A：建议家长操作（尤其 12 岁以下）。青少年可以一起参与，培养自我管理意识。</li>
+        </ul>
+      </div>
+      ${commonRedFlag}
+      ${commonEnding}`,
+
+    htn: `
+      <div class="guide-title">高血压随访指南</div>
+      <div class="guide-p" style="font-size:14px;margin-bottom:14px;">家庭血压监测是控压的关键——门诊血压只是快照，家庭血压才是电影。</div>
+      ${commonIntro}
+      <div class="guide-section">
+        <div class="guide-h">高血压随访重点</div>
+        <ul>
+          <li><b>家庭血压 ≠ 门诊血压</b>：家庭血压通常比门诊低 5-10 mmHg，更接近真实水平</li>
+          <li><b>达标标准</b>：一般目标 &lt; 130/80 mmHg（具体遵医嘱）</li>
+          <li><b>晨起血压最重要</b>：起床后 1 小时内、排尿后、服药前测量</li>
+          <li><b>趋势比单次重要</b>：偶尔一次偏高不用紧张，连续 3-5 天偏高需要关注</li>
+        </ul>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">正确测量血压</div>
+        <ol>
+          <li>坐椅子，双脚平放地面，静坐 5 分钟</li>
+          <li>上臂式血压计，袖带绑在心脏同高</li>
+          <li>测两次，间隔 1-2 分钟，取平均值</li>
+          <li>测完立即在 App 记录（30 秒，不容易忘）</li>
+        </ol>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">降压药注意事项</div>
+        <ul>
+          <li><b>不要自行停药</b>：血压正常了是因为药在起效，停药会反弹</li>
+          <li><b>不要自行加量</b>：偶尔偏高不等于要加药，先看趋势</li>
+          <li>用 App 的"今日行动"打卡提醒自己按时服药</li>
+          <li>调药后连续监测 2 周，帮医生评估效果</li>
+        </ul>
+      </div>
+      ${commonRedFlag}
+      ${commonEnding}`,
+
+    dm: `
+      <div class="guide-title">糖尿病随访指南</div>
+      <div class="guide-p" style="font-size:14px;margin-bottom:14px;">管好血糖就是保护肾脏——糖尿病肾病是透析的头号原因。</div>
+      ${commonIntro}
+      <div class="guide-section">
+        <div class="guide-h">糖尿病随访重点</div>
+        <table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:6px;">
+          <tr style="background:#f8f9fa;"><td style="padding:6px;font-weight:700;">指标</td><td style="padding:6px;font-weight:700;">意义</td><td style="padding:6px;font-weight:700;">频率</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">空腹/餐后血糖</td><td style="padding:6px;">日常波动情况，调药依据</td><td style="padding:6px;">每天 1-2 次</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">HbA1c</td><td style="padding:6px;">过去 2-3 个月平均血糖，"成绩单"</td><td style="padding:6px;">每 3 个月</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">尿蛋白/肌酐</td><td style="padding:6px;">早期发现糖尿病肾病</td><td style="padding:6px;">每 3-6 个月</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">血压</td><td style="padding:6px;">糖尿病+高血压加速肾损害</td><td style="padding:6px;">每天</td></tr>
+          <tr style="border-top:1px solid #eee;"><td style="padding:6px;">体重</td><td style="padding:6px;">体重管理是血糖控制的基础</td><td style="padding:6px;">每天</td></tr>
+        </table>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">血糖控制目标</div>
+        <ul>
+          <li><b>空腹血糖</b>：4.4-7.0 mmol/L（具体遵医嘱）</li>
+          <li><b>餐后 2h 血糖</b>：&lt; 10.0 mmol/L</li>
+          <li><b>HbA1c</b>：&lt; 7%（年轻/病程短可更严格；高龄可放宽）</li>
+          <li>目标因人而异 — 记录数据，让医生帮你设定适合的标准</li>
+        </ul>
+      </div>
+      <div class="guide-section">
+        <div class="guide-h">低血糖比高血糖更危险</div>
+        <div class="guide-p" style="background:#fef2f2;padding:8px 10px;border-radius:8px;">
+          血糖 &lt; 3.9 mmol/L = 低血糖。症状：心慌、手抖、出冷汗、头晕。<br>
+          <b>处理</b>：立即吃 15g 糖（3-4 块方糖/半杯果汁），15 分钟后复测。<br>
+          <b>如果意识不清</b> → 不要喂食，拨打 120。
+        </div>
+      </div>
+      ${commonRedFlag}
+      ${commonEnding}`
+  };
+
+  const defaultContent = `
+    <div class="guide-title">随访指南</div>
+    <div class="guide-p" style="font-size:14px;margin-bottom:14px;">更早发现变化，让每次复诊更有效率。</div>
+    ${commonIntro}
+    ${commonRedFlag}
+    ${commonEnding}`;
+
+  bodyEl.innerHTML = diseaseContent[prog] || defaultContent;
 }
 
 function setTabLabel(key, label){

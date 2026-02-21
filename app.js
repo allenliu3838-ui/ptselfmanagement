@@ -1187,60 +1187,7 @@ function renderExplainPage(){
   }
 }
 
-function renderGuidePage(){
-  const bodyEl = qs("#guideBody");
-  if(!bodyEl) return;
-
-  const prog = state.activeProgram;
-  const progName = programLabel(prog);
-
-  const headline = {
-    kidney: "肾脏随访的意义：把‘零散检查’变成‘可行动的趋势’",
-    dialysis: "透析随访的意义：少出意外、少折腾、复诊更高效",
-    stone: "结石随访的意义：减少复发、把发作变成可解释的时间线",
-    peds: "儿肾随访的意义：把生长与肾功能放在同一条时间线上",
-  }[prog] || "随访的意义";
-
-  bodyEl.innerHTML = `
-    <div class="guide-title">${escapeHtml(headline)}</div>
-
-    <div class="guide-section">
-      <div class="guide-h">为什么要随访？（一句话）</div>
-      <div class="guide-p">随访不是“多做检查”，而是“更早发现风险 → 更早沟通 → 少住院/少并发症”。</div>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">你能得到什么？（最重要的 3 件事）</div>
-      <ul>
-        <li><b>更早发现变化</b>：趋势比单次数值更可靠（血压/体重/尿检/化验）。</li>
-        <li><b>复诊更高效</b>：一页摘要把“最近变化点”整理好，医生更容易抓重点。</li>
-        <li><b>更安全</b>：红旗优先（胸痛、气促、意识异常、少尿/无尿、发热+剧烈腰痛等）会被置顶提醒。</li>
-      </ul>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">我们希望你怎么用？（最省力的做法）</div>
-      <ol>
-        <li>每天打开一次 <b>首页 → 今日行动</b>，完成 1–2 项关键记录。</li>
-        <li>有检查报告就上传到 <b>资料库</b>（活检/基因/影像/免疫学报告）。</li>
-        <li>复诊前 1 分钟：在 <b>我的 → 一页摘要</b> 复制发给医生/随访护士。</li>
-      </ol>
-    </div>
-
-    <div class="guide-section">
-      <div class="guide-h">为什么每一项都要解释“意义”？</div>
-      <ul>
-        <li>因为每个检查都在回答一个问题：例如“肾功能稳定吗？”“蛋白尿有没有改善？”“水分管理是否合适？”</li>
-        <li>当你理解“目的”，你更容易坚持，也更不焦虑。</li>
-        <li>所以你会在每个任务旁看到 <b>i</b>：点开就是该项的独立说明页。</li>
-      </ul>
-    </div>
-
-    <div class="disclaimer" style="margin-top:14px;">
-      <strong>边界：</strong>本工具用于记录、教育与复诊整理，不提供诊断或处方。出现红旗症状，请立即就医或联系随访团队。
-    </div>
-  `;
-}
+// renderGuidePage — now defined in js/render.js (modular version)
 function defaultState(){
   const today = yyyyMMdd(new Date());
   return {
@@ -2564,31 +2511,7 @@ function renderRecent(){
   return pieces.join("");
 }
 
-function renderLabsList(){
-  const labsBox = qs("#labsList");
-  if(!labsBox) return;
-  if(!state.labs?.length){
-    labsBox.innerHTML = `<div class="note">暂无化验。点击“新增”录入一次。</div>`;
-  } else {
-    const sorted = [...state.labs].sort((a,b)=> (a.date||"").localeCompare(b.date||"")).reverse();
-    labsBox.innerHTML = sorted.slice(0,8).map(l => {
-      const items = [];
-      if(l.scr) items.push(`Scr ${l.scr}${l.scrUnit==="mgdl"?"mg/dL":"μmol/L"}`);
-      if(l.egfr) items.push(`eGFR ${l.egfr}`);
-      if(l.k) items.push(`K ${l.k}`);
-      if(l.na) items.push(`Na ${l.na}`);
-      if(l.p) items.push(`P ${l.p}`);
-      if(l.ca) items.push(`Ca ${l.ca}`);
-      if(l.mg) items.push(`Mg ${l.mg}`);
-      if(l.glu) items.push(`Glu ${l.glu}`);
-      if(l.hba1c) items.push(`HbA1c ${l.hba1c}`);
-      return `<div class="list-item">
-        <div class="t">${niceDate(l.date||"")}</div>
-        <div class="s">${escapeHtml(items.join(" · ") || "—")}</div>
-      </div>`;
-    }).join("");
-  }
-}
+// renderLabsList — now defined in js/render.js (modular version with OCR badge + sparkline)
 
 function renderUrineList(){
   const urineBox = qs("#urineList");
@@ -2944,22 +2867,7 @@ function renderFollowup(){
   if(bGlu) bGlu.classList.toggle("hidden", !(prog==="dm" || (prog==="kidney" && state.comorbid.dm) || prog==="dialysis"));
 }
 
-function renderMe(){
-  const prev = qs("#exportPreview");
-  if(prev) prev.textContent = buildExportText();
-
-  const b = qs("#btnExport2");
-  if(b) b.onclick = ()=>copyExport("clinic");
-
-  const tAI = qs("#toggleShowAI");
-  if(tAI) tAI.checked = showAITab();
-
-  const tHome = qs("#toggleHomeMoreDefault");
-  if(tHome) tHome.checked = !!(state.ui && state.ui.homeMoreDefault);
-
-  const fbPrev = qs("#feedbackPreview");
-  if(fbPrev) fbPrev.textContent = buildFeedbackText(false);
-}
+// renderMe — now defined in js/render.js (modular version)
 
 
 function renderAI(){
@@ -2976,6 +2884,7 @@ function renderAI(){
 
 function renderAll(){
   renderHeader();
+  renderPremiumBadge();
   renderHome();
   renderRecords();
   renderDocsPage();
@@ -2984,6 +2893,7 @@ function renderAll(){
   renderAI();
   renderExplainPage();
   renderGuidePage();
+  renderUsagePage();
 }
 
 function navigate(pageKey){
