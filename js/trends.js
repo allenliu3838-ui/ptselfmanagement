@@ -465,7 +465,7 @@ function openPersonalDietModal(){
   const pVal = lab ? toNum(lab.p) : null;
   if(pVal !== null){
     if(pVal > 1.45){
-      advices.push({ icon:"🔴", title:"严格限磷", items:["避免：可乐/碳酸饮料、加工肉类（火腿/香肠）、方便面","减少：内脏类、蛋黄、全谷物","优选：白面、白米、瘦肉（选择新鲜食材而非加工品）","关键：看食品标签，含"磷酸盐"的添加剂吸收率极高"] });
+      advices.push({ icon:"🔴", title:"严格限磷", items:["避免：可乐/碳酸饮料、加工肉类（火腿/香肠）、方便面","减少：内脏类、蛋黄、全谷物","优选：白面、白米、瘦肉（选择新鲜食材而非加工品）","关键：看食品标签，含‘磷酸盐’的添加剂吸收率极高"] });
     } else if(pVal > 1.3){
       advices.push({ icon:"🟡", title:"注意控磷", items:["减少加工食品和碳酸饮料","优先选择新鲜食材"] });
     }
