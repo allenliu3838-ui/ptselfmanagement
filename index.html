@@ -487,11 +487,39 @@
     <!-- ME -->
     <section class="page" id="page-me" data-page="me" aria-label="我的">
       <div class="container">
+        <!-- Guides: most prominent, first thing patient sees -->
+        <div class="grid">
+          <div class="card" style="border:2px solid var(--primary);background:linear-gradient(135deg,#f0f7ff 0%,#fff 100%);">
+            <div class="card-hd">
+              <div>
+                <div class="card-title" style="color:var(--primary);">使用说明</div>
+                <div class="card-subtitle">3 分钟了解全部功能</div>
+              </div>
+              <button class="primary small" id="btnUsageOpen">查看</button>
+            </div>
+            <div class="content">
+              <div class="note">第一次用？从这里开始。场景化引导，教你最快上手。</div>
+            </div>
+          </div>
+          <div class="card" style="border:2px solid var(--primary);background:linear-gradient(135deg,#f0f7ff 0%,#fff 100%);">
+            <div class="card-hd">
+              <div>
+                <div class="card-title" style="color:var(--primary);">随访指南</div>
+                <div class="card-subtitle">为什么随访 + 你该关注什么</div>
+              </div>
+              <button class="primary small" id="btnGuideOpen">查看</button>
+            </div>
+            <div class="content">
+              <div class="note">根据你的病种定制内容：重点指标、饮食要点、红旗信号。</div>
+            </div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-hd">
             <div>
               <div class="card-title">我的</div>
-              <div class="card-subtitle">版本与内测信息</div>
+              <div class="card-subtitle">版本与信息</div>
             </div>
             <button class="ghost small" id="btnLoadDemo">查看示例数据</button>
             <button class="ghost small" id="btnReset">清空数据</button>
@@ -499,15 +527,11 @@
           <div class="content">
             <div class="brand-showcase">
               <img src="icons/logo-full.png" alt="肾域AI KidneySphere AI" class="brand-full" />
+              <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">上海胤域医学科技有限公司</div>
             </div>
             <div class="kv"><span>版本</span><span id="meVersion"></span></div>
             <div class="kv"><span>当前项目</span><span id="meProgram"></span></div>
             <div class="kv"><span>启用项目</span><span id="meEnabled"></span></div>
-            <div class="kv"><span>内测建议</span><span>先测流程：建档→记录→提醒→摘要→内容</span></div>
-            <div style="display:flex;gap:8px;margin-top:10px;">
-              <button class="ghost small" id="btnUsageOpen">使用说明</button>
-              <button class="ghost small" id="btnGuideOpen">随访指南</button>
-            </div>
           </div>
         </div>
 

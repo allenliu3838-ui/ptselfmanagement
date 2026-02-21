@@ -1573,18 +1573,8 @@ function renderAI(){
 }
 
 function renderAll(){
-  renderHeader();
-  renderPremiumBadge();
-  renderHome();
-  renderRecords();
-  renderTrendCard();
-  renderDocsPage();
-  renderFollowup();
-  renderMe();
-  renderAI();
-  renderExplainPage();
-  renderGuidePage();
-  renderUsagePage();
+  const fns = [renderHeader,renderPremiumBadge,renderHome,renderRecords,renderTrendCard,renderDocsPage,renderFollowup,renderMe,renderAI,renderExplainPage,renderGuidePage,renderUsagePage];
+  fns.forEach(fn=>{ try{ fn(); }catch(e){ console.error("renderAll error in "+fn.name, e); } });
 }
 
 function navigate(pageKey){
