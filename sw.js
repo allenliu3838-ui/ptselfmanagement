@@ -1,25 +1,25 @@
-const CACHE_NAME = "kidney-care-v9.10.0";
+const CACHE_NAME = "kidney-care-v9.11.0";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
-  "./js/constants.js",
-  "./js/utils.js",
-  "./js/state.js",
-  "./js/programs.js",
-  "./js/tasks.js",
-  "./js/db.js",
-  "./js/diet.js",
-  "./js/render.js",
-  "./js/modals.js",
-  "./js/export.js",
-  "./js/trends.js",
-  "./js/premium.js",
-  "./js/ocr.js",
-  "./js/share.js",
-  "./js/ai.js",
-  "./js/ui.js",
-  "./js/app.js",
+  "./js/constants.js?v=9.11",
+  "./js/utils.js?v=9.11",
+  "./js/state.js?v=9.11",
+  "./js/programs.js?v=9.11",
+  "./js/tasks.js?v=9.11",
+  "./js/db.js?v=9.11",
+  "./js/diet.js?v=9.11",
+  "./js/render.js?v=9.11",
+  "./js/modals.js?v=9.11",
+  "./js/export.js?v=9.11",
+  "./js/trends.js?v=9.11",
+  "./js/premium.js?v=9.11",
+  "./js/ocr.js?v=9.11",
+  "./js/share.js?v=9.11",
+  "./js/ai.js?v=9.11",
+  "./js/ui.js?v=9.11",
+  "./js/app.js?v=9.11",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -33,6 +33,8 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  // Force immediate activation — don't wait for old tabs to close
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
@@ -59,17 +61,18 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(
     caches.match(req).then((cached) => {
-      // Network-first for HTML, cache-first for others
+      // Network-first for HTML and JS, cache-first for static assets
       const url = new URL(req.url);
       const isHTML = req.headers.get("accept")?.includes("text/html") || url.pathname.endsWith("/");
-      if (isHTML) {
-        // Bypass HTTP cache for navigations to reduce "stuck on old version" issues.
+      const isJS = url.pathname.endsWith(".js");
+      if (isHTML || isJS) {
+        // Bypass HTTP cache to reduce "stuck on old version" issues.
         const fetchReq = new Request(req, { cache: "no-store" });
         return fetch(fetchReq).then((resp) => {
           const copy = resp.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
           return resp;
-        }).catch(() => cached || caches.match("./index.html"));
+        }).catch(() => cached || (isHTML ? caches.match("./index.html") : undefined));
       }
       return cached || fetch(req).then((resp) => {
         const copy = resp.clone();
