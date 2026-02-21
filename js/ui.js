@@ -28,6 +28,8 @@ function bindUI(){
   // Usage guide page
   const uo = qs("#btnUsageOpen");
   if(uo) uo.addEventListener("click", ()=>openUsagePage());
+  const uh = qs("#btnUsageHome");
+  if(uh) uh.addEventListener("click", (e)=>{ e.preventDefault(); openUsagePage(); });
   const ub = qs("#btnUsageBack");
   if(ub) ub.addEventListener("click", ()=>overlayBack());
 

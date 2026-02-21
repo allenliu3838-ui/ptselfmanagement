@@ -658,6 +658,16 @@ function renderCelebration(tasks){
 }
 
 function renderHome(){
+  // Bind button handlers FIRST — before any rendering that might throw.
+  // This ensures navigation / action buttons always work even if a render section errors.
+  try{
+    const _be = qs("#btnExport");           if(_be) _be.onclick = ()=>copyExport();
+    const _bd = qs("#btnDiet");             if(_bd) _bd.onclick = ()=>openDietModal();
+    const _bk = qs("#btnKnowledge");        if(_bk) _bk.onclick = ()=>openKnowledgeModal();
+    const _bp = qs("#btnProgramMainAction"); if(_bp) _bp.onclick = ()=>openProgramMainModal();
+    const _bt = qs("#btnTriage");           if(_bt) _bt.onclick = ()=>openTriageModal();
+  }catch(_e){ console.warn("renderHome: button binding error", _e); }
+
   applyHomeMoreUI();
   updateStreak();
   renderGreeting();
@@ -721,107 +731,113 @@ function renderHome(){
     list.appendChild(el);
   });
 
-  qs("#btnMarkAllDone").onclick = ()=>markAllTasksDone(tasks);
+  const _bm = qs("#btnMarkAllDone");
+  if(_bm) _bm.onclick = ()=>markAllTasksDone(tasks);
   const bPlan = qs("#btnGoPlan");
   if(bPlan) bPlan.onclick = ()=>navigate("followup");
 
   // Celebration
   renderCelebration(tasks);
 
-  // Safety
-  const safety = safetySignals();
-  const safetyBox = qs("#safetyContent");
-  safetyBox.innerHTML = safety.map(s => `
-    <div class="list-item">
-      <div class="t">${badgeDot(s.level)} ${escapeHtml(s.title)}</div>
-      <div class="s">${escapeHtml(s.detail)}</div>
-    </div>
-  `).join("");
-
-  // Program main card
-  renderProgramMainCard();
-
-  // Diet (v1 food library: 高钾/高磷食物库)
-  const diet = dietSignals();
-  const focus = dietFocus();
-  const dietBox = qs("#dietContent");
-
-  const badgesHtml = diet.length
-    ? `<div class="row">${diet.map(t=>`<div class="badge info">${escapeHtml(t.label)}</div>`).join("")}</div>`
-    : ``;
-
-  const focusLines = [];
-  if(focus.highK){
-    const kTxt = (focus.k===null) ? "" : String(focus.k);
-    focusLines.push(`血钾偏高${kTxt?`（${kTxt}）`:``}：本周优先关注“高钾食物/代盐避坑”。`);
-  }
-  if(focus.highP){
-    const pTxt = (focus.p===null) ? "" : String(focus.p);
-    focusLines.push(`血磷偏高${pTxt?`（${pTxt}）`:``}：本周优先减少“含磷添加剂”的加工食品。`);
-  }
-
-  const focusHtml = focusLines.length
-    ? `<div class="list-item"><div class="t">本周重点</div><div class="s">${escapeHtml(focusLines.join(" "))}</div></div>`
-    : `<div class="note">想知道“能不能吃”？点右上角【饮食中心】搜索食物；每个食物都有单独的解释与替代选择。</div>`;
-
-  dietBox.innerHTML = `
-    ${badgesHtml}
-    ${focusHtml}
-    <div class="row" style="margin-top:10px;">
-      <button class="ghost small" data-diet-open="highK">高钾食物</button>
-      <button class="ghost small" data-diet-open="highP">高磷食物</button>
-      <button class="ghost small" data-diet-open="both">钾+磷双高</button>
-      <button class="ghost small" data-diet-open="additiveP">磷添加剂避坑</button>
-    </div>
-    <div style="margin-top:8px;"><button class="primary small" id="btnPersonalDiet">今日个性化建议 ⭐</button></div>
-    <div class="note subtle">提示：饮食仅做健康教育与避坑提醒；具体限制与目标请以医生/营养师个体化方案为准。</div>
-  `;
-
-  const btnPD = qs("#btnPersonalDiet");
-  if(btnPD) btnPD.onclick = ()=> requirePremium("dietPersonal", ()=> openPersonalDietModal());
-
-  qsa('#dietContent [data-diet-open]').forEach(btn=>{
-    btn.onclick = (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      openDietModal(btn.getAttribute('data-diet-open'));
-    };
-  });
-
-  // Knowledge
-  const rec = recommendKnowledge();
-  const box = qs("#knowledgeContent");
-  if(!rec.length){
-    box.innerHTML = `<div class="empty-cta"><div class="emoji">💡</div><div class="msg">完善资料或录入化验后，系统会推荐个性化的健康知识。</div><button class="ghost small" onclick="openProfile()">完善资料</button></div>`;
-  }else{
-    box.innerHTML = rec.map(a => `
+  // Safety — wrapped so errors don't break other sections
+  try{
+    const safety = safetySignals();
+    const safetyBox = qs("#safetyContent");
+    if(safetyBox) safetyBox.innerHTML = safety.map(s => `
       <div class="list-item">
-        <div class="t">${escapeHtml(a.title)}</div>
-        <div class="s">${escapeHtml(a.body)}</div>
-        <div class="row" style="margin-top:10px;">
-          <button class="ghost small" data-knowledge="${a.id}">做一个行动：${escapeHtml(a.action.label)}</button>
-        </div>
+        <div class="t">${badgeDot(s.level)} ${escapeHtml(s.title)}</div>
+        <div class="s">${escapeHtml(s.detail)}</div>
       </div>
     `).join("");
-    qsa("button[data-knowledge]").forEach(btn=>{
-      btn.onclick = ()=>doKnowledgeAction(btn.getAttribute("data-knowledge"));
+  }catch(e){ console.warn("renderHome: safety error", e); }
+
+  // Program main card
+  try{ renderProgramMainCard(); }catch(e){ console.warn("renderHome: programCard error", e); }
+
+  // Diet (v1 food library: 高钾/高磷食物库)
+  try{
+    const diet = dietSignals();
+    const focus = dietFocus();
+    const dietBox = qs("#dietContent");
+
+    const badgesHtml = diet.length
+      ? `<div class="row">${diet.map(t=>`<div class="badge info">${escapeHtml(t.label)}</div>`).join("")}</div>`
+      : ``;
+
+    const focusLines = [];
+    if(focus.highK){
+      const kTxt = (focus.k===null) ? "" : String(focus.k);
+      focusLines.push(`血钾偏高${kTxt?`（${kTxt}）`:``}：本周优先关注"高钾食物/代盐避坑"。`);
+    }
+    if(focus.highP){
+      const pTxt = (focus.p===null) ? "" : String(focus.p);
+      focusLines.push(`血磷偏高${pTxt?`（${pTxt}）`:``}：本周优先减少"含磷添加剂"的加工食品。`);
+    }
+
+    const focusHtml = focusLines.length
+      ? `<div class="list-item"><div class="t">本周重点</div><div class="s">${escapeHtml(focusLines.join(" "))}</div></div>`
+      : `<div class="note">想知道"能不能吃"？点右上角【饮食中心】搜索食物；每个食物都有单独的解释与替代选择。</div>`;
+
+    if(dietBox) dietBox.innerHTML = `
+      ${badgesHtml}
+      ${focusHtml}
+      <div class="row" style="margin-top:10px;">
+        <button class="ghost small" data-diet-open="highK">高钾食物</button>
+        <button class="ghost small" data-diet-open="highP">高磷食物</button>
+        <button class="ghost small" data-diet-open="both">钾+磷双高</button>
+        <button class="ghost small" data-diet-open="additiveP">磷添加剂避坑</button>
+      </div>
+      <div style="margin-top:8px;"><button class="primary small" id="btnPersonalDiet">今日个性化建议 ⭐</button></div>
+      <div class="note subtle">提示：饮食仅做健康教育与避坑提醒；具体限制与目标请以医生/营养师个体化方案为准。</div>
+    `;
+
+    const btnPD = qs("#btnPersonalDiet");
+    if(btnPD) btnPD.onclick = ()=> requirePremium("dietPersonal", ()=> openPersonalDietModal());
+
+    qsa('#dietContent [data-diet-open]').forEach(btn=>{
+      btn.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        openDietModal(btn.getAttribute('data-diet-open'));
+      };
     });
-  }
+  }catch(e){ console.warn("renderHome: diet error", e); }
+
+  // Knowledge
+  try{
+    const rec = recommendKnowledge();
+    const box = qs("#knowledgeContent");
+    if(box){
+      if(!rec.length){
+        box.innerHTML = `<div class="empty-cta"><div class="emoji">💡</div><div class="msg">完善资料或录入化验后，系统会推荐个性化的健康知识。</div><button class="ghost small" onclick="openProfile()">完善资料</button></div>`;
+      }else{
+        box.innerHTML = rec.map(a => `
+          <div class="list-item">
+            <div class="t">${escapeHtml(a.title)}</div>
+            <div class="s">${escapeHtml(a.body)}</div>
+            <div class="row" style="margin-top:10px;">
+              <button class="ghost small" data-knowledge="${a.id}">做一个行动：${escapeHtml(a.action.label)}</button>
+            </div>
+          </div>
+        `).join("");
+        qsa("button[data-knowledge]").forEach(btn=>{
+          btn.onclick = ()=>doKnowledgeAction(btn.getAttribute("data-knowledge"));
+        });
+      }
+    }
+  }catch(e){ console.warn("renderHome: knowledge error", e); }
 
   // Recent
-  const recentBox = qs("#recentContent");
-  recentBox.innerHTML = renderRecent();
+  try{
+    const recentBox = qs("#recentContent");
+    if(recentBox) recentBox.innerHTML = renderRecent();
+  }catch(e){ console.warn("renderHome: recent error", e); }
 
   // Dialysis card on Home: only show when dialysis program is enabled or active
   const dCard = qs("#cardDialysisHome");
   if(dCard) dCard.classList.toggle("hidden", !(state.activeProgram==="dialysis" || state.enabledPrograms?.dialysis));
 
-  // buttons
-  qs("#btnExport").onclick = ()=>copyExport();
-  qs("#btnDiet").onclick = ()=>openDietModal();
-  qs("#btnKnowledge").onclick = ()=>openKnowledgeModal();
-  qs("#btnProgramMainAction").onclick = ()=>openProgramMainModal();
-  qs("#btnTriage").onclick = ()=>openTriageModal();
+  // (button bindings moved to top of renderHome for robustness)
 }
 
 function renderProgramMainCard(){
