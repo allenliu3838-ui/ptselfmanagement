@@ -16,7 +16,11 @@ function savePremiumState(ps){
   try{ localStorage.setItem(PREMIUM_KEY, JSON.stringify(ps)); }catch(_e){}
 }
 
+// Internal beta: all features free for everyone. Flip to false when going to production.
+const BETA_ALL_FREE = true;
+
 function isPremium(){
+  if(BETA_ALL_FREE) return true;
   const ps = loadPremiumState();
   if(ps.tier === "free") return false;
   if(ps.expiresAt){
@@ -26,6 +30,7 @@ function isPremium(){
 }
 
 function premiumTierLabel(){
+  if(BETA_ALL_FREE) return "内测版（全功能）";
   return isPremium() ? "会员版" : "免费版";
 }
 
@@ -303,14 +308,34 @@ function streakBadgeHTML(){
 function renderPremiumBadge(){
   const el = qs("#premiumBadge");
   if(!el) return;
-  if(isPremium()){
+  if(BETA_ALL_FREE){
+    el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">内测版 · 全功能开放</span>`;
+  } else if(isPremium()){
     el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">⭐ 会员版</span>`;
   } else {
     el.innerHTML = `<span class="badge" style="font-size:10px;cursor:pointer;background:#f59e0b;color:#fff;" id="badgePremiumClick">升级会员</span>`;
   }
   setTimeout(()=>{
     const b = qs("#badgePremiumClick");
-    if(b) b.onclick = ()=> isPremium() ? showPremiumInfo() : openUpgradeModal("trendAnalysis");
+    if(b) b.onclick = ()=> BETA_ALL_FREE ? showBetaInfo() : (isPremium() ? showPremiumInfo() : openUpgradeModal("trendAnalysis"));
+  }, 0);
+}
+
+function showBetaInfo(){
+  let featListHtml = "";
+  Object.values(PREMIUM_FEATURES).forEach(f=>{
+    if(f.upcoming) return;
+    featListHtml += `<div class="list-item"><div class="t">✅ ${escapeHtml(f.label)}</div><div class="s">${escapeHtml(f.desc)}</div></div>`;
+  });
+  openSimpleModal("内测版 · 全功能开放", "上海胤域医学科技有限公司", `
+    <div class="note" style="margin-bottom:12px;">
+      感谢参与内测！当前所有功能<b>完全免费</b>开放，无需付费、无需激活。
+    </div>
+    ${featListHtml}
+    <div class="note subtle" style="margin-top:12px;">正式版上线后将推出会员订阅服务。内测期间的使用数据和记录将完整保留。</div>
+  `, `<button class="ghost" data-close="modalSimple">知道了</button>`);
+  setTimeout(()=>{
+    qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
   }, 0);
 }
 
