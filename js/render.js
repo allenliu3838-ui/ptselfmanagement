@@ -982,6 +982,7 @@ function renderProgramMainCard(){
   } else if(state.activeProgram === "stone"){
     title.textContent = "结石管理速览";
     subtitle.textContent = "喝水 + 发作事件 + 红旗分诊";
+    if(!state.stone) state.stone = defaultState().stone;
     const today = yyyyMMdd(new Date());
     const cur = toNum(state.stone.intakeLog?.[today]) || 0;
     const tgt = toNum(state.stone.targetMl);
@@ -1046,6 +1047,7 @@ function renderProgramMainCard(){
   } else if(state.activeProgram === "peds"){
     title.textContent = "儿肾随访速览";
     subtitle.textContent = "生长 + 儿科血压/肾功能";
+    if(!state.peds) state.peds = defaultState().peds;
     const age = computeAgeYears(state.peds.dob);
     const lab = latestLab();
     const lastH = latestVital(state.vitals.height);
