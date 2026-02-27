@@ -83,6 +83,9 @@ function defaultState(){
     chat: [
       { role:"ai", text:"你好，我是随访助手（内测版）。我可以帮你：看懂化验趋势、整理复诊问题、把记录汇总成一页摘要。注意：我不提供诊断或处方，红旗症状请立即就医或联系团队。" }
     ],
+    summaryQuestions: "",
+    ctaRemoteDismissed: false,
+    ctaHomeDismissed: false,
   };
 }
 
@@ -121,6 +124,9 @@ function loadState(){
     if(!st.markers) st.markers = [];
     if(!st.documents) st.documents = [];
     if(!st.chat) st.chat = defaultState().chat;
+    if(typeof st.summaryQuestions === "undefined") st.summaryQuestions = "";
+    if(typeof st.ctaRemoteDismissed === "undefined") st.ctaRemoteDismissed = false;
+    if(typeof st.ctaHomeDismissed === "undefined") st.ctaHomeDismissed = false;
 
     // Engagement migration: add engagement tracking for existing users
     if(!st.engagement) st.engagement = { onboarded: true, streak: 0, lastActiveDate: "", longestStreak: 0 };

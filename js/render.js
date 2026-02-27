@@ -483,7 +483,7 @@ function renderTabbar(){
   // Primary tabs
   setTabLabel("home", "首页");
   setTabLabel("records", cfg.records);
-  setTabLabel("docs", "资料库");
+  setTabLabel("summary", "摘要");
   setTabLabel("me", "我的");
 
   // Optional AI tab (can be hidden to reduce confusion)
@@ -1592,6 +1592,13 @@ function renderAI(){
 
 function renderAll(){
   const fns = [renderHeader,renderPremiumBadge,renderHome,renderRecords,renderTrendCard,renderDocsPage,renderFollowup,renderMe,renderAI,renderExplainPage,renderGuidePage,renderUsagePage];
+  /* P0: summary, privacy, terms, quick-start, footer, CTA (defined in summary.js) */
+  if(typeof renderSummary === "function") fns.push(renderSummary);
+  if(typeof renderPrivacy === "function") fns.push(renderPrivacy);
+  if(typeof renderTerms === "function") fns.push(renderTerms);
+  if(typeof renderQuickStart === "function") fns.push(renderQuickStart);
+  if(typeof renderSiteFooter === "function") fns.push(renderSiteFooter);
+  if(typeof renderHomeCTA === "function") fns.push(renderHomeCTA);
   fns.forEach(fn=>{ try{ fn(); }catch(e){ console.error("renderAll error in "+fn.name, e); } });
 }
 
@@ -1606,6 +1613,11 @@ function navigate(pageKey){
   qsa(".tab").forEach(t=>{
     t.classList.toggle("active", t.getAttribute("data-nav") === currentTabKey);
   });
+
+  // P0-7: track page views
+  if(typeof trackEvent === "function") trackEvent("page_view", {page: pageKey});
+  // P0-2: track summary views specifically
+  if(pageKey === "summary" && typeof trackEvent === "function") trackEvent("summary_view");
 
   // on-demand render to keep state fresh
   renderAll();

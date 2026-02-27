@@ -6,7 +6,7 @@
 */
 // Versioning note (Netlify + PWA):
 // - Bump VERSION whenever you deploy to ensure SW cache separation and visible build identity.
-const VERSION = "9.9.0";
+const VERSION = "10.0.0";
 const STORAGE_KEY = "kidneyCareStateV7";
 
 const PROGRAMS = {
@@ -30,7 +30,7 @@ const WORKSPACE_TABS = {
 };
 
 // Tab pages (overlay pages like 'explain'/'guide' should NOT reset tab highlight)
-const TAB_KEYS = ["home","ai","records","docs","me"];
+const TAB_KEYS = ["home","ai","records","summary","me"];
 let currentTabKey = "home";
 
 // Tab visibility (reduce confusion for first-time testers)

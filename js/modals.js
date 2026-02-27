@@ -1014,6 +1014,7 @@ function openAddLab(){
 
     state.labs.push(entry);
     saveState();
+    if(typeof trackEvent === "function") trackEvent("record_submit", {type:"lab"});
     closeModal("modalSimple");
     renderAll();
   };
@@ -1919,6 +1920,7 @@ function openQuickBP(){
     }
     state.vitals.bp.push({ dateTime: nowISO(), sys, dia, context: qs("#bpCtx").value.trim() });
     saveState();
+    if(typeof trackEvent === "function") trackEvent("record_submit", {type:"bp"});
     closeModal("modalSimple");
     renderAll();
   };
@@ -1937,6 +1939,7 @@ function openQuickWeight(){
     if(kg===null){ alert("请填写体重"); return; }
     state.vitals.weight.push({ dateTime: nowISO(), kg });
     saveState();
+    if(typeof trackEvent === "function") trackEvent("record_submit", {type:"weight"});
     closeModal("modalSimple");
     renderAll();
   };
@@ -2087,6 +2090,7 @@ function quickSymptoms(opts={}){
   });
   qs("#btnSaveSym").onclick = ()=>{
     state.symptoms.push({ dateTime: nowISO(), tags: [...selected], note: qs("#symNote").value.trim() });
+    if(typeof trackEvent === "function") trackEvent("record_submit", {type:"symptom"});
     saveState();
     closeModal("modalSimple");
     renderAll();

@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
-  <link rel="stylesheet" href="style.css?v=9.11" />
+  <link rel="stylesheet" href="style.css?v=10.0" />
 </head>
 <body data-home-more="0">
   <header class="topbar">
@@ -67,11 +67,20 @@
     <!-- HOME -->
     <section class="page active" id="page-home" data-page="home" aria-label="首页">
       <div class="container">
+        <!-- Top disclaimer (P0-6) -->
+        <div class="disclaimer-top">本工具用于健康管理与随访记录，不提供医疗诊断或治疗建议。指标异常或不适请及时联系医生。</div>
+
         <!-- Greeting + streak -->
         <div id="homeGreeting">
           <div class="greeting" id="greetingText">你好</div>
-          <div class="greeting-sub" id="greetingSub">今天的随访从这里开始</div>
+          <div class="greeting-sub" id="greetingSub">随访记录更轻松，趋势一目了然</div>
         </div>
+
+        <!-- 3-step quick start (P0-1) -->
+        <div class="card" id="quickStartCard"></div>
+
+        <!-- CTA for frequent users (P0-4 scenario 3) -->
+        <div id="homeCtaRemote" class="hidden"></div>
 
         <div class="card" id="cardTodayTasks">
           <div class="card-hd">
@@ -172,6 +181,7 @@
         <div class="disclaimer">
           <strong>重要提示：</strong>本产品用于健康教育、记录与随访管理，不提供诊断或处方。出现胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等情况，请立即就医或联系随访团队。
         </div>
+        <div class="site-footer"></div>
       </div>
     </section>
 
@@ -361,10 +371,11 @@
             <button class="tile" id="btnQuickSymptoms">记录症状</button>
           </div>
         </div>
+        <div class="site-footer"></div>
       </div>
     </section>
 
-    
+
     <!-- DOCS -->
     <section class="page" id="page-docs" data-page="docs" aria-label="资料库">
       <div class="container">
@@ -481,6 +492,56 @@
           </div>
           <div id="trendContent" class="content"></div>
         </div>
+      </div>
+    </section>
+
+    <!-- SUMMARY (P0-2) -->
+    <section class="page" id="page-summary" data-page="summary" aria-label="随访摘要">
+      <div class="container">
+        <div class="disclaimer-top">本工具用于健康管理与随访记录，不提供医疗诊断或治疗建议。指标异常或不适请及时联系医生。</div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">随访摘要</div>
+              <div class="card-subtitle">用于健康管理与随访记录，可生成摘要分享给医生</div>
+            </div>
+            <div class="row" style="gap:8px;margin:0;">
+              <button class="ghost small" id="btnSummary7d">7天</button>
+              <button class="primary small" id="btnSummary30d">30天</button>
+            </div>
+          </div>
+          <div id="summaryContent" class="summary-printable"></div>
+        </div>
+
+        <div class="card" id="cardSummaryActions">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">导出与分享</div>
+              <div class="card-subtitle">发给医生或打印带去复诊</div>
+            </div>
+          </div>
+          <div class="summary-actions">
+            <button class="tile" id="btnSummaryCopy">复制摘要文字</button>
+            <button class="tile" id="btnSummaryPrint">打印/导出 PDF</button>
+            <button class="tile" id="btnSummaryRemote">发送给医生</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">我想问医生的问题</div>
+              <div class="card-subtitle">下次复诊时带上这些问题</div>
+            </div>
+          </div>
+          <textarea id="summaryQuestions" rows="3" placeholder="写下你想问医生的问题，例如：肌酐升高需要调药吗？"></textarea>
+          <button class="ghost small" id="btnSaveQuestions" style="margin-top:8px;">保存</button>
+        </div>
+
+        <div id="summaryCta" class="hidden"></div>
+
+        <div class="site-footer"></div>
       </div>
     </section>
 
@@ -609,6 +670,18 @@
             <div class="note subtle">建议每周至少备份一次，系统会自动提醒。</div>
           </div>
         </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">资料库</div>
+              <div class="card-subtitle">上传管理检查报告（活检/基因/影像等）</div>
+            </div>
+            <button class="primary small" id="btnDocsFromMe">打开</button>
+          </div>
+        </div>
+
+        <div class="site-footer"></div>
       </div>
     </section>
 
@@ -646,6 +719,40 @@
       </div>
     </section>
 
+    <!-- PRIVACY (P0-6) -->
+    <section class="page" id="page-privacy" data-page="privacy" aria-label="隐私政策">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">隐私政策</div>
+              <div class="card-subtitle">数据安全与隐私保护</div>
+            </div>
+            <button class="ghost small" id="btnPrivacyBack">返回</button>
+          </div>
+          <div id="privacyBody" class="content"></div>
+        </div>
+        <div class="site-footer"></div>
+      </div>
+    </section>
+
+    <!-- TERMS (P0-6) -->
+    <section class="page" id="page-terms" data-page="terms" aria-label="用户协议">
+      <div class="container">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">用户协议</div>
+              <div class="card-subtitle">使用条款与免责声明</div>
+            </div>
+            <button class="ghost small" id="btnTermsBack">返回</button>
+          </div>
+          <div id="termsBody" class="content"></div>
+        </div>
+        <div class="site-footer"></div>
+      </div>
+    </section>
+
     <!-- EXPLAIN (Per-item) -->
     <section class="page" id="page-explain" data-page="explain" aria-label="检查说明">
       <div class="container">
@@ -668,7 +775,7 @@
     <button class="tab active" data-nav="home">首页</button>
     <button class="tab" data-nav="ai">AI</button>
     <button class="tab" data-nav="records">记录</button>
-    <button class="tab" data-nav="docs">资料库</button>
+    <button class="tab" data-nav="summary">摘要</button>
     <button class="tab" data-nav="me">我的</button>
   </nav>
 
@@ -1056,22 +1163,24 @@
 
   <!-- Modular JS (split from app.js) - load order matters -->
   <!-- Cache-busting: ?v= forces browser/SW to fetch fresh files after updates -->
-  <script src="js/constants.js?v=9.11"></script>
-  <script src="js/utils.js?v=9.11"></script>
-  <script src="js/state.js?v=9.11"></script>
-  <script src="js/programs.js?v=9.11"></script>
-  <script src="js/tasks.js?v=9.11"></script>
-  <script src="js/db.js?v=9.11"></script>
-  <script src="js/diet.js?v=9.11"></script>
-  <script src="js/render.js?v=9.11"></script>
-  <script src="js/modals.js?v=9.11"></script>
-  <script src="js/export.js?v=9.11"></script>
-  <script src="js/trends.js?v=9.11"></script>
-  <script src="js/premium.js?v=9.11"></script>
-  <script src="js/ocr.js?v=9.11"></script>
-  <script src="js/share.js?v=9.11"></script>
-  <script src="js/ai.js?v=9.11"></script>
-  <script src="js/ui.js?v=9.11"></script>
-  <script src="js/app.js?v=9.11"></script>
+  <script src="js/constants.js?v=10.0"></script>
+  <script src="js/utils.js?v=10.0"></script>
+  <script src="js/state.js?v=10.0"></script>
+  <script src="js/tracking.js?v=10.0"></script>
+  <script src="js/programs.js?v=10.0"></script>
+  <script src="js/tasks.js?v=10.0"></script>
+  <script src="js/db.js?v=10.0"></script>
+  <script src="js/diet.js?v=10.0"></script>
+  <script src="js/render.js?v=10.0"></script>
+  <script src="js/modals.js?v=10.0"></script>
+  <script src="js/export.js?v=10.0"></script>
+  <script src="js/trends.js?v=10.0"></script>
+  <script src="js/premium.js?v=10.0"></script>
+  <script src="js/ocr.js?v=10.0"></script>
+  <script src="js/share.js?v=10.0"></script>
+  <script src="js/ai.js?v=10.0"></script>
+  <script src="js/summary.js?v=10.0"></script>
+  <script src="js/ui.js?v=10.0"></script>
+  <script src="js/app.js?v=10.0"></script>
 </body>
 </html>
