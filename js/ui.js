@@ -262,6 +262,38 @@ function bindUI(){
 
 
 
+  /* ===== Summary page bindings (P0-2/P0-3) ===== */
+  const b7d = qs("#btnSummary7d");
+  if(b7d) b7d.addEventListener("click", ()=>{ _summaryDays = 7; renderSummary(); });
+  const b30d = qs("#btnSummary30d");
+  if(b30d) b30d.addEventListener("click", ()=>{ _summaryDays = 30; renderSummary(); });
+  const bSumCopy = qs("#btnSummaryCopy");
+  if(bSumCopy) bSumCopy.addEventListener("click", ()=>handleSummaryCopy());
+  const bSumPrint = qs("#btnSummaryPrint");
+  if(bSumPrint) bSumPrint.addEventListener("click", ()=>handleSummaryPrint());
+  const bSumRemote = qs("#btnSummaryRemote");
+  if(bSumRemote) bSumRemote.addEventListener("click", ()=>handleSummaryRemote());
+  const bSaveQ = qs("#btnSaveQuestions");
+  if(bSaveQ) bSaveQ.addEventListener("click", ()=>{
+    const qa = qs("#summaryQuestions");
+    if(qa){ state.summaryQuestions = qa.value; saveState(); toast("已保存问题"); }
+  });
+  /* Auto-save questions on blur */
+  const qaField = qs("#summaryQuestions");
+  if(qaField) qaField.addEventListener("blur", ()=>{
+    state.summaryQuestions = qaField.value; saveState();
+  });
+
+  /* Privacy / Terms back buttons */
+  const bPrivBack = qs("#btnPrivacyBack");
+  if(bPrivBack) bPrivBack.addEventListener("click", ()=>overlayBack());
+  const bTermBack = qs("#btnTermsBack");
+  if(bTermBack) bTermBack.addEventListener("click", ()=>overlayBack());
+
+  /* Docs link from Me page */
+  const bDocsFromMe = qs("#btnDocsFromMe");
+  if(bDocsFromMe) bDocsFromMe.addEventListener("click", ()=>navigate("docs"));
+
   // demo data
   const btnDemo = qs("#btnLoadDemo");
   if(btnDemo) btnDemo.addEventListener("click", ()=>{

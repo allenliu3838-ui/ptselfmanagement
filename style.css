@@ -462,3 +462,111 @@ button{transition:transform .12s ease, background .12s ease;}
 .empty-cta .emoji{font-size:32px;margin-bottom:8px;}
 .empty-cta .msg{font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.45;}
 .empty-cta button{margin:0 auto;}
+
+/* ===== Summary page (P0-2) ===== */
+.summary-printable{padding:0;}
+.summary-header{margin-bottom:12px;}
+.summary-title{font-weight:900;font-size:16px;line-height:1.35;}
+.summary-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.summary-section{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#fbfcff;margin-bottom:8px;}
+.summary-label{font-weight:900;font-size:13px;color:var(--text);}
+.summary-count{font-weight:600;color:var(--muted);font-size:12px;}
+.summary-value{font-size:14px;margin-top:4px;line-height:1.5;}
+.summary-trend{font-size:12px;color:var(--muted);margin-top:4px;}
+.summary-trend .trend-arrow{font-weight:900;}
+.summary-sym{font-size:13px;line-height:1.5;margin-top:4px;padding-left:2px;}
+.summary-sym-date{color:var(--muted);font-weight:700;font-size:12px;}
+.summary-disclaimer{margin-top:12px;padding:10px 12px;border-radius:10px;background:#fff6ef;border:1px solid #ffe1c7;color:#6a3b00;font-size:11px;line-height:1.45;}
+.summary-spark polyline{stroke:var(--primary);}
+
+/* Summary actions row */
+.summary-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+@media(min-width:480px){.summary-actions{grid-template-columns:1fr 1fr 1fr;}}
+.summary-actions .tile{height:48px;font-size:13px;}
+
+/* Questions textarea on summary page */
+#summaryQuestions{
+  width:100%;border-radius:12px;border:1px solid var(--border);
+  padding:10px 12px;font-size:14px;line-height:1.5;resize:vertical;
+  font-family:inherit;min-height:80px;
+}
+
+/* ===== Quick-start card (P0-1) ===== */
+.quick-steps{display:flex;flex-direction:column;gap:8px;}
+.quick-step{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:14px;
+  border:1px solid var(--border);background:#f9fbff;
+  cursor:pointer;transition:background .15s;
+}
+.quick-step:active{background:#eef4ff;}
+.quick-step.done{opacity:.6;}
+.quick-step.done .quick-step-num{background:var(--ok);color:#fff;border-color:var(--ok);}
+.quick-step-num{
+  width:28px;height:28px;border-radius:999px;
+  border:2px solid var(--primary);color:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:13px;flex-shrink:0;
+}
+.quick-step-text b{font-size:14px;display:block;line-height:1.3;}
+.quick-step-text span{font-size:12px;color:var(--muted);}
+
+/* ===== CTA card (P0-4) ===== */
+.cta-card{
+  padding:14px;border-radius:14px;
+  border:1px solid #d6e5ff;background:linear-gradient(135deg,#f0f7ff 0%,#fff 100%);
+  margin-bottom:14px;
+}
+.cta-text{font-weight:900;font-size:14px;color:var(--primary);}
+.cta-desc{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;}
+.cta-actions{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;}
+.cta-link{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:8px 14px;border-radius:12px;
+  background:var(--primary);color:#fff;font-weight:800;font-size:13px;
+  text-decoration:none;
+}
+.cta-link:active{background:var(--primary2);}
+
+/* ===== Disclaimer top bar ===== */
+.disclaimer-top{
+  padding:8px 12px;border-radius:10px;
+  background:#fff6ef;border:1px solid #ffe1c7;
+  color:#6a3b00;font-size:11px;line-height:1.4;
+  margin-bottom:12px;
+}
+
+/* ===== Site footer (P0-6) ===== */
+.site-footer{
+  margin-top:20px;padding:16px 0 8px;
+  border-top:1px solid var(--border);
+  text-align:center;font-size:11px;color:var(--muted);line-height:1.6;
+}
+.footer-disclaimer{
+  padding:10px 12px;border-radius:10px;
+  background:#fff6ef;border:1px solid #ffe1c7;
+  color:#6a3b00;font-size:11px;line-height:1.45;
+  margin-bottom:10px;
+}
+.footer-links{margin-bottom:6px;}
+.footer-links a{color:var(--primary);font-weight:700;text-decoration:none;}
+.footer-sep{margin:0 6px;color:var(--border);}
+.footer-muted{color:var(--muted);}
+.footer-icp{color:var(--muted);font-size:10px;margin-top:4px;}
+.footer-company{color:var(--muted);font-size:10px;margin-top:2px;}
+
+/* ===== Print styles (P0-3) ===== */
+@media print{
+  body{background:#fff !important;}
+  .topbar,.tabbar,.update-banner,.modal,.cta-card,
+  #cardSummaryActions,#summaryCta,#btnSaveQuestions,
+  .quick-steps,.site-footer,.disclaimer-top,
+  button,.tab{display:none !important;}
+  .page{display:none !important;}
+  #page-summary{display:block !important;opacity:1 !important;}
+  #page-summary .container{padding:0 !important;}
+  .card{box-shadow:none !important;border:1px solid #ddd !important;break-inside:avoid;}
+  .summary-section{break-inside:avoid;}
+  #summaryQuestions{border:1px solid #ddd !important;}
+  .summary-disclaimer{border:none !important;background:#f9f9f9 !important;}
+}
