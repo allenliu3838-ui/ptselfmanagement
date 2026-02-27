@@ -78,7 +78,11 @@ function bindUI(){
   const bUp = qs("#btnUploadDoc");
   if(bUp) bUp.addEventListener("click", ()=>openDocUploadModal());
   const bVault = qs("#btnViewAllDocs");
-  if(bVault) bVault.addEventListener("click", ()=>navigate("docs"));
+  if(bVault) bVault.addEventListener("click", ()=>{
+    state.ui.overlayReturn = currentTabKey || 'records';
+    saveState();
+    navigate("docs");
+  });
 
   // Docs page
   const bDocsUp = qs("#btnDocsUpload");
@@ -290,9 +294,20 @@ function bindUI(){
   const bTermBack = qs("#btnTermsBack");
   if(bTermBack) bTermBack.addEventListener("click", ()=>overlayBack());
 
+  /* Followup back button */
+  const bFollowBack = qs("#btnFollowupBack");
+  if(bFollowBack) bFollowBack.addEventListener("click", ()=>overlayBack());
+
   /* Docs link from Me page */
   const bDocsFromMe = qs("#btnDocsFromMe");
-  if(bDocsFromMe) bDocsFromMe.addEventListener("click", ()=>navigate("docs"));
+  if(bDocsFromMe) bDocsFromMe.addEventListener("click", ()=>{
+    state.ui.overlayReturn = currentTabKey || 'me';
+    saveState();
+    navigate("docs");
+  });
+  /* Docs back button */
+  const bDocsBack = qs("#btnDocsBack");
+  if(bDocsBack) bDocsBack.addEventListener("click", ()=>overlayBack());
 
   // demo data
   const btnDemo = qs("#btnLoadDemo");

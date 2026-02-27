@@ -386,6 +386,7 @@
               <div class="card-subtitle">把报告/活检/基因/影像集中放好，复诊更高效</div>
             </div>
             <div class="row">
+              <button class="ghost small" id="btnDocsBack">返回</button>
               <button class="ghost small" id="btnDocsVisitPack">复诊包</button>
               <button class="primary small" id="btnDocsUpload">上传</button>
             </div>
@@ -461,7 +462,10 @@
               <div class="card-title">随访计划</div>
               <div class="card-subtitle">项目化：你只看与你当前项目相关的内容</div>
             </div>
-            <button class="ghost small" id="btnConfig">计划配置</button>
+            <div class="row">
+              <button class="ghost small" id="btnFollowupBack">返回</button>
+              <button class="ghost small" id="btnConfig">计划配置</button>
+            </div>
           </div>
           <div id="planContent" class="content"></div>
         </div>
@@ -490,7 +494,7 @@
               <div class="card-subtitle">内测先做可用，后续接图表与医生端配置</div>
             </div>
           </div>
-          <div id="trendContent" class="content"></div>
+          <div id="followupTrendContent" class="content"></div>
         </div>
       </div>
     </section>
