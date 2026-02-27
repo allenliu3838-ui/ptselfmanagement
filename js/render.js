@@ -734,7 +734,11 @@ function renderHome(){
   const _bm = qs("#btnMarkAllDone");
   if(_bm) _bm.onclick = ()=>markAllTasksDone(tasks);
   const bPlan = qs("#btnGoPlan");
-  if(bPlan) bPlan.onclick = ()=>navigate("followup");
+  if(bPlan) bPlan.onclick = ()=>{
+    state.ui.overlayReturn = currentTabKey || 'home';
+    saveState();
+    navigate("followup");
+  };
 
   // Celebration
   renderCelebration(tasks);
@@ -1439,7 +1443,7 @@ function renderFollowup(){
   }
 
   // ===== Trends (compact but actionable) =====
-  const trend = qs("#trendContent");
+  const trend = qs("#followupTrendContent");
   const parts = [];
 
   const bpSorted = [...(state.vitals.bp||[])].sort((a,b)=> (a.dateTime||"").localeCompare(b.dateTime||""));
