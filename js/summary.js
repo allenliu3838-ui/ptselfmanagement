@@ -45,6 +45,21 @@ function buildSummaryHTML(days){
   html += '<div class="summary-meta">' + nowISO() + ' · ' + programLabel(state.activeProgram) + '</div>';
   html += '</div>';
 
+  var prepTips = [];
+  var bpRecent = getSummaryPeriodRecords(state.vitals.bp, days);
+  var wtRecent = getSummaryPeriodRecords(state.vitals.weight, days);
+  var labRecent = (state.labs||[]).filter(function(r){ var d=new Date(r.date); return !isNaN(d.getTime()) && d >= cutoff; });
+  if(bpRecent.length >= 3) prepTips.push('已累计多次血压记录，可直接展示趋势而不只看单次值。');
+  if(bpRecent.length > 0 && wtRecent.length === 0) prepTips.push('建议补 1 次体重，便于医生判断体液变化。');
+  if(labRecent.length > 0 && (state.symptoms||[]).length === 0) prepTips.push('建议补充近期症状，让化验变化更容易解释。');
+  if(!prepTips.length) prepTips.push('继续按当前节奏记录即可，复诊时可直接出示本页。');
+
+  html += '<div class="summary-section">';
+  html += '<div class="summary-label">复诊前重点</div>';
+  html += '<div class="summary-value">' + prepTips.join(' ') + '</div>';
+  html += '<div class="summary-trend">你可以直接复制本页文字给医生，减少重复描述。</div>';
+  html += '</div>';
+
   /* Last record timestamp */
   var allDates = [];
   ['bp','weight','glucose','temp'].forEach(function(k){
@@ -183,7 +198,7 @@ function buildSummaryHTML(days){
 
   if(!hasAnyData){
     return '<div class="empty-cta"><div class="emoji">📋</div>' +
-      '<div class="msg">还没有记录数据<br>先去"记录"页添加一条血压、体重或化验，摘要就会自动生成</div>' +
+      '<div class="msg">还没有记录数据<br>先添加一条记录，系统就会自动生成可用于复诊的一页摘要</div>' +
       '<button class="primary" onclick="navigate(\'records\');trackEvent(\'page_view\',{page:\'records\'});">去记录</button></div>';
   }
   return html;

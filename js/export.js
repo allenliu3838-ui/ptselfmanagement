@@ -401,8 +401,10 @@ async function importBackupFromJSONText(text){
   const obj = JSON.parse(text);
   const st = obj && obj.state ? obj.state : obj;
   if(!st || typeof st !== "object") throw new Error("Invalid backup");
+  const hadExistingData = hasLocalData();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
 
+  let restoredFiles = 0;
   // Restore IndexedDB files if present
   if(obj.files && Array.isArray(obj.files)){
     try{
@@ -416,11 +418,18 @@ async function importBackupFromJSONText(text){
           const store = tx.objectStore(FILE_STORE);
           store.put({ id: f.id, name: f.name || "", type: f.type || "application/octet-stream", size: f.size || blob.size, createdAt: f.createdAt || Date.now(), blob });
           await new Promise((ok, fail)=>{ tx.oncomplete = ok; tx.onerror = fail; });
+          restoredFiles += 1;
         }catch(_e){ /* skip individual file errors */ }
       }
       try{ db.close(); }catch(_e){}
     }catch(_e){ /* IndexedDB 不可用时忽略 */ }
   }
+
+  return {
+    importedSummary: summarizeImportedData(st),
+    restoredFiles,
+    overwritten: hadExistingData
+  };
 }
 
 function recordBackupTimestamp(){
@@ -439,26 +448,56 @@ function daysSinceLastBackup(){
   return Math.floor((Date.now() - d.getTime()) / (24*3600*1000));
 }
 
+
+function hasLocalData(){
+  return !!((state.labs?.length || state.vitals?.bp?.length || state.symptoms?.length ||
+    state.urineTests?.length || state.documents?.length || state.markers?.length ||
+    state.medsLog?.length || state.vitals?.glucose?.length || state.vitals?.weight?.length));
+}
+
+function getBackupStatusMeta(){
+  const last = getLastBackupTime();
+  if(!last){
+    return { ok:false, level:"none", text:"尚未备份", detail:"建议现在导出一份完整备份，避免换机或清理缓存后数据丢失。" };
+  }
+  const days = daysSinceLastBackup();
+  if(days <= 3){
+    return { ok:true, level:"fresh", text:"已备份成功", detail:`最近一次备份：${new Date(last).toLocaleString("zh-CN")}（${days} 天前）` };
+  }
+  if(days <= 7){
+    return { ok:true, level:"aging", text:"已备份（建议本周再备份一次）", detail:`最近一次备份：${new Date(last).toLocaleString("zh-CN")}（${days} 天前）` };
+  }
+  return { ok:false, level:"stale", text:"备份已过期", detail:`最近一次备份：${new Date(last).toLocaleString("zh-CN")}（${days} 天前），建议尽快更新。` };
+}
+
+function shouldShowActiveNoBackupReminder(){
+  const streak = state.engagement?.streak || 0;
+  return streak >= 7 && daysSinceLastBackup() >= 7 && hasLocalData();
+}
+
 function shouldShowBackupReminder(){
-  // Show reminder if: data exists and last backup > 7 days ago (or never)
-  const hasData = (state.labs?.length || state.vitals?.bp?.length || state.symptoms?.length ||
-                   state.urineTests?.length || state.documents?.length || state.markers?.length ||
-                   state.medsLog?.length || state.vitals?.glucose?.length);
-  if(!hasData) return false;
+  if(!hasLocalData()) return false;
   return daysSinceLastBackup() >= 7;
 }
 
 function checkBackupReminder(){
   if(!shouldShowBackupReminder()) return;
   const days = daysSinceLastBackup();
+  const streak = state.engagement?.streak || 0;
+  const isActive = shouldShowActiveNoBackupReminder();
   const msg = days === Infinity
     ? "你还没有备份过数据。建议现在导出一份完整备份，防止数据丢失。"
     : `距上次备份已过 ${days} 天。建议定期备份，防止数据丢失。`;
+  const activeMsg = isActive
+    ? `<div class="note" style="margin-top:8px;color:var(--warn);">你已连续记录 ${streak} 天，建议现在备份一次，把这段努力稳稳保存下来。</div>`
+    : "";
   openSimpleModal("备份提醒", "保护你的健康数据", `
     <div class="note">${escapeHtml(msg)}</div>
+    ${activeMsg}
     <div class="note subtle" style="margin-top:8px;">备份包含所有记录和资料库文件，可用于换机迁移或数据恢复。</div>
   `, `
     <button class="primary" id="btnBackupNow">立即备份</button>
+    <button class="ghost" id="btnBackupHowto">查看换机迁移说明</button>
     <button class="ghost" data-close="modalSimple">稍后再说</button>
   `);
   setTimeout(()=>{
@@ -467,6 +506,8 @@ function checkBackupReminder(){
       closeModal("modalSimple");
       await doFullBackupDownload();
     };
+    const how = qs("#btnBackupHowto");
+    if(how) how.onclick = ()=>openBackupGuide();
     qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
   }, 0);
 }
@@ -519,6 +560,7 @@ async function doFullBackupDownload(){
     // Update the last-backup display if visible
     const el = qs("#lastBackupInfo");
     if(el) el.textContent = `上次备份：${new Date().toLocaleString("zh-CN")}`;
+    if(typeof renderBackupStatus === "function") renderBackupStatus();
     toast(fileCount
       ? `完整备份已导出（含 ${fileCount} 个文件）`
       : "完整备份已导出");
@@ -526,6 +568,59 @@ async function doFullBackupDownload(){
     console.error("Backup failed:", e);
     toast("备份导出失败，请重试");
   }
+}
+
+
+
+async function doFullBackupShare(){
+  try{
+    const payload = await buildFullBackupJSON();
+    const fileName = `kidney-care-full-backup-${yyyyMMdd(new Date())}.json`;
+    const text = JSON.stringify(payload);
+    const file = new File([text], fileName, { type:"application/json" });
+    if(navigator.canShare && navigator.canShare({ files:[file] })){
+      await navigator.share({
+        title: "肾域随访完整备份",
+        text: "可保存到系统文件或转发到其他设备",
+        files: [file]
+      });
+      recordBackupTimestamp();
+      if(typeof renderBackupStatus === "function") renderBackupStatus();
+      toast("已调起系统分享，可保存到文件或相册");
+      return;
+    }
+    downloadTextFile(fileName, text, "application/json;charset=utf-8");
+    recordBackupTimestamp();
+    if(typeof renderBackupStatus === "function") renderBackupStatus();
+    toast("当前设备不支持系统分享，已改为本地下载");
+  }catch(e){
+    console.error(e);
+    toast("导出失败，请重试");
+  }
+}
+
+function openBackupGuide(){
+  openSimpleModal("换机迁移与恢复", "3 步完成，不用担心数据丢失", `
+    <div class="list-item"><div class="t">步骤 1：旧手机导出备份</div><div class="s">在“我的 → 数据备份”点击“完整备份”或“一键导出到系统文件/相册”。</div></div>
+    <div class="list-item"><div class="t">步骤 2：把备份文件发到新手机</div><div class="s">可用微信文件传输、AirDrop、网盘或数据线，保持 JSON 文件原名即可。</div></div>
+    <div class="list-item"><div class="t">步骤 3：新手机导入备份</div><div class="s">打开同一页面，选择“导入备份”并选中 JSON 文件，系统会自动恢复记录与资料。</div></div>
+    <div class="note subtle" style="margin-top:8px;">建议：导入后先到“一页摘要”确认最近数据已恢复，再继续记录。</div>
+  `, `<button class="primary" data-close="modalSimple">我知道了</button>`);
+  qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
+}
+
+function summarizeImportedData(st){
+  const v = st.vitals || {};
+  const items = [
+    ["血压", (v.bp||[]).length],
+    ["体重", (v.weight||[]).length],
+    ["血糖", (v.glucose||[]).length],
+    ["化验", (st.labs||[]).length],
+    ["尿检", (st.urineTests||[]).length],
+    ["症状", (st.symptoms||[]).length],
+    ["资料条目", (st.documents||[]).length],
+  ].filter(([,n])=>n>0).map(([k,n])=>`${k} ${n} 条`);
+  return items.length ? items.join("、") : "未识别到记录条目";
 }
 
 // beforeunload: warn if significant unbacked-up data
