@@ -837,6 +837,8 @@ function renderHome(){
     if(recentBox) recentBox.innerHTML = renderRecent();
   }catch(e){ console.warn("renderHome: recent error", e); }
 
+  try{ renderSummaryEntryCard(); renderWeeklyWins(); renderLightNudges(); }catch(e){ console.warn("renderHome: extra cards error", e); }
+
   // Dialysis card on Home: only show when dialysis program is enabled or active
   const dCard = qs("#cardDialysisHome");
   if(dCard) dCard.classList.toggle("hidden", !(state.activeProgram==="dialysis" || state.enabledPrograms?.dialysis));
@@ -1520,6 +1522,80 @@ function renderFollowup(){
   if(bGlu) bGlu.classList.toggle("hidden", !(prog==="dm" || (prog==="kidney" && state.comorbid.dm) || prog==="dialysis"));
 }
 
+
+function renderSummaryEntryCard(){
+  const box = qs("#summaryEntryHint");
+  if(!box) return;
+  const bp = (state.vitals?.bp||[]).length;
+  const labs = (state.labs||[]).length;
+  const wt = (state.vitals?.weight||[]).length;
+  const total = bp + labs + wt + (state.symptoms||[]).length;
+  if(total===0){
+    box.innerHTML = `<div class="note">先记录 1 条血压、体重或化验，系统就会自动生成复诊摘要。</div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="list-item"><div class="t">已自动整理</div><div class="s">血压 ${bp} 条、体重 ${wt} 条、化验 ${labs} 条。</div></div>
+    <div class="note subtle">复诊前直接复制摘要给医生，能更快进入重点讨论。</div>
+  `;
+}
+
+function renderWeeklyWins(){
+  const box = qs("#weeklyWinsContent");
+  if(!box) return;
+  const done = countRecordsInLast7Days();
+  const streak = state.engagement?.streak || 0;
+  const bp7 = getSummaryPeriodRecords(state.vitals?.bp||[], 7);
+  let bpRate = "";
+  if(bp7.length){
+    const ok = bp7.filter(r=>toNum(r.sys)!==null && toNum(r.dia)!==null && toNum(r.sys)<140 && toNum(r.dia)<90).length;
+    bpRate = `${Math.round(ok/bp7.length*100)}%`;
+  }
+  const lines = [];
+  lines.push(`<div class="list-item"><div class="t">本周记录完成度</div><div class="s">你完成了 ${done} 条记录，${done>=7?"很棒，节奏稳定。":"继续保持，每条记录都在帮你看清趋势。"}</div></div>`);
+  lines.push(`<div class="list-item"><div class="t">连续记录</div><div class="s">已连续 ${streak} 天${streak>=7?"，你的坚持非常有价值。":"，慢慢来，稳定比完美更重要。"}</div></div>`);
+  if(bpRate){
+    lines.push(`<div class="list-item"><div class="t">血压达标率</div><div class="s">近7天约 ${bpRate}（仅作自我观察）。</div></div>`);
+  } else {
+    lines.push(`<div class="list-item"><div class="t">血压观察</div><div class="s">本周还没有足够血压数据，补 1-2 次就能看到更清晰变化。</div></div>`);
+  }
+  box.innerHTML = lines.join("");
+}
+
+function renderLightNudges(){
+  const box = qs("#lightNudgeContent");
+  if(!box) return;
+  const bpCount = (state.vitals?.bp||[]).length;
+  const wtCount = (state.vitals?.weight||[]).length;
+  const labCount = (state.labs||[]).length;
+  const symCount = (state.symptoms||[]).length;
+  const cards = [];
+  if(bpCount >= 4 && wtCount === 0){
+    cards.push(`<div class="list-item"><div class="t">你最近很认真在记血压 👍</div><div class="s">顺手补一条体重，医生更容易判断是否有体液变化。</div></div>`);
+  }
+  if(labCount >= 1 && symCount === 0){
+    cards.push(`<div class="list-item"><div class="t">化验已记录</div><div class="s">若最近有不适，可补一条症状，复诊时更容易对应化验变化。</div></div>`);
+  }
+  if(!cards.length){
+    box.innerHTML = `<div class="note subtle">当前记录结构很完整，继续按你的节奏记录就很好。</div>`;
+    return;
+  }
+  box.innerHTML = cards.join("") + `<div class="note subtle" style="margin-top:8px;">这些只是提醒，你可以随时忽略，不影响主要流程。</div>`;
+}
+
+function renderBackupStatus(){
+  const statusEl = qs("#backupStatusText");
+  const infoEl = qs("#lastBackupInfo");
+  if(!statusEl && !infoEl) return;
+  const meta = getBackupStatusMeta();
+  if(statusEl){
+    statusEl.textContent = meta.text;
+    statusEl.style.color = meta.ok ? "var(--ok)" : "var(--warn)";
+    statusEl.style.fontWeight = "700";
+  }
+  if(infoEl) infoEl.textContent = meta.detail;
+}
+
 function renderMe(){
   const prev = qs("#exportPreview");
   if(prev) prev.textContent = buildExportText();
@@ -1565,20 +1641,7 @@ function renderMe(){
     }
   }
 
-  // Show last backup time
-  const lbi = qs("#lastBackupInfo");
-  if(lbi){
-    const last = getLastBackupTime();
-    if(last){
-      const d = new Date(last);
-      const days = daysSinceLastBackup();
-      const timeStr = d.toLocaleString("zh-CN");
-      const warn = days >= 7 ? " ⚠ 建议尽快备份" : "";
-      lbi.textContent = `上次备份：${timeStr}（${days} 天前）${warn}`;
-    } else {
-      lbi.textContent = "尚未备份过，建议立即导出一份完整备份";
-    }
-  }
+  renderBackupStatus();
 }
 
 
