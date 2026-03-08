@@ -53,8 +53,23 @@ function aiQuickExplain(){
     lines.push("2）血压/体重/尿检趋势是否提示需要加强某个管理环节？");
     lines.push("3）我当前的饮食/用药注意事项有哪些（以医嘱为准）？");
   }
+  // Evidence transparency: show triggered rules
+  try{
+    if(typeof getEducationProfile === 'function' && typeof buildTriggeredRules === 'function'){
+      var profile = getEducationProfile(state);
+      var rules = buildTriggeredRules(profile);
+      if(rules.length){
+        lines.push("");
+        lines.push("【当前触发的规则】");
+        rules.forEach(function(r){ lines.push("· " + r); });
+      }
+    }
+  }catch(_e){}
+
   lines.push("");
   lines.push("提示：如出现胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等红旗，请立即就医或联系团队。");
+  lines.push("");
+  lines.push("这条信息不能替代医生判断。建议联系医生/随访团队，并带上这些记录。");
   aiPush("ai", lines.join("\n"));
   aiEnsureOnAIPage();
 }
@@ -154,6 +169,31 @@ function generateAIDemoResponse(text){
   parts.push("3）今天你能做的 1 件事：");
     parts.push("- 在首页“今日行动”把血压/体重/尿检或身高体重记录补齐，然后复制“一页摘要”发给医生。");
   if(diet) parts.push(`4）饮食关注点：${diet}（仅教育提示，具体以医生/营养师方案为准）`);
-  parts.push("如果你现在有胸痛/呼吸困难/意识改变/抽搐/少尿无尿/发热伴剧烈腰痛等红旗，请立即就医或联系团队。");
+
+  // Evidence transparency: show data sources
+  try{
+    if(typeof buildAIEvidence === 'function'){
+      var evidence = buildAIEvidence(state);
+      if(evidence.length){
+        parts.push("");
+        parts.push("【数据依据（原始值）】");
+        evidence.forEach(function(e){
+          parts.push("· " + e.label + "：" + e.value + " " + e.unit + "（" + e.date + "）");
+        });
+      }
+    }
+    if(typeof getEducationProfile === 'function' && typeof buildTriggeredRules === 'function'){
+      var profile = getEducationProfile(state);
+      var rules = buildTriggeredRules(profile);
+      if(rules.length){
+        parts.push("");
+        parts.push("【触发的个体化规则】");
+        rules.forEach(function(r){ parts.push("· " + r); });
+      }
+    }
+  }catch(_e){}
+
+  parts.push("");
+  parts.push("这条信息不能替代医生判断。建议联系医生/随访团队，并带上这些记录。");
   return parts.join("\n");
 }
