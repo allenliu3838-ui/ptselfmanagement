@@ -604,3 +604,7 @@ button{transition:transform .12s ease, background .12s ease;}
 .edu-tag-adjunct{background:#e3f2fd;color:#1565c0;}
 .edu-tag-emerging{background:#fff3e0;color:#e65100;}
 .edu-tag-review{background:#fce4ec;color:#c62828;}
+
+/* Followup Education Sections */
+.edu-followup-section{margin-top:12px;padding:12px;background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.edu-followup-section-title{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text);}

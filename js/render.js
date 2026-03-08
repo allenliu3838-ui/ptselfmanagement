@@ -1518,6 +1518,44 @@ function renderFollowup(){
   if(bDial) bDial.classList.toggle("hidden", prog !== "dialysis");
   const bGlu = qs("#btnPlanRecordGlucose");
   if(bGlu) bGlu.classList.toggle("hidden", !(prog==="dm" || (prog==="kidney" && state.comorbid.dm) || prog==="dialysis"));
+
+  // ===== Education cards for followup page =====
+  try{
+    var eduBox = qs("#followupEduContent");
+    if(eduBox && typeof getEducationProfile === "function" && typeof getEducationCards === "function"){
+      var profile = getEducationProfile(state);
+      var allCards = typeof getAllEducationCards === "function" ? getAllEducationCards() : [];
+      var cards = getEducationCards(profile, allCards);
+      var redFlags = typeof getRedFlags === "function" ? getRedFlags(profile) : [];
+      if(cards.length || redFlags.length){
+        var html = "";
+        // Show red flags first
+        if(redFlags.length){
+          html += '<div class="edu-followup-section"><div class="edu-followup-section-title" style="color:var(--danger);">红旗提醒</div>';
+          html += redFlags.map(function(f){
+            return '<div class="edu-redflag-item"><div class="edu-redflag-badge">' + escapeHtml(f.project) + '</div>' +
+              '<div class="edu-redflag-body"><div class="edu-redflag-title">' + escapeHtml(f.title) + '</div>' +
+              '<div class="edu-redflag-summary">' + escapeHtml(f.summary) + '</div></div></div>';
+          }).join("");
+          html += '</div>';
+        }
+        // Show education cards
+        if(cards.length){
+          html += '<div class="edu-followup-section"><div class="edu-followup-section-title">健康教育</div>';
+          html += cards.slice(0, 5).map(function(c){
+            var actionLine = (Array.isArray(c.actionToday) && c.actionToday.length) ? '<div class="edu-card-action">今天能做：' + escapeHtml(c.actionToday[0]) + '</div>' : '';
+            var redLine = (Array.isArray(c.redFlags) && c.redFlags.length) ? '<div class="edu-card-redflags">找医生：' + escapeHtml(c.redFlags[0]) + '</div>' : '';
+            return '<div class="list-item edu-card"><div class="t">' + escapeHtml(c.title) + '</div><div class="s">' + escapeHtml(c.shortSummary) + '</div>' + actionLine + redLine + '</div>';
+          }).join("");
+          html += '</div>';
+        }
+        eduBox.innerHTML = html;
+        eduBox.style.display = "";
+      } else {
+        eduBox.style.display = "none";
+      }
+    }
+  }catch(e){ console.warn("renderFollowup: education error", e); }
 }
 
 function renderMe(){
