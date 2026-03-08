@@ -165,7 +165,7 @@ function simulateOCRExtraction(filename){
   // In real implementation, these would be populated from OCR API response
   return {
     recognized: false,
-    message: "内测版：OCR 云端识别接口开发中",
+    message: "OCR 云端识别接口开发中",
     fields: {
       date: yyyyMMdd(new Date()),
       scr: "",

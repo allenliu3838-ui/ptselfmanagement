@@ -144,7 +144,7 @@ function bindUI(){
   if(bFb) bFb.onclick = async ()=>{
     const text = buildFeedbackText(false);
     const prev = qs("#feedbackPreview"); if(prev) prev.textContent = text;
-    try{ await navigator.clipboard.writeText(text); toast("已复制反馈信息，可粘贴到内测群"); }
+    try{ await navigator.clipboard.writeText(text); toast("已复制反馈信息"); }
     catch(e){ prompt("复制下面内容：", text); }
   };
   const bFb2 = qs("#btnCopyFeedbackWithSummary");
@@ -370,7 +370,7 @@ function bindUI(){
   });
 
   qs("#btnAIHelp").addEventListener("click", ()=>{
-    openSimpleModal("AI 使用边界","内测版提醒", `
+    openSimpleModal("AI 使用边界","使用提醒", `
       <div class="list-item"><div class="t">能做</div><div class="s">解释化验趋势、整理复诊问题、把记录汇总成摘要、提醒红旗分诊。</div></div>
       <div class="list-item"><div class="t">不能做</div><div class="s">诊断疾病、开具处方、替代主诊医生决策。</div></div>
       <div class="list-item"><div class="t">红旗优先</div><div class="s">胸痛/呼吸困难/意识改变/抽搐/少尿无尿/发热伴剧烈腰痛等，请立即就医或联系团队。</div></div>
@@ -379,7 +379,7 @@ function bindUI(){
 
   // config placeholder
   qs("#btnConfig").addEventListener("click", ()=>{
-    openSimpleModal("计划配置（内测）","下一步：接医生端可配置规则", `
+    openSimpleModal("计划配置","下一步：接医生端可配置规则", `
       <div class="note">当前版本的任务与提醒由本地规则生成。正式版建议：所有阈值/频率/文案由中心配置下发（避免写死）。</div>
     `, `<button class="ghost" data-close="modalSimple">关闭</button>`);
   });

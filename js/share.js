@@ -55,7 +55,7 @@ function showShareSetupModal(){
           1. 生成你的专属共享码<br>
           2. 把码发给家属（微信/短信）<br>
           3. 家属打开本 App → 输入共享码 → 只读查看<br>
-          <span style="color:var(--muted);">内测版：共享码为本地演示，正式版将通过云端实现实时同步</span>
+          <span style="color:var(--muted);">共享码为本地演示，后续版本将通过云端实现实时同步</span>
         </div>
       </div>
     </div>
@@ -130,7 +130,7 @@ function showShareActiveModal(ss){
 
     const btnWechat = qs("#btnShareWechat");
     if(btnWechat) btnWechat.onclick = async ()=>{
-      const text = `我在用"肾域随访"管理肾病随访数据。你可以通过共享码 ${code} 查看我的健康概况。下载地址：[App链接]`;
+      const text = `我在用 KidneySphere Followup管理肾病随访数据。你可以通过共享码 ${code} 查看我的健康概况。下载地址：[App链接]`;
       try{ await navigator.clipboard.writeText(text); toast("已复制分享文案，可粘贴到微信发送"); }
       catch(_e){ prompt("复制分享文案：", text); }
     };
@@ -169,7 +169,7 @@ function openFamilyViewEntry(){
       <span>共享码</span>
       <input id="familyCodeInput" type="text" maxlength="6" placeholder="例如：ABC123" style="text-transform:uppercase;letter-spacing:4px;font-size:18px;font-weight:700;text-align:center;">
     </label>
-    <div class="note subtle" style="margin-top:8px;">内测版：此功能需要云端支持，正式版上线后可用。</div>
+    <div class="note subtle" style="margin-top:8px;">此功能需要云端支持，后续版本上线后可用。</div>
   `;
   openSimpleModal("查看家属数据", "输入共享码", bodyHtml, `
     <button class="primary" id="btnFamilyViewGo">查看</button>
@@ -183,7 +183,7 @@ function openFamilyViewEntry(){
         toast("请输入 6 位共享码");
         return;
       }
-      toast("内测版暂不支持远程查看，正式版将通过云端实现");
+      toast("暂不支持远程查看，后续版本将通过云端实现");
     };
     qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
   }, 0);
@@ -347,7 +347,7 @@ function openVisitPrepModal(){
 
 function buildVisitPrepText(changes, insights, questions, lab, bp, wt, sinceDate){
   const lines = [];
-  lines.push("【肾域随访 · 复诊准备包】");
+  lines.push("【KidneySphere Followup · 复诊准备包】");
   lines.push(`生成时间：${nowISO()}`);
   lines.push(`项目：${programLabel(state.activeProgram)}`);
   lines.push(`覆盖范围：${niceDate(sinceDate)} 至今`);

@@ -2,7 +2,7 @@
 
 function buildExportTextShort(){
   const lines = [];
-  lines.push(`【随访 摘要（微信版/内测）】`);
+  lines.push(`【KidneySphere Followup · 摘要（微信版）】`);
   lines.push(`日期：${niceDate(yyyyMMdd(new Date()))}`);
   lines.push(`项目：${programLabel(state.activeProgram)}；身份：${identityText()}`);
   if(state.activeProgram === "kidney"){
@@ -66,7 +66,7 @@ function buildExportTextShort(){
 
 function buildExportText(){
   const lines = [];
-  lines.push(`【肾域随访 一页摘要（内测）】`);
+  lines.push(`【KidneySphere Followup · 一页摘要】`);
   lines.push(`日期：${niceDate(yyyyMMdd(new Date()))}`);
   lines.push(`当前项目：${programLabel(state.activeProgram)}`);
   lines.push(`身份：${identityText()}`);
@@ -267,7 +267,7 @@ function buildVisitPackText(days=90){
   const cutoff = new Date(Date.now() - daysN*24*3600*1000);
 
   const lines = [];
-  lines.push(`【肾域随访 复诊包（内测）】`);
+  lines.push(`【KidneySphere Followup · 复诊包】`);
   lines.push(`生成：${niceDate(yyyyMMdd(new Date()))}`);
   lines.push(`项目：${programLabel(state.activeProgram)}；范围：近 ${daysN} 天`);
   lines.push("");
@@ -353,7 +353,7 @@ function buildVisitPackJSON(days=90){
 
 function buildFeedbackText(withSummary=false){
   const lines = [];
-  lines.push("【肾域随访 内测反馈】");
+  lines.push("【KidneySphere Followup · 反馈】");
   lines.push(`时间：${nowISO()}`);
   lines.push(`版本：${VERSION}`);
   lines.push(`设备/浏览器：${navigator.userAgent}`);
@@ -552,7 +552,7 @@ async function doFullBackupDownload(){
     const payload = await buildFullBackupJSON();
     const fileCount = payload.files?.length || 0;
     downloadTextFile(
-      `kidney-care-full-backup-${yyyyMMdd(new Date())}.json`,
+      `ks-followup-backup-${yyyyMMdd(new Date())}.json`,
       JSON.stringify(payload),
       "application/json;charset=utf-8"
     );

@@ -608,15 +608,15 @@ const DIET_GUIDES = [
 
 const KNOWLEDGE = [
   { id:"k_bp", tags:["kidney","htn"], title:"家庭血压：怎么测更准？", body:"固定时间、安静坐位、袖带合适、连续测两次取平均。把“周均值+波动”带去复诊，比单次数值更有用。", action:{label:"去记录血压", fn:"record_bp"} },
-  { id:"htn_meds", tags:["htn"], title:"高血压用药：更重要的是‘坚持 + 记录’", body:"随访里最有价值的不是一次数字，而是：血压趋势 + 是否按医嘱服药 + 是否出现头晕/乏力等不适。App 内测版支持‘用药打卡’做复诊整理。", action:{label:"用药打卡", fn:"record_meds"} },
+  { id:"htn_meds", tags:["htn"], title:"高血压用药：更重要的是‘坚持 + 记录’", body:"随访里最有价值的不是一次数字，而是：血压趋势 + 是否按医嘱服药 + 是否出现头晕/乏力等不适。App 支持‘用药打卡’做复诊整理。", action:{label:"用药打卡", fn:"record_meds"} },
   { id:"k_protein", tags:["kidney","glomerular"], title:"尿蛋白/尿检怎么记录才对复诊有用？", body:"建议按日期记录：尿蛋白等级（或ACR/UPCR）、尿潜血、体重/水肿、血压。趋势比单次更重要。", action:{label:"去记录尿检", fn:"record_urine"} },
   { id:"k_tx_food", tags:["kidney","tx"], title:"移植期饮食：先守住“食品安全”", body:"免疫抑制期更怕食源性感染：避免生食/半生、注意分餐与冷藏、外卖选择更稳妥的熟食。具体以移植中心宣教为准。", action:{label:"查看饮食提醒", fn:"open_diet"} },
   { id:"k_electro", tags:["safety","electrolyte"], title:"电解质异常：先识别红旗，再谈饮食", body:"心悸、胸痛、抽搐、意识异常、呼吸困难等属于红旗。出现红旗应尽快就医/联系团队。饮食建议只能辅助，不能替代医疗处理。", action:{label:"打开红旗分诊", fn:"open_triage"} },
   { id:"s_water", tags:["stone"], title:"结石预防：把喝水拆成“分次策略”", body:"与其一次猛灌，不如把一天分成多个小目标（起床/上午/下午/晚间）。如果医生要求限水，请以医嘱为准。", action:{label:"去记录喝水", fn:"record_water"} },
   { id:"p_growth", tags:["peds"], title:"儿肾随访：把“生长”放到第一屏", body:"孩子的身高体重、生长速度与营养/肾功能密切相关。建议至少每月记录一次身高与体重（或按医生要求）。", action:{label:"去记录身高", fn:"record_height"} },
-  { id:"p_bp", tags:["peds"], title:"儿童血压：不是固定阈值，而是“百分位”", body:"儿童血压解读常需要结合年龄/性别/身高百分位。App 内测版先做结构化记录与复诊整理，最终以儿肾医生判读为准。", action:{label:"去记录血压", fn:"record_bp"} },
+  { id:"p_bp", tags:["peds"], title:"儿童血压：不是固定阈值，而是“百分位”", body:"儿童血压解读常需要结合年龄/性别/身高百分位。App 先做结构化记录与复诊整理，最终以儿肾医生判读为准。", action:{label:"去记录血压", fn:"record_bp"} },
   { id:"d_hd", tags:["dialysis"], title:"血透日：透前/透后记录能让复诊更高效", body:"建议记录：透前体重与血压、透后体重与血压、超滤量（如有）。长期看“间期体重增长趋势”比单次更有价值。", action:{label:"记录一次透析", fn:"record_dialysis"} },
-  { id:"d_pd_redflag", tags:["dialysis"], title:"腹透红旗：透析液混浊/腹痛/发热要优先处理", body:"腹透出现透析液混浊、腹痛、发热等需要优先联系透析团队或就医。App 内测版先做“记录+分诊提示”。", action:{label:"打开红旗分诊", fn:"open_triage"} },
+  { id:"d_pd_redflag", tags:["dialysis"], title:"腹透红旗：透析液混浊/腹痛/发热要优先处理", body:"腹透出现透析液混浊、腹痛、发热等需要优先联系透析团队或就医。App 先做”记录+分诊提示”。", action:{label:"打开红旗分诊", fn:"open_triage"} },
   { id:"d_fluid", tags:["dialysis"], title:"透析控水：先遵医嘱，再做记录", body:"透析患者常有控水/控盐要求。App 里会把“限水”作为高优先级提示，但具体目标以透析中心医嘱为准。", action:{label:"查看饮食提醒", fn:"open_diet"} },
   { id:"dm_glu", tags:["dm"], title:"血糖记录：给医生看的不是‘一个值’，是‘时间点+趋势’", body:"建议给每次血糖打标签（空腹/餐后/睡前/随机），并关注低血糖症状（出汗、心慌、手抖）。趋势与事件记录能显著提高复诊效率。", action:{label:"去记录血糖", fn:"record_glucose"} },
   { id:"dm_a1c", tags:["dm"], title:"HbA1c：更像‘过去2-3个月平均控糖的回放’", body:"HbA1c 常用于评估阶段性控糖水平。把每次结果按日期录入/上传报告，医生更容易判断是否需要调整方案。", action:{label:"去录入化验", fn:"record_labs"} },
@@ -808,7 +808,7 @@ const EXPLAINERS = {
     howto: [
       "优先上传PDF原件；如为照片，建议光线充足、对焦清晰",
       "上传时选择分类（活检/基因/影像/化验单等）便于复诊快速定位",
-      "内测版为本地保存；正式版可接云端与医生端共享（需权限控制）"
+      "当前为本地保存；正式版可接云端与医生端共享（需权限控制）"
     ],
     usedfor: [
       "资料汇总会进入一页摘要（数量+最近上传）",
@@ -820,7 +820,7 @@ const EXPLAINERS = {
   markers_advanced: {
     title: "高级监测指标：为什么要记录？",
     subtitle: "用于随访整理与趋势（不做自我诊断）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "dd-cfDNA、DSA、anti-PLA2R、dsDNA/C3/C4等指标常用于专病管理与复诊沟通。记录趋势能帮助团队更快抓重点。",
     focus: [
       "同一方法/单位下的趋势变化",
@@ -842,7 +842,7 @@ const EXPLAINERS = {
   mk_ddcfDNA: {
     title: "dd-cfDNA：为什么要记录？",
     subtitle: "移植随访常用辅助指标之一（不同平台差异大）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "dd-cfDNA 常作为评估移植肾受损/免疫风险变化的辅助线索之一，通常需要结合肌酐/eGFR、尿蛋白、症状与其他免疫学信息一起看。我们记录它的目的，是让随访团队复诊时更快抓住趋势与变化点。",
     focus: [
       "更关注趋势变化（连续升高/降低）而非单次数值",
@@ -864,7 +864,7 @@ const EXPLAINERS = {
   mk_dsa: {
     title: "DSA：为什么要记录/上传？",
     subtitle: "供者特异性抗体报告常较复杂，原件更重要",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "DSA 报告通常包含分型与强度等信息（不同实验室展示方式不同）。记录/上传的意义在于：复诊时团队可以快速核对关键字段，并与肾功能、活检、dd-cfDNA 等信息综合判断。",
     focus: [
       "是否为新出现或明显变化（以医生解读为准）",
@@ -886,7 +886,7 @@ const EXPLAINERS = {
   mk_antiPLA2R: {
     title: "anti-PLA2R：为什么要记录？",
     subtitle: "膜性肾病随访常用免疫学指标（以医生解释为准）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "在膜性肾病随访中，anti-PLA2R 常用于反映免疫活动的线索。把它与尿蛋白、肾功能、症状放在同一条时间线上，能让复诊沟通更高效。",
     focus: [
       "更关注趋势变化，而不是单次结果",
@@ -908,7 +908,7 @@ const EXPLAINERS = {
   mk_antiTHSD7A: {
     title: "anti-THSD7A：为什么要记录？",
     subtitle: "膜性肾病的可选补充指标（以中心检测为准）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "部分膜性肾病患者可能会检测 anti-THSD7A 作为补充线索。记录/上传的意义主要在于复诊整理与时间线对比。",
     focus: ["是否做过该检测与结果（以报告为准）", "与尿蛋白与肾功能趋势是否同步"],
     howto: ["建议上传原始报告；如仅口头结论，建议备注检测机构/日期", "不要据此自行调整治疗"],
@@ -919,7 +919,7 @@ const EXPLAINERS = {
   mk_dsDNA: {
     title: "抗dsDNA：为什么要记录？",
     subtitle: "狼疮肾随访常用血清学线索之一（需综合解读）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "在狼疮肾随访中，抗dsDNA 常与补体、尿蛋白/尿沉渣和肾功能一起用于评估免疫活动线索。记录的意义在于把变化放入时间线，方便复诊讨论。",
     focus: ["趋势变化（同一方法更可比）", "与补体C3/C4、蛋白尿、症状是否同向"],
     howto: ["建议上传报告原件并记录日期/单位（不同医院差异较大）", "不要用单项指标替代医生判断"],
@@ -930,7 +930,7 @@ const EXPLAINERS = {
   mk_c3: {
     title: "补体C3：为什么要记录？",
     subtitle: "狼疮肾/C3肾病等随访常用线索（参考范围因院而异）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "C3 常用于反映免疫活动或补体消耗的线索之一，需要结合疾病类型、其他化验与临床表现综合解读。",
     focus: ["是否低于本院参考范围（以报告为准）", "与C4、dsDNA、尿蛋白/尿沉渣变化是否相关"],
     howto: ["建议同时上传原报告，保留参考范围与检测方法信息", "不同医院参考范围不同，尽量同院随访更可比"],
@@ -941,7 +941,7 @@ const EXPLAINERS = {
   mk_c4: {
     title: "补体C4：为什么要记录？",
     subtitle: "狼疮肾随访常用线索（参考范围因院而异）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "C4 常与C3、dsDNA等一起用于评估免疫活动线索。记录趋势能帮助复诊更快回顾变化。",
     focus: ["是否低于本院参考范围（以报告为准）", "与dsDNA、蛋白尿、症状是否同向"],
     howto: ["建议上传原报告并记录日期", "不同医院参考范围不同，趋势解读需由医生完成"],
@@ -952,7 +952,7 @@ const EXPLAINERS = {
   mk_antiNephrin: {
     title: "anti-nephrin：为什么要记录？",
     subtitle: "MCD/FSGS 等人群的可选高级指标（以中心方案为准）",
-    review: "内测文案（待中心审核）",
+    review: "待中心审核",
     why: "anti-nephrin 在部分中心用于肾病综合征/MCD 等人群的研究或辅助评估线索。对多数患者并非必查项，因此我们把它作为‘可选高级指标’：以归档与复诊整理为主。",
     focus: ["是否检测过与结果（阳性/阴性/滴度）", "与蛋白尿、水肿变化是否相关（由医生综合判断）"],
     howto: ["优先上传报告原件；此处可记录阳性/阴性或滴度/数值", "不要据此自行调整治疗"],
@@ -1078,7 +1078,7 @@ const EXPLAINERS = {
     subtitle: "儿童血压解读常需结合年龄/性别/身高百分位",
     why: "儿童血压不像成人有固定阈值，通常需要结合年龄、性别、身高百分位综合判断；记录越规范越有价值。",
     focus: ["固定时间的趋势", "与头晕、乏力、肾功能/尿检变化的关联", "在复诊时提供‘家庭测量方案’依据"],
-    howto: ["袖带大小要适合儿童；安静坐位后测量", "建议监护人协助固定时间记录", "App内测版用于整理，最终判读以儿肾医生为准"],
+    howto: ["袖带大小要适合儿童；安静坐位后测量", "建议监护人协助固定时间记录", "App 用于整理，最终判读以儿肾医生为准"],
     usedfor: ["进入儿肾摘要与复诊问题清单", "帮助医生决定是否需要进一步检查（如ABPM等）"],
     redflags: ["胸痛/呼吸困难", "意识异常/抽搐", "持续严重头痛"],
     action: { label:"去记录血压", fn:"openQuickBP" }
@@ -1103,7 +1103,7 @@ const MARKER_DEFS = {
   dsa: { key:"dsa", label:"DSA（供者特异性抗体）", unit:"", scopes:["tx"], tip:"建议上传完整报告；此处仅录入摘要字段。" },
   antiPLA2R: { key:"antiPLA2R", label:"anti-PLA2R（RU/mL）", unit:"RU/mL", scopes:["mn"], tip:"用于动态随访与复诊整理。" },
   antiTHSD7A: { key:"antiTHSD7A", label:"anti-THSD7A（可选）", unit:"", scopes:["mn"], tip:"如你有该检测，可作为补充录入/上传报告。" },
-  antiNephrin: { key:"antiNephrin", label:"anti-nephrin（可选）", unit:"", scopes:["mcd","fsgs"], tip:"内测：建议优先上传报告原件；此处可录入阳性/阴性或滴度。" },
+  antiNephrin: { key:"antiNephrin", label:"anti-nephrin（可选）", unit:"", scopes:["mcd","fsgs"], tip:"建议优先上传报告原件；此处可录入阳性/阴性或滴度。" },
   dsDNA: { key:"dsDNA", label:"抗dsDNA", unit:"", scopes:["ln"], tip:"狼疮肾随访常用血清学指标之一。" },
   c3: { key:"c3", label:"补体C3", unit:"", scopes:["ln","c3g"], tip:"注意不同医院参考范围差异。" },
   c4: { key:"c4", label:"补体C4", unit:"", scopes:["ln"], tip:"注意不同医院参考范围差异。" },

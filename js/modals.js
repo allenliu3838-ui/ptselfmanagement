@@ -14,7 +14,7 @@ function explainerById(id){
   if(e) return e;
   return {
     title: "为什么要做这项记录？",
-    subtitle: "内测版提示",
+    subtitle: "使用边界",
     why: "这项记录用于随访整理与复诊沟通。",
     focus: ["趋势比单次更重要", "如有不适请优先联系医生/就医"],
     howto: ["按医嘱或中心宣教执行"],
@@ -238,7 +238,7 @@ function openProgramMainModal(){
     openQuickGlucose();
   } else if(state.activeProgram === "stone"){
     openSimpleModal(
-      "结石面板（内测）",
+      "结石面板",
       "结石模块被项目化隔离，避免与CKD/移植混在一起造成混乱。",
       `<div class="list-item"><div class="t">喝水</div><div class="s">点击“+250ml”快速记录。若限水，目标仅作记录。</div></div>
        <div class="list-item"><div class="t">发作事件</div><div class="s">腰痛/血尿/发热等建议记录时间线，复诊沟通更清晰。</div></div>
@@ -256,7 +256,7 @@ function openProgramMainModal(){
     },0);
   } else if(state.activeProgram === "peds"){
     openSimpleModal(
-      "儿肾面板（内测）",
+      "儿肾面板",
       "儿肾项目单列，避免使用成人阈值。重点：生长 + 记录 + 复诊整理。",
       `<div class="list-item"><div class="t">生长记录</div><div class="s">建议每月记录身高与体重一次（或按医嘱）。</div></div>
        <div class="list-item"><div class="t">儿科血压</div><div class="s">儿童血压多以百分位解读；本版先做结构化记录与复诊整理。</div></div>
@@ -277,7 +277,7 @@ function openProgramMainModal(){
     const modTxt = mod === "pd" ? "腹透" : "血透";
     const limit = state.dialysis?.fluidRestricted === "true";
     openSimpleModal(
-      "透析面板（内测）",
+      "透析面板",
       "透析项目独立于 CKD/移植/结石：避免规则冲突。",
       `<div class="list-item"><div class="t">方式</div><div class="s">当前：${escapeHtml(modTxt)}。建议记录体重、血压、症状；血透可记录透前/透后与超滤量。</div></div>
        <div class="list-item"><div class="t">限水提示</div><div class="s">${limit?"已标记为限水（以透析中心医嘱为准）":"未标记/不确定"}。如同时使用结石项目，系统会显示“控水/限水”标签以避免误导。</div></div>
@@ -415,7 +415,7 @@ function openDoctorFinderModal(){
     </details>
   `;
 
-  openSimpleModal("附近医生/机构（内测占位）", "未来：按定位搜索，并对医生/机构信息做质量控制", body,
+  openSimpleModal("附近医生/机构（占位）", "未来：按定位搜索，并对医生/机构信息做质量控制", body,
     `<button class="ghost" data-close="modalSimple">关闭</button>`
   );
 
@@ -983,7 +983,7 @@ function openAddLab(){
 
     <label class="field"><span>HbA1c（%）</span><input id="labHbA1c" type="number" inputmode="decimal" placeholder="例如：6.5"></label>
   `;
-  openSimpleModal("新增化验（内测）","录入后会触发：饮食提醒/安全提醒/计划建议", body,
+  openSimpleModal("新增化验","录入后会触发：饮食提醒/安全提醒/计划建议", body,
     `<button class="primary" id="btnSaveLab">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   qs("#scrUnit").value = lab.scrUnit || "umolL";
 
@@ -1155,7 +1155,7 @@ function openDocUploadModal(preset={}){
 
   const body = `
     ${whyTip("docs_vault")}
-    <div class="note">内测：文件仅保存在本机（IndexedDB）。建议只上传非敏感/脱敏资料用于测试流程。</div>
+    <div class="note">文件仅保存在本机（IndexedDB）。请勿上传敏感/未脱敏资料。</div>
     <label class="field"><span>资料类型</span>
       <select id="docCategory">
         <option value="biopsy_report">肾活检报告（PDF/图片）</option>
@@ -1192,7 +1192,7 @@ function openDocUploadModal(preset={}){
   `;
 
   openSimpleModal(
-    "上传资料（内测）",
+    "上传资料",
     "用于随访整理与复诊沟通；不用于诊断或处方。",
     body,
     `<button class="primary" id="btnSaveDocUpload">保存</button><button class="ghost" data-close="modalSimple">取消</button>`
@@ -1440,7 +1440,7 @@ function openDocsVaultModal(){
     </label>
     <div id="docVaultList"></div>
   `;
-  openSimpleModal("资料库（内测）","本地保存：更换设备不会同步（正式版可上云）", body, `<button class="ghost" data-close="modalSimple">关闭</button>`);
+  openSimpleModal("资料库","本地保存：更换设备不会同步", body, `<button class="ghost" data-close="modalSimple">关闭</button>`);
 
   const sel = qs("#docProgFilter");
   if(sel) sel.value = prog;
@@ -1804,7 +1804,7 @@ function openDialysisSessionModal(){
   const title = "记录透析";
   const subtitle = mod === "pd" ? "腹透：记录 UF/透析液/红旗" : "血透：记录透前/透后 + 超滤量";
 
-  const baseNote = `<div class="note">内测版：以"结构化记录 + 复诊整理"为主。任何红旗（胸痛、气促、抽搐、腹透液混浊/腹痛/发热等）请优先联系透析团队/就医。</div>`;
+  const baseNote = `<div class="note">以"结构化记录 + 复诊整理"为主。任何红旗（胸痛、气促、抽搐、腹透液混浊/腹痛/发热等）请优先联系透析团队/就医。</div>`;
 
   let body = "";
   if(mod === "hd"){
@@ -1938,7 +1938,7 @@ function openQuickBP(){
       <label class="field"><span>舒张压</span><input id="bpDia" type="number" inputmode="numeric" placeholder="例如：80"></label>
     </div>
     <label class="field"><span>场景（可选）</span><input id="bpCtx" type="text" placeholder="例如：早晨、服药前、运动后"></label>
-    <div class="note subtle">${state.activeProgram==="peds" ? "儿童血压通常需要按年龄/性别/身高百分位解读；本内测版先做记录与整理。" : "不建议仅看单次数值；更推荐周均值与波动。"} </div>
+    <div class="note subtle">${state.activeProgram==="peds" ? "儿童血压通常需要按年龄/性别/身高百分位解读；本版先做记录与整理。" : "不建议仅看单次数值；更推荐周均值与波动。"} </div>
   `;
   openSimpleModal("记录血压","将自动进入随访摘要", body,
     `<button class="primary" id="btnSaveBP">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);

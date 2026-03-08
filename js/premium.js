@@ -30,7 +30,7 @@ function isPremium(){
 }
 
 function premiumTierLabel(){
-  if(BETA_ALL_FREE) return "内测版（全功能）";
+  if(BETA_ALL_FREE) return "v";
   return isPremium() ? "会员版" : "免费版";
 }
 
@@ -148,13 +148,13 @@ function openUpgradeModal(featureKey){
 function openPaymentFlow(plan="yearly"){
   const p = PRICING[plan];
   closeModal("modalSimple");
-  openSimpleModal("支付确认", "内测版", `
+  openSimpleModal("支付确认", "", `
     <div style="text-align:center;">
       <div style="margin-bottom:8px;">
         <span style="font-size:12px;color:var(--muted);">已选：</span>
         <span style="font-weight:700;">${escapeHtml(p.label)} ¥${p.price}/${p.unit}</span>
       </div>
-      <div style="font-size:16px;margin-bottom:12px;">内测期间免费体验全部会员功能</div>
+      <div style="font-size:16px;margin-bottom:12px;">免费体验全部功能</div>
       <div class="note subtle">正式版将接入微信支付/支付宝，敬请期待</div>
     </div>
   `, `
@@ -166,7 +166,7 @@ function openPaymentFlow(plan="yearly"){
     if(btn) btn.onclick = ()=>{
       activatePremium(plan);
       closeModal("modalSimple");
-      toast("已激活会员版（内测体验），全部功能已解锁");
+      toast("已激活，全部功能已解锁");
       renderAll();
     };
     qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
@@ -206,7 +206,7 @@ function buildWeeklyReport(){
   const safety = safetySignals();
 
   const lines = [];
-  lines.push("【肾域随访 · 周报】");
+  lines.push("【KidneySphere Followup · 周报】");
   lines.push(`生成时间：${nowISO()}`);
   lines.push(`项目：${programLabel(state.activeProgram)}`);
   lines.push("");
@@ -309,7 +309,7 @@ function renderPremiumBadge(){
   const el = qs("#premiumBadge");
   if(!el) return;
   if(BETA_ALL_FREE){
-    el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">内测版 · 全功能开放</span>`;
+    el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">KidneySphere Followup</span>`;
   } else if(isPremium()){
     el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">⭐ 会员版</span>`;
   } else {
@@ -327,12 +327,12 @@ function showBetaInfo(){
     if(f.upcoming) return;
     featListHtml += `<div class="list-item"><div class="t">✅ ${escapeHtml(f.label)}</div><div class="s">${escapeHtml(f.desc)}</div></div>`;
   });
-  openSimpleModal("内测版 · 全功能开放", "上海胤域医学科技有限公司", `
+  openSimpleModal("KidneySphere Followup", "© KidneySphere", `
     <div class="note" style="margin-bottom:12px;">
-      感谢参与内测！当前所有功能<b>完全免费</b>开放，无需付费、无需激活。
+      当前所有功能<b>完全免费</b>开放，无需付费、无需激活。
     </div>
     ${featListHtml}
-    <div class="note subtle" style="margin-top:12px;">正式版上线后将推出会员订阅服务。内测期间的使用数据和记录将完整保留。</div>
+    <div class="note subtle" style="margin-top:12px;">升级后的使用数据和记录将完整保留。</div>
   `, `<button class="ghost" data-close="modalSimple">知道了</button>`);
   setTimeout(()=>{
     qsa("#modalSimple [data-close]").forEach(b=>b.onclick = ()=>closeModal("modalSimple"));
