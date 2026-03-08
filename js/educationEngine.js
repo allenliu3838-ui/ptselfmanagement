@@ -309,8 +309,8 @@ function getRedFlags(profile) {
 function getTopConcerns(profile, st) {
   var concerns = [];
 
-  // CKD / Glomerular disease
-  if (profile.programs.kidney && !profile.isPediatric && !profile.programs.dialysis) {
+  // CKD / Glomerular disease (not transplant, not dialysis, not peds — those have their own)
+  if (profile.programs.kidney && !profile.isPediatric && !profile.programs.dialysis && !profile.isTransplant) {
     concerns.push({ id: "ckd_egfr",   title: "eGFR 趋势", detail: "关注肾功能变化方向", icon: "🔬" });
     concerns.push({ id: "ckd_uacr",   title: "UACR/尿蛋白", detail: "蛋白尿是肾损伤的独立信号", icon: "🧪" });
     concerns.push({ id: "ckd_bp",     title: "血压控制", detail: "每天测量，看平均趋势", icon: "💓" });
