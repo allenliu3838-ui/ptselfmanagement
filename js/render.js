@@ -14,15 +14,41 @@ function renderExplainPage(){
 
   const mkList = (arr)=> arr && arr.length ? `<ul>${arr.map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>` : "";
 
+  // Try to find matching lab explanation card from education engine
+  var labCard = null;
+  try{
+    if(typeof getEducationProfile === 'function' && typeof getLabExplanations === 'function'){
+      var profile = getEducationProfile(state);
+      var labCards = getLabExplanations(profile);
+      labCard = labCards.find(function(c){ return c.id === 'lab_' + id || c.tags && c.tags.indexOf(id) >= 0; });
+    }
+  }catch(_e){}
+
+  var misconceptionsHtml = '';
+  var whenToRecheckHtml = '';
+  var cannotTellHtml = '';
+  if(labCard){
+    if(Array.isArray(labCard.commonMisconceptions) && labCard.commonMisconceptions.length){
+      misconceptionsHtml = '<div class="explain-section"><div class="explain-h">常见误解</div><div class="explain-p">' + mkList(labCard.commonMisconceptions) + '</div></div>';
+    }
+    if(Array.isArray(labCard.whenToRecheck) && labCard.whenToRecheck.length){
+      whenToRecheckHtml = '<div class="explain-section"><div class="explain-h">什么时候值得复查</div><div class="explain-p">' + mkList(labCard.whenToRecheck) + '</div></div>';
+    }
+    if(Array.isArray(labCard.cannotTellAlone) && labCard.cannotTellAlone.length){
+      cannotTellHtml = '<div class="explain-section"><div class="explain-h">它不能单独说明什么</div><div class="explain-p">' + mkList(labCard.cannotTellAlone) + '</div></div>';
+    }
+  }
+
   bodyEl.innerHTML = `
     <div class="explain-section">
-      <div class="explain-h">为什么要做</div>
+      <div class="explain-h">这项检查主要看什么</div>
       <div class="explain-p">${escapeHtml(e.why || "")}</div>
     </div>
     <div class="explain-section">
       <div class="explain-h">我们重点看什么</div>
       <div class="explain-p">${mkList(e.focus)}</div>
     </div>
+    ${misconceptionsHtml}
     <div class="explain-section">
       <div class="explain-h">怎么做更有用</div>
       <div class="explain-p">${mkList(e.howto)}</div>
@@ -31,6 +57,8 @@ function renderExplainPage(){
       <div class="explain-h">这条数据会用到哪里</div>
       <div class="explain-p">${mkList(e.usedfor)}</div>
     </div>
+    ${whenToRecheckHtml}
+    ${cannotTellHtml}
     <div class="explain-section">
       <div class="explain-h">什么时候要尽快联系团队/就医（红旗）</div>
       <div class="explain-p">${mkList(e.redflags)}</div>
