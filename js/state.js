@@ -81,7 +81,7 @@ function defaultState(){
     markers: [],
     documents: [],
     chat: [
-      { role:"ai", text:"你好，我是随访助手（内测版）。我可以帮你：看懂化验趋势、整理复诊问题、把记录汇总成一页摘要。注意：我不提供诊断或处方，红旗症状请立即就医或联系团队。" }
+      { role:"ai", text:"你好，我是随访助手。我可以帮你：看懂化验趋势、整理复诊问题、把记录汇总成一页摘要。注意：我不提供诊断或处方，红旗症状请立即就医或联系团队。" }
     ],
     summaryQuestions: "",
     ctaRemoteDismissed: false,

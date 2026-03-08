@@ -31,7 +31,7 @@ function openKnowledgeModal(){
     .filter(a => a.tags.includes(state.activeProgram) || (state.activeProgram==="kidney" && a.tags.includes("kidney")) || a.tags.includes("safety"))
     .slice(0, 12);
   openSimpleModal(
-    "知识库（内测）",
+    "知识库",
         "建议：短内容 + 一个行动；推送最终应由“阶段/状态”触发，而不仅是病名。",
     `
       ${items.map(a=>`
@@ -246,7 +246,7 @@ function renderDietFoodDetail(foodId){
 
   openSimpleModal(
     food.name,
-        `来源：内测教育库 v${DIET_LIBRARY_VERSION} · 点击“返回列表”继续搜索`,
+        `来源：教育库 v${DIET_LIBRARY_VERSION} · 点击“返回列表”继续搜索`,
     body,
     `<button class="ghost" id="btnDietBack">返回列表</button>
      <button class="primary" id="btnDietFav">${favSet.has(food.id) ? "★ 已收藏" : "☆ 收藏"}</button>
@@ -284,7 +284,7 @@ function renderDietGuide(guideId){
   };
 
   const body = `
-        <div class="note subtle">专题指南 v${DIET_GUIDE_VERSION} · 以“少走弯路、容易坚持”为目标（内测教育内容）</div>
+        <div class="note subtle">专题指南 v${DIET_GUIDE_VERSION} · 以“少走弯路、容易坚持”为目标（教育内容）</div>
 
     ${state.comorbid?.masld ? `<div class="row"><div class="badge ok">你已标记：脂肪肝/MASLD</div></div>` : ``}
 
@@ -344,7 +344,7 @@ function renderDietModal(){
         : `<div class="note">尚未发现突出饮食关注点。你仍可以用食物库自查“能不能吃”。</div>`;
 
   const body = `
-        <div class="note subtle">提示：点任意食物，查看“为什么要关注 + 替代选择”。（内测教育库，不替代医生/营养师）</div>
+        <div class="note subtle">提示：点任意食物，查看“为什么要关注 + 替代选择”。（教育库，不替代医生/营养师）</div>
 
     ${tagsHtml}
 

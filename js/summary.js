@@ -332,7 +332,7 @@ function renderPrivacy(){
     '<div class="guide-p">本应用当前不接入任何第三方登录、广告或数据分析服务。如未来接入，将提前更新隐私政策并告知用户。</div></div>' +
     '<div class="guide-section"><div class="guide-h">联系方式</div>' +
     '<div class="guide-p">如有隐私相关问题，请联系：privacy@kidneysphere.cn（占位）</div></div>' +
-    '<div class="note" style="margin-top:14px;">最后更新：2025年2月 · 上海胤域医学科技有限公司</div>';
+    '<div class="note" style="margin-top:14px;">最后更新：2025年2月 · © KidneySphere</div>';
 }
 
 function renderTerms(){
@@ -341,14 +341,14 @@ function renderTerms(){
   el.innerHTML =
     '<div class="guide-title">用户协议（简版）</div>' +
     '<div class="guide-section"><div class="guide-h">服务说明</div>' +
-    '<div class="guide-p">肾域随访是一款健康管理与随访记录工具，帮助用户记录血压、体重、化验等健康数据，并生成趋势分析和随访摘要。本工具<b>不提供医疗诊断、治疗建议或处方服务</b>。</div></div>' +
+    '<div class="guide-p">KidneySphere Followup 是一款健康管理与随访记录工具，帮助用户记录血压、体重、化验等健康数据，并生成趋势分析和随访摘要。本工具<b>不提供医疗诊断、治疗建议或处方服务</b>。</div></div>' +
     '<div class="guide-section"><div class="guide-h">免责声明</div>' +
     '<div class="guide-p">本工具中的趋势分析、安全提醒等功能仅供参考，不能替代专业医疗人员的判断。出现胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等紧急情况，请<b>立即就医或拨打急救电话</b>。</div></div>' +
     '<div class="guide-section"><div class="guide-h">使用责任</div>' +
     '<div class="guide-p">用户应确保录入数据的准确性。本工具的输出内容（摘要、趋势等）基于用户录入的数据生成，可能存在不完整或不准确的情况。重要健康决策请以医生建议为准。</div></div>' +
     '<div class="guide-section"><div class="guide-h">知识产权</div>' +
-    '<div class="guide-p">本应用的界面设计、代码和内容的知识产权归上海胤域医学科技有限公司所有。</div></div>' +
-    '<div class="note" style="margin-top:14px;">最后更新：2025年2月 · 上海胤域医学科技有限公司</div>';
+    '<div class="guide-p">本应用的界面设计、代码和内容的知识产权归© KidneySphere所有。</div></div>' +
+    '<div class="note" style="margin-top:14px;">最后更新：2025年2月 · © KidneySphere</div>';
 }
 
 /* ===== Quick-start card for home (P0-1) ===== */
@@ -399,7 +399,7 @@ function renderSiteFooter(){
         '<span class="footer-muted">联系：contact@kidneysphere.cn</span>' +
       '</div>' +
       '<div class="footer-icp">ICP备案号：沪ICP备XXXXXXXX号（占位）</div>' +
-      '<div class="footer-company">上海胤域医学科技有限公司</div>';
+      '<div class="footer-company">© KidneySphere</div>';
   });
 }
 

@@ -76,7 +76,7 @@ function renderUsagePage(){
     : `<div class="guide-p" style="background:#fff8e1;padding:10px 12px;border-radius:10px;"><b>你还没有任何记录。</b>建议现在就完成第一步：回到首页，录入一次血压或体重（30 秒）。有了第一条数据，后面的功能才会"活"起来。</div>`;
 
   bodyEl.innerHTML = `
-    <div class="guide-title">3 分钟学会使用肾域随访</div>
+    <div class="guide-title">3 分钟学会使用 KidneySphere Followup</div>
     ${quickStartHtml}
 
     <div class="guide-section">
@@ -505,7 +505,7 @@ function renderTabbar(){
 
 function renderHeader(){
   const vp = qs("#versionPill");
-  if(vp) vp.textContent = `v${VERSION} · 内测`;
+  if(vp) vp.textContent = `v${VERSION}`;
   qs("#meVersion").textContent = VERSION;
 
   qs("#brandSubtitle").textContent = `项目：${programLabel(state.activeProgram)}`;
@@ -936,7 +936,7 @@ function renderProgramMainCard(){
       <div class="kv"><span>最近血压</span><span>${bp ? `${bp.sys}/${bp.dia} (${niceDate(bp.dateTime.slice(0,10))})` : "—"}</span></div>
       <div class="kv"><span>近14条平均</span><span>${(avgSys!==null && avgDia!==null) ? `${avgSys}/${avgDia}` : "—"}</span></div>
       <div class="kv"><span>最近用药打卡</span><span>${lastMeds ? `${niceDate(lastMeds.dateTime.slice(0,10))} · ${escapeHtml(labelMedsStatus(lastMeds.status))}` : "—"}</span></div>
-      <div class="note subtle">提示：阈值与目标请以医生建议为准；本内测版提供记录与复诊整理。</div>
+      <div class="note subtle">提示：阈值与目标请以医生建议为准；本版提供记录与复诊整理。</div>
     `;
     actionBtn.textContent = "记录一次血压";
   } else if(state.activeProgram === "dm"){
@@ -1073,7 +1073,7 @@ function renderProgramMainCard(){
       <div class="kv"><span>身高生长速度</span><span>${hv?`${hv.perYear} cm/年（${hv.days}天）`:"—"}</span></div>
       <div class="kv"><span>体重增长速度</span><span>${wv?`${wv.perYear} kg/年（${wv.days}天）`:"—"}</span></div>
       <div class="kv"><span>儿科eGFR（估算）</span><span>${egfr!==null?`${egfr}（Bedside Schwartz）`:"—"}</span></div>
-      <div class="note subtle">说明：儿童血压与肾功能解读更依赖身高/年龄百分位与医生判读；本内测版先做“记录与复诊整理”。</div>
+      <div class="note subtle">说明：儿童血压与肾功能解读更依赖身高/年龄百分位与医生判读；本版先做”记录与复诊整理”。</div>
     `;
     actionBtn.textContent = "去记录身高";
   } else {
