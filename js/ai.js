@@ -90,7 +90,7 @@ function aiQuickMessage(){
   const prog = programLabel(state.activeProgram);
   const text = buildExportText();
   const lines = [];
-  lines.push(`医生您好，我是患者（或家属），想就【${prog}】随访请教。下面是一页摘要（KidneySphere Followup 自动整理）：`);
+  lines.push(`医生您好，我是患者（或家属），想就【${prog}】随访请教。下面是一页摘要（肾域·记录 自动整理）：`);
   lines.push(text);
   lines.push("");
   lines.push("谢谢医生！如需我补充其他记录/化验，请告知。");

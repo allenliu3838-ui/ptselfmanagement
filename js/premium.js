@@ -206,7 +206,7 @@ function buildWeeklyReport(){
   const safety = safetySignals();
 
   const lines = [];
-  lines.push("【KidneySphere Followup · 周报】");
+  lines.push("【肾域·记录 · 周报】");
   lines.push(`生成时间：${nowISO()}`);
   lines.push(`项目：${programLabel(state.activeProgram)}`);
   lines.push("");
@@ -309,7 +309,7 @@ function renderPremiumBadge(){
   const el = qs("#premiumBadge");
   if(!el) return;
   if(BETA_ALL_FREE){
-    el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">KidneySphere Followup</span>`;
+    el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">肾域·记录</span>`;
   } else if(isPremium()){
     el.innerHTML = `<span class="badge ok" style="font-size:10px;cursor:pointer;" id="badgePremiumClick">⭐ 会员版</span>`;
   } else {
@@ -327,7 +327,7 @@ function showBetaInfo(){
     if(f.upcoming) return;
     featListHtml += `<div class="list-item"><div class="t">✅ ${escapeHtml(f.label)}</div><div class="s">${escapeHtml(f.desc)}</div></div>`;
   });
-  openSimpleModal("KidneySphere Followup", "© KidneySphere", `
+  openSimpleModal("肾域·记录", "© KidneySphere", `
     <div class="note" style="margin-bottom:12px;">
       当前所有功能<b>完全免费</b>开放，无需付费、无需激活。
     </div>

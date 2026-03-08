@@ -341,7 +341,7 @@ function renderTerms(){
   el.innerHTML =
     '<div class="guide-title">用户协议（简版）</div>' +
     '<div class="guide-section"><div class="guide-h">服务说明</div>' +
-    '<div class="guide-p">KidneySphere Followup 是一款健康管理与随访记录工具，帮助用户记录血压、体重、化验等健康数据，并生成趋势分析和随访摘要。本工具<b>不提供医疗诊断、治疗建议或处方服务</b>。</div></div>' +
+    '<div class="guide-p">肾域·记录 是一款健康管理与随访记录工具，帮助用户记录血压、体重、化验等健康数据，并生成趋势分析和随访摘要。本工具<b>不提供医疗诊断、治疗建议或处方服务</b>。</div></div>' +
     '<div class="guide-section"><div class="guide-h">免责声明</div>' +
     '<div class="guide-p">本工具中的趋势分析、安全提醒等功能仅供参考，不能替代专业医疗人员的判断。出现胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等紧急情况，请<b>立即就医或拨打急救电话</b>。</div></div>' +
     '<div class="guide-section"><div class="guide-h">使用责任</div>' +

@@ -76,7 +76,7 @@ function renderUsagePage(){
     : `<div class="guide-p" style="background:#fff8e1;padding:10px 12px;border-radius:10px;"><b>你还没有任何记录。</b>建议现在就完成第一步：回到首页，录入一次血压或体重（30 秒）。有了第一条数据，后面的功能才会"活"起来。</div>`;
 
   bodyEl.innerHTML = `
-    <div class="guide-title">3 分钟学会使用 KidneySphere Followup</div>
+    <div class="guide-title">3 分钟学会使用 肾域·记录</div>
     ${quickStartHtml}
 
     <div class="guide-section">
