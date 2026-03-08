@@ -130,7 +130,7 @@ function showShareActiveModal(ss){
 
     const btnWechat = qs("#btnShareWechat");
     if(btnWechat) btnWechat.onclick = async ()=>{
-      const text = `我在用 KidneySphere Followup管理肾病随访数据。你可以通过共享码 ${code} 查看我的健康概况。下载地址：[App链接]`;
+      const text = `我在用 肾域·记录管理肾病随访数据。你可以通过共享码 ${code} 查看我的健康概况。下载地址：[App链接]`;
       try{ await navigator.clipboard.writeText(text); toast("已复制分享文案，可粘贴到微信发送"); }
       catch(_e){ prompt("复制分享文案：", text); }
     };
@@ -347,7 +347,7 @@ function openVisitPrepModal(){
 
 function buildVisitPrepText(changes, insights, questions, lab, bp, wt, sinceDate){
   const lines = [];
-  lines.push("【KidneySphere Followup · 复诊准备包】");
+  lines.push("【肾域·记录 · 复诊准备包】");
   lines.push(`生成时间：${nowISO()}`);
   lines.push(`项目：${programLabel(state.activeProgram)}`);
   lines.push(`覆盖范围：${niceDate(sinceDate)} 至今`);

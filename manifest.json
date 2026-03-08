@@ -1,6 +1,6 @@
 {
-  "name": "肾域随访 · KidneySphere Followup",
-  "short_name": "KidneySphere Followup",
+  "name": "肾域·记录 — KidneySphere Tracker",
+  "short_name": "肾域·记录",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f5f7fb",
