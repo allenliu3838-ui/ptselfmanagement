@@ -1594,6 +1594,125 @@ function renderAI(){
   box.scrollTop = box.scrollHeight;
 }
 
+// ──────────────────────────────────────────────
+// Education Engine UI Integration
+// ──────────────────────────────────────────────
+
+function renderTopConcerns(){
+  if(typeof getEducationProfile !== "function" || typeof getTopConcerns !== "function") return;
+  var card = qs("#cardTopConcerns");
+  var box = qs("#topConcernsContent");
+  if(!card || !box) return;
+  try{
+    var profile = getEducationProfile(state);
+    var concerns = getTopConcerns(profile, state);
+    if(!concerns.length){ card.style.display = "none"; return; }
+    card.style.display = "";
+    var progLabel = typeof programLabel === "function" ? programLabel(state.activeProgram) : state.activeProgram;
+    var sub = qs("#topConcernsSubtitle");
+    if(sub) sub.textContent = "基于你的项目（" + progLabel + "）和记录生成";
+    box.innerHTML = concerns.map(function(c,i){
+      return '<div class="edu-concern-item">' +
+        '<div class="edu-concern-num">' + (i+1) + '</div>' +
+        '<div class="edu-concern-body">' +
+          '<div class="edu-concern-title">' + escapeHtml(c.title) + '</div>' +
+          '<div class="edu-concern-detail">' + escapeHtml(c.detail) + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+  }catch(e){ console.warn("renderTopConcerns error", e); card.style.display = "none"; }
+}
+
+function renderRedFlagsEdu(){
+  if(typeof getEducationProfile !== "function" || typeof getRedFlags !== "function") return;
+  var card = qs("#cardRedFlagsEdu");
+  var box = qs("#redFlagsEduContent");
+  if(!card || !box) return;
+  try{
+    var profile = getEducationProfile(state);
+    var flags = getRedFlags(profile);
+    // Only show if there are specific high-risk flags (not just generic BP)
+    var highRiskFlags = flags.filter(function(f){ return f.project !== "通用"; });
+    if(!highRiskFlags.length){ card.style.display = "none"; return; }
+    card.style.display = "";
+    box.innerHTML = highRiskFlags.map(function(f){
+      return '<div class="edu-redflag-item">' +
+        '<div class="edu-redflag-badge">' + escapeHtml(f.project) + '</div>' +
+        '<div class="edu-redflag-body">' +
+          '<div class="edu-redflag-title">' + escapeHtml(f.title) + '</div>' +
+          '<div class="edu-redflag-summary">' + escapeHtml(f.summary) + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+  }catch(e){ console.warn("renderRedFlagsEdu error", e); card.style.display = "none"; }
+}
+
+function renderDietReasons(){
+  if(typeof getEducationProfile !== "function" || typeof getDietReasonTag !== "function") return;
+  try{
+    var profile = getEducationProfile(state);
+    var dietWarnings = typeof getDietWarnings === "function" ? getDietWarnings(profile) : [];
+    // Add "为什么看到这条" to diet subtitle
+    var dietSubtitle = qs("#cardDiet .card-subtitle");
+    if(dietSubtitle){
+      var reasons = [];
+      var diet = typeof dietSignals === "function" ? dietSignals() : [];
+      for(var i = 0; i < diet.length; i++){
+        var r = getDietReasonTag(diet[i].key, profile);
+        if(r) reasons.push(r);
+      }
+      if(reasons.length){
+        dietSubtitle.textContent = "为什么看到这些：" + reasons.join("；");
+      }
+    }
+    // Show diet conflict warnings
+    var contextWarnings = dietWarnings.filter(function(w){ return w.type === "conflict" || w.type === "suppress"; });
+    if(contextWarnings.length){
+      var dietBox = qs("#dietContent");
+      if(dietBox){
+        var warningHtml = contextWarnings.map(function(w){
+          return '<div class="edu-diet-warning"><strong>' + escapeHtml(w.reason) + '：</strong>' + escapeHtml(w.message) + '</div>';
+        }).join("");
+        dietBox.insertAdjacentHTML("afterbegin", warningHtml);
+      }
+    }
+  }catch(e){ console.warn("renderDietReasons error", e); }
+}
+
+function renderEducationCards(){
+  if(typeof getEducationProfile !== "function" || typeof getEducationCards !== "function") return;
+  var box = qs("#knowledgeContent");
+  if(!box) return;
+  try{
+    var profile = getEducationProfile(state);
+    var cards = getEducationCards(profile, typeof getAllEducationCards === "function" ? getAllEducationCards() : []);
+    if(!cards.length) return;
+    // Append education cards after existing knowledge content
+    var eduHtml = cards.slice(0, 3).map(function(c){
+      var redFlagHtml = "";
+      if(Array.isArray(c.redFlags) && c.redFlags.length){
+        redFlagHtml = '<div class="edu-card-redflags"><strong>什么时候找医生/急诊：</strong>' +
+          c.redFlags.slice(0,2).map(function(r){ return escapeHtml(r); }).join("；") + '</div>';
+      }
+      var actionHtml = "";
+      if(Array.isArray(c.actionToday) && c.actionToday.length){
+        actionHtml = '<div class="edu-card-action">今天能做：' + escapeHtml(c.actionToday[0]) + '</div>';
+      }
+      var maturityBadge = "";
+      if(c.maturity === "adjunct") maturityBadge = '<span class="badge info" style="font-size:9px;">辅助</span> ';
+      if(c.maturity === "emerging") maturityBadge = '<span class="badge warn" style="font-size:9px;">探索中</span> ';
+      var reviewBadge = "";
+      if(c.requiresMedicalReview) reviewBadge = '<span class="badge warn" style="font-size:9px;">待临床审校</span> ';
+      return '<div class="list-item edu-card">' +
+        '<div class="t">' + maturityBadge + reviewBadge + escapeHtml(c.title) + '</div>' +
+        '<div class="s">' + escapeHtml(c.shortSummary) + '</div>' +
+        actionHtml + redFlagHtml +
+      '</div>';
+    }).join("");
+    box.insertAdjacentHTML("beforeend", '<div class="edu-section-divider">配置驱动教育卡片</div>' + eduHtml);
+  }catch(e){ console.warn("renderEducationCards error", e); }
+}
+
 function renderAll(){
   const fns = [renderHeader,renderPremiumBadge,renderHome,renderRecords,renderTrendCard,renderDocsPage,renderFollowup,renderMe,renderAI,renderExplainPage,renderGuidePage,renderUsagePage];
   /* P0: summary, privacy, terms, quick-start, footer, CTA (defined in summary.js) */
@@ -1603,6 +1722,8 @@ function renderAll(){
   if(typeof renderQuickStart === "function") fns.push(renderQuickStart);
   if(typeof renderSiteFooter === "function") fns.push(renderSiteFooter);
   if(typeof renderHomeCTA === "function") fns.push(renderHomeCTA);
+  /* Education engine renders */
+  fns.push(renderTopConcerns, renderRedFlagsEdu, renderDietReasons, renderEducationCards);
   fns.forEach(fn=>{ try{ fn(); }catch(e){ console.error("renderAll error in "+fn.name, e); } });
 }
 
