@@ -1,0 +1,33 @@
+[
+  {
+    "id": "advanced_marker_maturity",
+    "project": ["kidney"],
+    "audience": "all",
+    "priority": "p0",
+    "title": "高级指标成熟度：标准、辅助、探索中",
+    "shortSummary": "dd-cfDNA、DSA、anti-PLA2R、anti-nephrin 等高级监测指标处于不同的临床成熟度。了解这些指标的定位有助于和医生更好地沟通。",
+    "whyItMatters": "不是所有检测都有同等的证据支持。有些是临床标准操作，有些是辅助参考，有些还在研究中。了解成熟度可以帮你提出更好的问题，也避免过度解读新兴指标。",
+    "keyMetrics": [],
+    "actionToday": [
+      "了解你正在监测的指标属于哪个成熟度级别",
+      "对'探索中'的指标，结果仅供参考，以医生解读为准"
+    ],
+    "avoidOrDont": [
+      "不要仅凭一项'探索中'指标的结果就改变治疗方案",
+      "不要因为指标是'探索中'就认为没有价值——它可能提供有意义的参考"
+    ],
+    "redFlags": [
+      "任何指标突然明显变化都建议联系医生——不管成熟度级别"
+    ],
+    "askDoctor": [
+      "我做的这些检测，哪些是标准检测，哪些是辅助参考？",
+      "这些新指标的结果怎么解读？会改变我的治疗吗？"
+    ],
+    "maturity": "standard",
+    "tags": ["高级指标", "成熟度"],
+    "requiresMedicalReview": true,
+    "reviewerStatus": "draft",
+    "updatedAt": "2026-03-08",
+    "version": "1.0"
+  }
+]

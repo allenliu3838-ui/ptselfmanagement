@@ -148,21 +148,23 @@ function analyzeTrends(){
     const days = Math.max(1, (new Date(last.date) - new Date(first.date)) / (24*3600*1000));
     const monthlyRate = (diff / days) * 30;
     const rounded = Math.round(monthlyRate*10)/10;
+    const T = THRESHOLDS.egfr;
+    const M = TREND_MESSAGES.egfr;
 
     if(diff > 0){
-      insights.push({ type:"egfr", level:"ok", title:"eGFR 趋势向好",
+      insights.push({ type:"egfr", level:"ok", title:M.improving,
         detail:`从 ${first.value} 升至 ${last.value}（${first.date} → ${last.date}），平均每月 +${rounded}`,
         sparkData: egfrVals.map(d=>d.value) });
-    } else if(monthlyRate < -2){
-      insights.push({ type:"egfr", level:"danger", title:"eGFR 下降较快",
-        detail:`从 ${first.value} 降至 ${last.value}（${first.date} → ${last.date}），平均每月 ${rounded}。建议复诊时与医生讨论`,
+    } else if(monthlyRate < T.monthlyDeclineRate){
+      insights.push({ type:"egfr", level:"danger", title:M.rapidDecline,
+        detail:`从 ${first.value} 降至 ${last.value}（${first.date} → ${last.date}），平均每月 ${rounded}。${M.rapidAdvice}`,
         sparkData: egfrVals.map(d=>d.value) });
     } else if(diff < 0){
-      insights.push({ type:"egfr", level:"warn", title:"eGFR 缓慢下降",
+      insights.push({ type:"egfr", level:"warn", title:M.slowDecline,
         detail:`从 ${first.value} 降至 ${last.value}（${first.date} → ${last.date}），平均每月 ${rounded}`,
         sparkData: egfrVals.map(d=>d.value) });
     } else {
-      insights.push({ type:"egfr", level:"ok", title:"eGFR 稳定",
+      insights.push({ type:"egfr", level:"ok", title:M.stable,
         detail:`维持在 ${last.value} 左右`,
         sparkData: egfrVals.map(d=>d.value) });
     }
@@ -182,16 +184,17 @@ function analyzeTrends(){
     const pct = Math.round((diff / first.value)*100);
     const unit = last.unit === "mgdl" ? "mg/dL" : "μmol/L";
 
-    if(pct > 20){
-      insights.push({ type:"scr", level:"danger", title:"肌酐上升明显",
-        detail:`从 ${first.value} 升至 ${last.value} ${unit}（+${pct}%）。肌酐短期大幅上升需关注，建议尽早复诊`,
+    var SM = TREND_MESSAGES.scr;
+    if(pct > THRESHOLDS.scr.significantRisePct){
+      insights.push({ type:"scr", level:"danger", title:SM.significantRise,
+        detail:`从 ${first.value} 升至 ${last.value} ${unit}（+${pct}%）。${SM.riseAdvice}`,
         sparkData: scrVals.map(d=>d.value) });
     } else if(diff > 0){
-      insights.push({ type:"scr", level:"warn", title:"肌酐略有上升",
+      insights.push({ type:"scr", level:"warn", title:SM.slightRise,
         detail:`从 ${first.value} 升至 ${last.value} ${unit}（+${pct}%）`,
         sparkData: scrVals.map(d=>d.value) });
     } else if(diff < 0){
-      insights.push({ type:"scr", level:"ok", title:"肌酐有改善",
+      insights.push({ type:"scr", level:"ok", title:SM.improved,
         detail:`从 ${first.value} 降至 ${last.value} ${unit}（${pct}%）`,
         sparkData: scrVals.map(d=>d.value) });
     }
@@ -206,17 +209,19 @@ function analyzeTrends(){
 
   if(kVals.length >= 1){
     const last = kVals[kVals.length-1];
-    if(last.value > 5.5){
-      insights.push({ type:"k", level:"danger", title:"血钾偏高",
-        detail:`最近血钾 ${last.value} mmol/L（>5.5）。高钾血症有心脏风险，需限制高钾食物并复诊`,
+    var KT = THRESHOLDS.k;
+    var KM = TREND_MESSAGES.k;
+    if(last.value > KT.dangerHigh){
+      insights.push({ type:"k", level:"danger", title:KM.dangerHigh,
+        detail:`最近血钾 ${last.value} mmol/L（>${KT.dangerHigh}）。${KM.dangerDetail}`,
         sparkData: kVals.map(d=>d.value) });
-    } else if(last.value > 5.0){
-      insights.push({ type:"k", level:"warn", title:"血钾偏高边缘",
-        detail:`最近血钾 ${last.value} mmol/L（正常 3.5-5.0），建议注意饮食`,
+    } else if(last.value > KT.warnHigh){
+      insights.push({ type:"k", level:"warn", title:KM.warnHigh,
+        detail:`最近血钾 ${last.value} mmol/L（正常 ${KT.warnLow}-${KT.warnHigh}），建议注意饮食`,
         sparkData: kVals.map(d=>d.value) });
-    } else if(last.value < 3.5){
-      insights.push({ type:"k", level:"warn", title:"血钾偏低",
-        detail:`最近血钾 ${last.value} mmol/L（<3.5），可能需要补钾`,
+    } else if(last.value < KT.warnLow){
+      insights.push({ type:"k", level:"warn", title:KM.warnLow,
+        detail:`最近血钾 ${last.value} mmol/L（<${KT.warnLow}），可能需要补钾`,
         sparkData: kVals.map(d=>d.value) });
     }
   }
@@ -237,20 +242,22 @@ function analyzeTrends(){
     const avg2Sys = secondHalf.reduce((s,v)=>s+(toNum(v.sys)||0),0)/secondHalf.length;
     const sysDiff = Math.round(avg2Sys - avg1Sys);
 
-    if(avgSys >= 140 || avgDia >= 90){
-      insights.push({ type:"bp", level:"danger", title:"血压偏高",
-        detail:`近 ${recent7.length} 次平均 ${avgSys}/${avgDia} mmHg。建议复诊调药`,
+    var BT = THRESHOLDS.bp;
+    var BM = TREND_MESSAGES.bp;
+    if(avgSys >= BT.dangerSys || avgDia >= BT.dangerDia){
+      insights.push({ type:"bp", level:"danger", title:BM.high,
+        detail:`近 ${recent7.length} 次平均 ${avgSys}/${avgDia} mmHg。${BM.highAdvice}`,
         sparkData: recent7.map(v=>toNum(v.sys)) });
     } else if(sysDiff < -5){
-      insights.push({ type:"bp", level:"ok", title:"血压改善趋势",
+      insights.push({ type:"bp", level:"ok", title:BM.improving,
         detail:`近期均值 ${avgSys}/${avgDia} mmHg，较前期降低约 ${Math.abs(sysDiff)} mmHg`,
         sparkData: sorted.slice(-10).map(v=>toNum(v.sys)) });
-    } else if(avgSys <= 130 && avgDia <= 80){
-      insights.push({ type:"bp", level:"ok", title:"血压控制良好",
+    } else if(avgSys <= BT.targetSys && avgDia <= BT.targetDia){
+      insights.push({ type:"bp", level:"ok", title:BM.good,
         detail:`近 ${recent7.length} 次平均 ${avgSys}/${avgDia} mmHg，达标`,
         sparkData: recent7.map(v=>toNum(v.sys)) });
     } else {
-      insights.push({ type:"bp", level:"warn", title:"血压需继续关注",
+      insights.push({ type:"bp", level:"warn", title:BM.needWatch,
         detail:`近 ${recent7.length} 次平均 ${avgSys}/${avgDia} mmHg`,
         sparkData: recent7.map(v=>toNum(v.sys)) });
     }
@@ -290,9 +297,10 @@ function analyzeTrends(){
     const lv = toNum(last.kg);
     if(fv !== null && lv !== null){
       const diff = Math.round((lv - fv)*10)/10;
-      if(Math.abs(diff) >= 2){
-        insights.push({ type:"weight", level: diff > 0 ? "warn" : "info", title: diff > 0 ? "体重上升" : "体重下降",
-          detail:`从 ${fv}kg → ${lv}kg（${diff>0?"+":""}${diff}kg），短期体重波动可能反映水钠潴留`,
+      var WM = TREND_MESSAGES.weight;
+      if(Math.abs(diff) >= THRESHOLDS.weight.significantChangeKg){
+        insights.push({ type:"weight", level: diff > 0 ? "warn" : "info", title: diff > 0 ? WM.increase : WM.decrease,
+          detail:`从 ${fv}kg → ${lv}kg（${diff>0?"+":""}${diff}kg），${WM.fluctuationNote}`,
           sparkData: sorted.slice(-10).map(v=>toNum(v.kg)) });
       }
     }
@@ -310,7 +318,7 @@ function buildTrendSummaryText(insights){
     return `${icon} ${ins.title}：${ins.detail}`;
   });
   lines.push("");
-  lines.push("提醒：以上为数据趋势整理，不是诊断。具体请遵医嘱。");
+  lines.push("提醒：" + DISCLAIMERS.general);
   return lines.join("\n");
 }
 
@@ -416,9 +424,10 @@ function openTrendChartModal(type){
     : "";
 
   const bodyHtml = `
+    <div class="disclaimer" style="margin-bottom:10px;padding:6px 10px;background:#f0f7ff;border-radius:8px;font-size:11px;border-left:3px solid var(--primary);">${DISCLAIMERS.general}</div>
     <div id="trendChartArea" style="width:100%;min-height:180px;margin-bottom:10px;"></div>
     ${interpretation}
-    <div class="note subtle" style="margin-top:8px;">点击可查看详细数据。趋势分析仅供参考，不替代医生判断。</div>
+    <div class="note subtle" style="margin-top:8px;">点击可查看详细数据。</div>
   `;
 
   openSimpleModal(title, "数据趋势可视化", bodyHtml, `
@@ -449,59 +458,62 @@ function openPersonalDietModal(){
   const focus = dietFocus();
   const advices = [];
 
-  // Potassium-based advice
+  // Potassium-based advice (thresholds from THRESHOLDS.k)
   const kVal = lab ? toNum(lab.k) : null;
   if(kVal !== null){
-    if(kVal > 5.5){
-      advices.push({ icon:"🔴", title:"严格限钾", items:["避免：香蕉、橙子、红枣、土豆、番茄、菠菜、蘑菇","建议：苹果、梨、黄瓜、圆白菜、冬瓜","烹饪：蔬菜切小块焯水后再烹调（可减少30-50%钾）","提醒：低钠盐含大量钾，肾病患者禁用"] });
-    } else if(kVal > 5.0){
-      advices.push({ icon:"🟡", title:"注意控钾", items:["减少：香蕉、橙汁、干果、坚果的摄入频率","优选：苹果、梨、白菜、冬瓜等低钾蔬果","避免：低钠盐（含氯化钾）"] });
+    if(kVal > THRESHOLDS.k.dangerHigh){
+      advices.push(DIET_ADVICE.k_danger);
+    } else if(kVal > THRESHOLDS.k.warnHigh){
+      advices.push(DIET_ADVICE.k_warn);
     } else {
-      advices.push({ icon:"🟢", title:"血钾正常", items:[`当前 ${kVal} mmol/L，在正常范围内`,"保持均衡饮食，继续监测"] });
+      var kNormal = Object.assign({}, DIET_ADVICE.k_normal);
+      kNormal.items = [`当前 ${kVal} mmol/L，在正常范围内`].concat(kNormal.items);
+      advices.push(kNormal);
     }
   }
 
-  // Phosphorus-based advice
+  // Phosphorus-based advice (thresholds from THRESHOLDS.p)
   const pVal = lab ? toNum(lab.p) : null;
   if(pVal !== null){
-    if(pVal > 1.45){
-      advices.push({ icon:"🔴", title:"严格限磷", items:["避免：可乐/碳酸饮料、加工肉类（火腿/香肠）、方便面","减少：内脏类、蛋黄、全谷物","优选：白面、白米、瘦肉（选择新鲜食材而非加工品）","关键：看食品标签，含‘磷酸盐’的添加剂吸收率极高"] });
-    } else if(pVal > 1.3){
-      advices.push({ icon:"🟡", title:"注意控磷", items:["减少加工食品和碳酸饮料","优先选择新鲜食材"] });
+    if(pVal > THRESHOLDS.p.dangerHigh){
+      advices.push(DIET_ADVICE.p_danger);
+    } else if(pVal > THRESHOLDS.p.warnHigh){
+      advices.push(DIET_ADVICE.p_warn);
     }
   }
 
-  // eGFR-based protein advice
+  // eGFR-based protein advice (thresholds from THRESHOLDS.egfr)
   const egfrVal = lab ? toNum(lab.egfr) : null;
   if(egfrVal !== null && state.activeProgram !== "dialysis"){
-    if(egfrVal < 30){
-      advices.push({ icon:"🟡", title:"低蛋白饮食建议", items:["每日蛋白摄入建议 0.6-0.8g/kg 体重","优先选择高质量蛋白：蛋清、鱼肉、瘦肉","可考虑 α-酮酸补充（需遵医嘱）","减少植物蛋白（豆类）摄入比例"] });
-    } else if(egfrVal < 60){
-      advices.push({ icon:"🟡", title:"适度控蛋白", items:["每日蛋白摄入建议 0.8g/kg 体重","避免高蛋白饮食（如大量红肉、蛋白粉）","均衡搭配动物蛋白和植物蛋白"] });
+    if(egfrVal < THRESHOLDS.egfr.lowProteinDiet){
+      advices.push(DIET_ADVICE.protein_low_egfr);
+    } else if(egfrVal < THRESHOLDS.egfr.moderateProtein){
+      advices.push(DIET_ADVICE.protein_moderate);
     }
   }
 
   // Dialysis patients: different advice
   if(state.activeProgram === "dialysis"){
-    advices.push({ icon:"📋", title:"透析饮食要点", items:["透析患者蛋白需求较高：1.0-1.2g/kg 体重/天","每次透析后适当补充优质蛋白","严格控制液体摄入（两次透析之间体重增长<干体重5%）","注意控钾控磷，按医嘱服用磷结合剂"] });
+    advices.push(DIET_ADVICE.dialysis_diet);
   }
 
   // Sodium advice (if HTN)
   if(state.comorbid?.htn || state.enabledPrograms?.htn){
-    advices.push({ icon:"🧂", title:"低盐饮食", items:["每日盐摄入 <5g（约1茶匙）","避免：腌制食品、咸菜、酱油过多","注意：味精/鸡精也含钠","用醋、柠檬汁、香料替代部分盐分调味"] });
+    advices.push(DIET_ADVICE.low_salt);
   }
 
   // DM advice
   if(state.comorbid?.dm || state.enabledPrograms?.dm){
-    advices.push({ icon:"🍚", title:"控糖建议", items:["选择低GI主食：糙米饭、全麦面（注意CKD患者需权衡控磷与控糖）","每餐搭配蔬菜、蛋白质，减缓血糖上升","避免含糖饮料和甜食","水果选择低糖种类：草莓、蓝莓（每日限量）"] });
+    advices.push(DIET_ADVICE.dm_diet);
   }
 
   if(!advices.length){
-    advices.push({ icon:"💡", title:"暂无个性化建议", items:["录入化验数据后将自动生成针对性的饮食建议","建议录入：血钾(K)、血磷(P)、eGFR 等指标"] });
+    advices.push(DIET_ADVICE.no_data);
   }
 
   const dateStr = lab ? `基于 ${niceDate(lab.date||"")} 化验结果` : "暂无化验数据";
   const bodyHtml = `
+    <div class="disclaimer" style="margin-bottom:10px;padding:8px 10px;background:#fef2f2;border-radius:8px;font-size:12px;border-left:3px solid var(--danger);">${DISCLAIMERS.personalDiet}</div>
     <div class="note subtle" style="margin-bottom:10px;">${escapeHtml(dateStr)} · 个性化生成</div>
     ${advices.map(a=>`
       <div class="list-item" style="margin-bottom:8px;">
@@ -509,7 +521,7 @@ function openPersonalDietModal(){
         <div class="s"><ul style="margin:4px 0 0 16px;padding:0;list-style:disc;">${a.items.map(i=>`<li style="margin-bottom:3px;">${escapeHtml(i)}</li>`).join("")}</ul></div>
       </div>
     `).join("")}
-    <div class="note subtle" style="margin-top:10px;">以上为基于化验数据的通用建议，不替代医生/营养师的个体化方案。</div>
+    <div class="note subtle" style="margin-top:10px;">${DISCLAIMERS.personalDiet}</div>
   `;
 
   openSimpleModal("今日个性化饮食建议", "⭐ 会员功能", bodyHtml, `

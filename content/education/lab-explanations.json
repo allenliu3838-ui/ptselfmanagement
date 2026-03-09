@@ -1,0 +1,147 @@
+[
+  {
+    "id": "lab_creatinine_egfr",
+    "project": ["kidney", "htn", "dm", "dialysis"],
+    "audience": "all",
+    "priority": "p0",
+    "title": "肌酐与 eGFR：肾功能的核心窗口",
+    "shortSummary": "肌酐是肌肉代谢产物，由肾脏排出。eGFR 由肌酐换算而来，估算肾脏过滤能力。两者一起看趋势比单次值更重要。",
+    "whyItMatters": "eGFR 是 CKD 分期的基础。但单次肌酐可受肌肉量、饮食、脱水等影响。看趋势才能判断肾功能是稳定、改善还是下降。",
+    "keyMetrics": ["肌酐 (μmol/L 或 mg/dL)", "eGFR (mL/min/1.73m²)"],
+    "actionToday": [
+      "录入最近的肌酐和 eGFR 结果",
+      "对比上次结果，看趋势方向"
+    ],
+    "commonMisconceptions": [
+      "误解：肌酐高一点就是肾衰竭 → 实际：需看趋势和基线",
+      "误解：eGFR 波动几个点就是恶化 → 实际：±5-10 的波动可能是正常变异",
+      "误解：肌酐正常就没有肾病 → 实际：早期 CKD 肌酐可能还正常"
+    ],
+    "whenToRecheck": [
+      "按医生建议的间隔复查（通常 1-6 个月）",
+      "急性病（感染/脱水/手术）恢复后建议复查",
+      "新开始或调整肾脏相关药物后"
+    ],
+    "cannotTellAlone": [
+      "不能单独判断 CKD 的原因——需要结合尿检、影像、病史",
+      "不能准确反映儿童的肾功能——需用儿科专用公式",
+      "不能直接用于透析充分性评估"
+    ],
+    "redFlags": [
+      "eGFR 短期内快速下降（数周内下降 >25%） → 联系医生",
+      "肌酐突然翻倍 → 可能急性肾损伤，紧急就医"
+    ],
+    "tags": ["化验", "肌酐", "eGFR", "肾功能"],
+    "requiresMedicalReview": false,
+    "reviewerStatus": "draft",
+    "updatedAt": "2026-03-08",
+    "version": "1.0"
+  },
+  {
+    "id": "lab_uacr_proteinuria",
+    "project": ["kidney", "htn", "dm"],
+    "audience": "all",
+    "priority": "p0",
+    "title": "UACR 与尿蛋白：肾小球屏障的信号灯",
+    "shortSummary": "UACR（尿白蛋白肌酐比）和 24 小时尿蛋白反映肾小球的过滤屏障是否完整。蛋白漏出增加往往比肌酐升高更早出现。",
+    "whyItMatters": "尿蛋白是肾脏损伤的独立危险因素，也是治疗效果的重要指标。蛋白尿下降通常预示更好的长期预后。",
+    "keyMetrics": ["UACR (mg/g)", "24h 尿蛋白 (g/d)", "尿常规蛋白定性"],
+    "actionToday": [
+      "如有最新尿检结果，录入 App",
+      "注意区分'尿常规蛋白 +/-'（粗略）和 UACR/24h 尿蛋白（精确）"
+    ],
+    "commonMisconceptions": [
+      "误解：尿蛋白 + 就是严重 → 实际：需要定量（UACR 或 24h）才能判断程度",
+      "误解：尿蛋白转阴就治好了 → 实际：需要持续监测，可能复发",
+      "误解：尿泡沫多就是蛋白尿 → 实际：不完全可靠，需化验确认"
+    ],
+    "whenToRecheck": [
+      "治疗调整后 1-3 个月复查",
+      "感染/发热期间的尿蛋白可能偏高——恢复后再测更准确",
+      "剧烈运动后可能一过性升高——避免运动后立刻查"
+    ],
+    "cannotTellAlone": [
+      "不能单独区分肾小球病的类型——需要结合其他检查甚至肾活检",
+      "不能判断是否需要免疫抑制治疗"
+    ],
+    "redFlags": [
+      "大量蛋白尿突然出现伴严重水肿（肾病综合征） → 紧急就医",
+      "蛋白尿缓解后突然大幅反弹 → 联系医生"
+    ],
+    "tags": ["化验", "UACR", "尿蛋白"],
+    "requiresMedicalReview": false,
+    "reviewerStatus": "draft",
+    "updatedAt": "2026-03-08",
+    "version": "1.0"
+  },
+  {
+    "id": "lab_electrolytes",
+    "project": ["kidney", "dialysis"],
+    "audience": "all",
+    "priority": "p0",
+    "title": "电解质（钾、磷等）：和饮食、肾功能、透析都有关",
+    "shortSummary": "血钾和血磷是 CKD/透析患者最常监测的电解质。异常可能有严重后果（如高钾引起心律失常），但不需要在化验正常时过度限制饮食。",
+    "whyItMatters": "高钾血症是 CKD/透析最危险的急性并发症之一。磷高与心血管钙化和骨病有关。但电解质水平受饮食、药物、透析充分性等多因素影响。",
+    "keyMetrics": ["血钾 K (mmol/L)", "血磷 P (mmol/L)", "血钙 Ca (mmol/L)"],
+    "actionToday": [
+      "录入最近的电解质结果",
+      "如果血钾正常（3.5-5.0），不需要严格限钾——正常饮食即可"
+    ],
+    "commonMisconceptions": [
+      "误解：所有肾病患者都要限钾 → 实际：只在血钾偏高或有风险时",
+      "误解：血钾高一点没关系 → 实际：>5.5 就有心律失常风险",
+      "误解：磷高吃磷结合剂就够了 → 实际：还需控制高磷饮食"
+    ],
+    "whenToRecheck": [
+      "电解质异常被纠正后 1-2 周复查",
+      "调整降钾药物/磷结合剂后复查",
+      "透析患者按透析中心要求定期查"
+    ],
+    "cannotTellAlone": [
+      "单次血钾不能判断是饮食原因还是药物原因——需结合全貌",
+      "血钙需结合磷、PTH 和维生素 D 综合评估"
+    ],
+    "redFlags": [
+      "血钾 ≥5.5 + 心悸/胸闷/乏力 → 紧急就医",
+      "血钾 ≥6.5 → 不管有无症状都是紧急情况"
+    ],
+    "tags": ["化验", "电解质", "钾", "磷"],
+    "requiresMedicalReview": false,
+    "reviewerStatus": "draft",
+    "updatedAt": "2026-03-08",
+    "version": "1.0"
+  },
+  {
+    "id": "lab_hba1c_glucose",
+    "project": ["dm"],
+    "audience": "all",
+    "priority": "p0",
+    "title": "HbA1c 与血糖：短期波动 vs 长期趋势",
+    "shortSummary": "血糖反映即时水平，HbA1c 反映过去 2-3 个月的平均。两者配合看才完整。",
+    "whyItMatters": "只看单次血糖容易被波动误导。HbA1c 提供长期图景。但 CKD 和贫血可能影响 HbA1c 的准确性。",
+    "keyMetrics": ["HbA1c (%)", "空腹血糖 (mmol/L)", "餐后2h血糖 (mmol/L)"],
+    "actionToday": [
+      "如有最新 HbA1c，录入并看趋势",
+      "每次测血糖时标注时间点（空腹/餐后/随机）"
+    ],
+    "commonMisconceptions": [
+      "误解：HbA1c 正常就没有高血糖 → 实际：可能有餐后高峰被平均掉",
+      "误解：HbA1c 越低越好 → 实际：过低可能反映频繁低血糖",
+      "误解：CKD 患者的 HbA1c 和正常人一样准 → 实际：贫血/透析可能影响准确性"
+    ],
+    "whenToRecheck": ["每 3 个月查一次 HbA1c（控糖稳定后可 6 个月）"],
+    "cannotTellAlone": [
+      "不能发现餐后血糖高峰——需要配合自我血糖监测",
+      "CKD/贫血患者的 HbA1c 可能偏低——不代表真的控制好了"
+    ],
+    "redFlags": [
+      "HbA1c 持续 >9% → 需要调整治疗方案",
+      "反复低血糖 + HbA1c 偏低 → 可能过度控糖，联系医生"
+    ],
+    "tags": ["化验", "HbA1c", "血糖", "糖尿病"],
+    "requiresMedicalReview": false,
+    "reviewerStatus": "draft",
+    "updatedAt": "2026-03-08",
+    "version": "1.0"
+  }
+]

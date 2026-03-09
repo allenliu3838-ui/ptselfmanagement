@@ -79,6 +79,28 @@
         <!-- 3-step quick start (P0-1) -->
         <div class="card" id="quickStartCard"></div>
 
+        <!-- Top 3 concerns (education engine) -->
+        <div class="card" id="cardTopConcerns" style="display:none;">
+          <div class="card-hd">
+            <div>
+              <div class="card-title">你现在最该关注的 3 件事</div>
+              <div class="card-subtitle" id="topConcernsSubtitle">根据你的项目和记录生成</div>
+            </div>
+          </div>
+          <div id="topConcernsContent" class="content"></div>
+        </div>
+
+        <!-- Red flags (education engine, high-risk profiles) -->
+        <div class="card" id="cardRedFlagsEdu" style="display:none;">
+          <div class="card-hd">
+            <div>
+              <div class="card-title" style="color:var(--danger);">高风险红旗提醒</div>
+              <div class="card-subtitle">基于你的项目和设置，以下红旗需要特别注意</div>
+            </div>
+          </div>
+          <div id="redFlagsEduContent" class="content"></div>
+        </div>
+
         <div class="card" id="cardSummaryEntry">
           <div class="card-hd">
             <div>
@@ -527,6 +549,8 @@
           </div>
           <div id="followupTrendContent" class="content"></div>
         </div>
+        <!-- Education cards (driven by education engine) -->
+        <div id="followupEduContent" style="display:none;"></div>
       </div>
     </section>
 
@@ -1217,9 +1241,11 @@
   <!-- Modular JS (split from app.js) - load order matters -->
   <!-- Cache-busting: ?v= forces browser/SW to fetch fresh files after updates -->
   <script src="js/constants.js?v=10.0"></script>
+  <script src="js/medical-config.js?v=10.0"></script>
   <script src="js/utils.js?v=10.0"></script>
   <script src="js/state.js?v=10.0"></script>
   <script src="js/tracking.js?v=10.0"></script>
+  <script src="js/educationEngine.js?v=10.0"></script>
   <script src="js/programs.js?v=10.0"></script>
   <script src="js/tasks.js?v=10.0"></script>
   <script src="js/db.js?v=10.0"></script>
@@ -1234,6 +1260,7 @@
   <script src="js/ai.js?v=10.0"></script>
   <script src="js/summary.js?v=10.0"></script>
   <script src="js/ui.js?v=10.0"></script>
+  <script src="js/educationContent.js?v=10.0"></script>
   <script src="js/app.js?v=10.0"></script>
 </body>
 </html>

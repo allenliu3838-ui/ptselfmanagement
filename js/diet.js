@@ -340,15 +340,42 @@ function renderDietModal(){
   const hasMasld = !!state.comorbid?.masld;
 
   const tagsHtml = tags.length
-    ? `<div class="row">${tags.map(t=>`<div class=\"badge info\">${escapeHtml(t.label)}</div>`).join('')}</div>`
-        : `<div class="note">尚未发现突出饮食关注点。你仍可以用食物库自查“能不能吃”。</div>`;
+    ? `<div class=”row”>${tags.map(t=>`<div class=”badge info”>${escapeHtml(t.label)}</div>`).join('')}</div>`
+        : `<div class=”note”>尚未发现突出饮食关注点。你仍可以用食物库自查”能不能吃”。</div>`;
+
+  // Education engine: personalized warnings
+  var dietWarningsHtml = '';
+  var dietReasonsHtml = '';
+  try{
+    if(typeof getEducationProfile === 'function' && typeof getDietWarnings === 'function'){
+      var profile = getEducationProfile(state);
+      var warnings = getDietWarnings(profile);
+      var contextW = warnings.filter(function(w){ return w.type === 'conflict' || w.type === 'suppress' || w.type === 'context'; });
+      if(contextW.length){
+        dietWarningsHtml = contextW.map(function(w){
+          return '<div class=”edu-diet-warning”><strong>' + escapeHtml(w.reason) + '：</strong>' + escapeHtml(w.message) + '</div>';
+        }).join('');
+      }
+      var reasons = tags.map(function(t){
+        var r = typeof getDietReasonTag === 'function' ? getDietReasonTag(t.key, profile) : '';
+        return r ? '<span class=”badge ok” style=”font-size:10px;”>' + escapeHtml(t.label) + '：' + escapeHtml(r) + '</span>' : '';
+      }).filter(Boolean);
+      if(reasons.length){
+        dietReasonsHtml = '<div style=”margin:8px 0;”><div class=”note subtle” style=”margin-bottom:4px;”>为什么你看到这些标签：</div><div class=”row” style=”flex-wrap:wrap;gap:4px;”>' + reasons.join('') + '</div></div>';
+      }
+    }
+  }catch(_e){ console.warn('diet: education warning error', _e); }
 
   const body = `
-        <div class="note subtle">提示：点任意食物，查看“为什么要关注 + 替代选择”。（教育库，不替代医生/营养师）</div>
+        <div class=”note subtle”>提示：点任意食物，查看”为什么要关注 + 替代选择”。（教育库，不替代医生/营养师）</div>
+
+    ${dietWarningsHtml}
 
     ${tagsHtml}
 
-    ${focusLines.length ? `<div class="list-item"><div class="t">本周重点</div><div class="s">${escapeHtml(focusLines.join(' '))}</div></div>` : ``}
+    ${dietReasonsHtml}
+
+    ${focusLines.length ? `<div class=”list-item”><div class=”t”>本周重点</div><div class=”s”>${escapeHtml(focusLines.join(' '))}</div></div>` : ``}
 
     <div class="list-item">
       <div class="t">专题指南</div>

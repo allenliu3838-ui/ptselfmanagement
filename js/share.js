@@ -236,35 +236,38 @@ function openVisitPrepModal(){
       if(prev.hba1c && curr.hba1c) compare("hba1c", "HbA1c", "%");
     }
 
-    // Build questions to ask the doctor
+    // Build questions to ask the doctor (observation-based, not treatment suggestions)
     const questions = [];
+    var VPQ = VISIT_PREP_QUESTIONS;
     if(insights.some(i=>i.type==="egfr" && i.level==="danger")){
-      questions.push("eGFR 下降较快，是否需要调整治疗方案？");
+      questions.push(VPQ.egfr_decline);
     }
     if(insights.some(i=>i.type==="k" && i.level==="danger")){
-      questions.push("血钾持续偏高，饮食之外是否需要药物干预？");
+      questions.push(VPQ.k_high);
     }
     if(insights.some(i=>i.type==="bp" && i.level==="danger")){
-      questions.push("血压控制不理想，是否需要调整降压药？");
+      questions.push(VPQ.bp_high);
     }
     if(insights.some(i=>i.type==="scr" && i.level==="danger")){
-      questions.push("肌酐上升明显，需要做哪些进一步检查？");
+      questions.push(VPQ.scr_rise);
     }
     if(insights.some(i=>i.type==="protein" && i.level==="warn")){
-      questions.push("尿蛋白有变化，是否需要调整免疫抑制剂/RAAS阻断剂？");
+      questions.push(VPQ.protein_change);
     }
     // Default questions
-    questions.push("目前的用药方案是否需要调整？");
-    questions.push("下次复诊建议什么时候？需要做哪些检查？");
-    if(state.activeProgram === "kidney" && lab?.egfr && toNum(lab.egfr) < 30){
-      questions.push("是否需要开始为透析/移植做准备？");
+    questions.push(VPQ.general_plan);
+    questions.push(VPQ.next_visit);
+    // Softer prompt for very low eGFR (no longer suggests dialysis/transplant directly)
+    if(state.activeProgram === "kidney" && lab?.egfr && toNum(lab.egfr) < THRESHOLDS.egfr.lowProteinDiet){
+      questions.push(VPQ.egfr_very_low);
     }
 
     // Empty state check
     const hasAnyData = lab || bp || wt || insights.length || changes.length;
 
-    // Build body HTML
-    let bodyHtml = `<div class="note subtle" style="margin-bottom:10px;">覆盖范围：${niceDate(sinceDate)} 至今</div>`;
+    // Build body HTML — disclaimer at top for visibility
+    let bodyHtml = `<div class="disclaimer" style="margin-bottom:10px;padding:8px 10px;background:#fef2f2;border-radius:8px;font-size:12px;border-left:3px solid var(--danger);">${DISCLAIMERS.visitPrep}</div>`;
+    bodyHtml += `<div class="note subtle" style="margin-bottom:10px;">覆盖范围：${niceDate(sinceDate)} 至今</div>`;
 
     if(!hasAnyData){
       bodyHtml += `<div class="list-item" style="margin-bottom:8px;text-align:center;padding:20px 12px;">
@@ -381,7 +384,7 @@ function buildVisitPrepText(changes, insights, questions, lab, bp, wt, sinceDate
     lines.push(`  ${i+1}. ${q}`);
   });
   lines.push("");
-  lines.push("提醒：以上为自动整理，供复诊参考，不替代医生判断。");
+  lines.push("提醒：" + DISCLAIMERS.visitPrep);
 
   return lines.join("\n");
 }
