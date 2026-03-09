@@ -1017,6 +1017,7 @@ function openAddLab(){
     if(typeof trackEvent === "function") trackEvent("record_submit", {type:"lab"});
     closeModal("modalSimple");
     renderAll();
+    maybeShowPostRecordGuidance("lab");
   };
 }
 
@@ -1890,6 +1891,36 @@ function openDialysisSessionModal(){
   };
 }
 
+
+function maybeShowPostRecordGuidance(type){
+  const total = (state.vitals?.bp?.length||0) + (state.vitals?.weight?.length||0) + (state.labs?.length||0) + (state.symptoms?.length||0);
+  const firstKeyDone = !state.ui?.seenSummaryNudge && total === 1;
+  const knowMap = {
+    bp: { title:"测血压小技巧", body:"固定时段、同侧手臂、静坐 5 分钟再测，趋势会更稳定。" },
+    weight: { title:"水肿观察方法", body:"建议每天同一时间称重，结合浮肿/尿量一起看更有参考价值。" },
+    lab: { title:"怎么看关键化验", body:"先看与上次相比的变化，再看是否伴随症状，复诊沟通会更高效。" },
+  };
+  const k = knowMap[type];
+  if(firstKeyDone){
+    state.ui = state.ui || {};
+    state.ui.seenSummaryNudge = true;
+    saveState();
+    openSimpleModal("记录已保存", "你的复诊摘要已自动生成", `
+      <div class="note">刚刚这条记录，已经进入“一页摘要”。复诊前可直接复制给医生，减少重复描述。</div>
+      ${k?`<div class="note subtle" style="margin-top:8px;">顺手看看：${escapeHtml(k.title)} · ${escapeHtml(k.body)}</div>`:""}
+    `, `<button class="primary" id="btnGoSummaryAfterRecord">查看复诊摘要</button><button class="ghost" data-close="modalSimple">稍后</button>`);
+    setTimeout(()=>{
+      const b = qs("#btnGoSummaryAfterRecord");
+      if(b) b.onclick = ()=>{ closeModal("modalSimple"); navigate("summary"); };
+      qsa("#modalSimple [data-close]").forEach(x=>x.onclick=()=>closeModal("modalSimple"));
+    },0);
+    return;
+  }
+  if(k){
+    toast(`已保存。小提示：${k.title}（在首页“记录小建议”也可查看）`);
+  }
+}
+
 function parseBPText(s){
   // Accept formats: "140/85" or "140 85"; returns [sys, dia] as strings
   const t = String(s || "").trim();
@@ -1923,6 +1954,7 @@ function openQuickBP(){
     if(typeof trackEvent === "function") trackEvent("record_submit", {type:"bp"});
     closeModal("modalSimple");
     renderAll();
+    maybeShowPostRecordGuidance("bp");
   };
 }
 
@@ -1942,6 +1974,7 @@ function openQuickWeight(){
     if(typeof trackEvent === "function") trackEvent("record_submit", {type:"weight"});
     closeModal("modalSimple");
     renderAll();
+    maybeShowPostRecordGuidance("weight");
   };
 }
 
@@ -2094,6 +2127,7 @@ function quickSymptoms(opts={}){
     saveState();
     closeModal("modalSimple");
     renderAll();
+    maybeShowPostRecordGuidance("symptom");
   };
 }
 

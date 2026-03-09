@@ -36,6 +36,8 @@ function bindUI(){
   // Home: collapse/expand optional cards
   const hm = qs("#btnHomeMoreToggle");
   if(hm) hm.addEventListener("click", ()=>toggleHomeMore());
+  const bGoSummaryNow = qs("#btnGoSummaryNow");
+  if(bGoSummaryNow) bGoSummaryNow.addEventListener("click", ()=>navigate("summary"));
 
   // top buttons
   qs("#btnProgram").addEventListener("click", ()=>{
@@ -156,6 +158,10 @@ function bindUI(){
   // Data backup (full: state + IndexedDB files)
   const bExportData = qs("#btnExportData");
   if(bExportData) bExportData.onclick = ()=> doFullBackupDownload();
+  const bExportDataShare = qs("#btnExportDataShare");
+  if(bExportDataShare) bExportDataShare.onclick = ()=> doFullBackupShare();
+  const bBackupGuide = qs("#btnBackupGuide");
+  if(bBackupGuide) bBackupGuide.onclick = ()=> openBackupGuide();
 
   const fileImport = qs("#fileImportData");
   if(fileImport) fileImport.onchange = async ()=>{
@@ -163,10 +169,17 @@ function bindUI(){
     if(!f) return;
     try{
       const text = await f.text();
-      await importBackupFromJSONText(text);
+      const result = await importBackupFromJSONText(text);
       recordBackupTimestamp();
-      toast("已导入数据（含文件），页面将刷新");
-      setTimeout(()=>location.reload(), 600);
+      const overwriteMsg = result.overwritten ? "会覆盖当前本机数据" : "将写入到当前设备";
+      openSimpleModal("导入完成", "数据已恢复", `
+        <div class="list-item"><div class="t">导入结果</div><div class="s">导入成功，可继续使用。</div></div>
+        <div class="list-item"><div class="t">已导入内容</div><div class="s">${escapeHtml(result.importedSummary)}${result.restoredFiles?`；资料库文件 ${result.restoredFiles} 个`:""}</div></div>
+        <div class="list-item"><div class="t">覆盖说明</div><div class="s">本次导入${escapeHtml(overwriteMsg)}。</div></div>
+        <div class="note subtle" style="margin-top:8px;">建议下一步：先打开“一页摘要”确认最近记录，再做一次完整备份。</div>
+      `, `<button class="primary" id="btnImportDoneReload">我知道了</button>`);
+      const rd = qs("#btnImportDoneReload");
+      if(rd) rd.onclick = ()=>location.reload();
     }catch(e){
       console.error(e);
       toast("导入失败：请确认文件格式正确");
