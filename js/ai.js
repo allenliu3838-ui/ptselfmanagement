@@ -67,7 +67,7 @@ function aiQuickExplain(){
   }catch(_e){}
 
   lines.push("");
-  lines.push("提示：如出现胸痛、呼吸困难、意识改变、抽搐、少尿/无尿、发热伴剧烈腰痛等红旗，请立即就医或联系团队。");
+  lines.push("提示：" + DISCLAIMERS.redFlag);
   lines.push("");
   lines.push("这条信息不能替代医生判断。建议联系医生/随访团队，并带上这些记录。");
   aiPush("ai", lines.join("\n"));
