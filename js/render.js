@@ -101,7 +101,7 @@ function renderUsagePage(){
 
   const quickStartHtml = hasAnyData
     ? `<div class="guide-p" style="background:#e8f5e9;padding:10px 12px;border-radius:10px;"><b>你已经开始了！</b>已有 ${(state.labs||[]).length} 次化验、${(state.vitals?.bp||[]).length} 次血压记录。继续保持，每天 1 分钟就够。</div>`
-    : `<div class="guide-p" style="background:#fff8e1;padding:10px 12px;border-radius:10px;"><b>你还没有任何记录。</b>建议现在就完成第一步：回到首页，录入一次血压或体重（30 秒）。有了第一条数据，后面的功能才会"活"起来。</div>`;
+    : `<div class="guide-p" style="background:#fff8e1;padding:10px 12px;border-radius:10px;"><b>只差一步就能开始了！</b>回到首页，花 30 秒录入一次血压或体重。有了第一条数据，系统就能开始帮你整理趋势和复诊摘要了。</div>`;
 
   bodyEl.innerHTML = `
     <div class="guide-title">3 分钟学会使用 肾域·记录</div>
@@ -568,17 +568,71 @@ function toggleHomeMore(){
 }
 
 // ===== Engagement helpers =====
+
+// Backfill-friendly streak: allows 7-day backfill window
+// If the user missed days but has records within the last 7 days,
+// recalculate streak from actual record dates to avoid "streak broken" frustration
+function recalcStreakFromRecords(){
+  const dates = new Set();
+  ['bp','weight','glucose','temp'].forEach(k=>{
+    (state.vitals?.[k]||[]).forEach(r=>{
+      if(r?.dateTime) dates.add(r.dateTime.slice(0,10));
+    });
+  });
+  (state.symptoms||[]).forEach(r=>{
+    if(r?.dateTime) dates.add(r.dateTime.slice(0,10));
+  });
+  (state.labs||[]).forEach(r=>{
+    if(r?.date) dates.add(r.date);
+  });
+  (state.urineTests||[]).forEach(r=>{
+    if(r?.date) dates.add(r.date);
+  });
+  (state.medsLog||[]).forEach(r=>{
+    if(r?.dateTime) dates.add(r.dateTime.slice(0,10));
+  });
+
+  if(dates.size === 0) return 0;
+
+  // Sort dates descending
+  const sorted = [...dates].sort().reverse();
+  const today = yyyyMMdd(new Date());
+
+  // If no record today, streak is from yesterday backward
+  let streak = 0;
+  let checkDate = new Date();
+  // Start from today
+  for(let i = 0; i < 365; i++){
+    const ds = yyyyMMdd(checkDate);
+    if(dates.has(ds)){
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else if(i === 0){
+      // Today has no record yet - that's ok, check from yesterday
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
 function updateStreak(){
   if(!state.engagement) state.engagement = { onboarded:false, streak:0, lastActiveDate:"", longestStreak:0 };
   const today = yyyyMMdd(new Date());
   if(state.engagement.lastActiveDate === today) return; // already counted today
+
+  // Use record-based streak calculation for more forgiving tracking
+  const recordStreak = recalcStreakFromRecords();
   const yesterday = yyyyMMdd(new Date(Date.now() - 86400000));
+
   if(state.engagement.lastActiveDate === yesterday){
-    state.engagement.streak += 1;
+    state.engagement.streak = Math.max(state.engagement.streak + 1, recordStreak);
   } else if(state.engagement.lastActiveDate && state.engagement.lastActiveDate !== today){
-    state.engagement.streak = 1; // reset
+    // Gap detected - use record-based recalculation (backfill friendly)
+    state.engagement.streak = Math.max(1, recordStreak);
   } else {
-    state.engagement.streak = 1; // first day
+    state.engagement.streak = Math.max(1, recordStreak);
   }
   if(state.engagement.streak > (state.engagement.longestStreak||0)){
     state.engagement.longestStreak = state.engagement.streak;
@@ -603,10 +657,13 @@ function renderGreeting(){
   const streak = state.engagement?.streak || 0;
   el.textContent = getGreeting();
   const msgs = [
-    "今天的随访从这里开始",
-    "每天花 1 分钟，复诊更从容",
-    "坚持记录，趋势比单次更有价值",
-    "你的健康数据在积累力量",
+    "今天花 30 秒录个数据，复诊就能更省心",
+    "每一次记录，都在帮你和医生更好地沟通",
+    "你的坚持正在积累力量，趋势比单次更有价值",
+    "慢慢来，按你的节奏就很好",
+    "你做的每一步，都是对自己健康的投资",
+    "不用完美，能记一点就是进步",
+    "你的数据在帮你看清方向",
   ];
   const dayIndex = new Date().getDay();
   sub.innerHTML = escapeHtml(msgs[dayIndex % msgs.length]);
@@ -678,8 +735,18 @@ function renderCelebration(tasks){
   if(!box) return;
   const total = tasks.length;
   const done = tasks.filter(t=>t.done).length;
+  const streak = state.engagement?.streak || 0;
+
   if(total > 0 && done === total){
-    box.innerHTML = `<div class="celebrate"><div class="emoji">🎉</div><div class="msg">今日任务全部完成！</div><div class="sub">坚持记录是最好的随访习惯</div></div>`;
+    // All done - full celebration
+    const streakMsg = streak >= 7 ? `已连续 ${streak} 天，你的坚持非常棒！` : streak >= 3 ? `连续第 ${streak} 天，节奏很稳！` : "每完成一天，都是对自己的关爱";
+    box.innerHTML = `<div class="celebrate"><div class="emoji">🎉</div><div class="msg">今天做得很好，全部完成了！</div><div class="sub">${escapeHtml(streakMsg)}</div></div>`;
+  } else if(done >= 1){
+    // Micro-goal reached: at least 1 item done → positive reinforcement
+    const remaining = total - done;
+    const microMsg = done === 1 ? "今天已达标！完成 1 项就很好" : `已完成 ${done} 项，做得很棒`;
+    const subMsg = remaining > 0 ? `还有 ${remaining} 项可选，不急，想做的时候再做` : "";
+    box.innerHTML = `<div class="celebrate" style="background:#f0f9f0;"><div class="emoji">✅</div><div class="msg">${escapeHtml(microMsg)}</div>${subMsg?`<div class="sub">${escapeHtml(subMsg)}</div>`:""}</div>`;
   } else {
     box.innerHTML = "";
   }
@@ -1160,7 +1227,7 @@ function renderRecent(){
       pieces.push(`<div class="list-item"><div class="t">今日饮水（结石）</div><div class="s">${cur} ml · ${niceDate(today)}</div></div>`);
     }
   }
-  if(!pieces.length) return `<div class="empty-cta"><div class="emoji">📋</div><div class="msg">还没有记录。试试先录入一次血压或体重，30 秒就能完成。</div><button class="primary small" onclick="openQuickBP()">记录血压</button></div>`;
+  if(!pieces.length) return `<div class="empty-cta"><div class="emoji">📋</div><div class="msg">今天花 30 秒录个血压或体重，下次复诊就能更省心。</div><button class="primary small" onclick="openQuickBP()">记录血压</button></div>`;
   return pieces.join("");
 }
 
@@ -1618,13 +1685,55 @@ function renderWeeklyWins(){
     bpRate = `${Math.round(ok/bp7.length*100)}%`;
   }
   const lines = [];
-  lines.push(`<div class="list-item"><div class="t">本周记录完成度</div><div class="s">你完成了 ${done} 条记录，${done>=7?"很棒，节奏稳定。":"继续保持，每条记录都在帮你看清趋势。"}</div></div>`);
-  lines.push(`<div class="list-item"><div class="t">连续记录</div><div class="s">已连续 ${streak} 天${streak>=7?"，你的坚持非常有价值。":"，慢慢来，稳定比完美更重要。"}</div></div>`);
-  if(bpRate){
-    lines.push(`<div class="list-item"><div class="t">血压达标率</div><div class="s">近7天约 ${bpRate}（仅作自我观察）。</div></div>`);
+
+  // Record count - always positive framing
+  if(done >= 7){
+    lines.push(`<div class="list-item"><div class="t">本周记录</div><div class="s">完成了 ${done} 条记录，节奏很稳，复诊时医生一眼就能看到你的变化趋势。</div></div>`);
+  } else if(done > 0){
+    lines.push(`<div class="list-item"><div class="t">本周记录</div><div class="s">已完成 ${done} 条记录，每一条都在帮你和医生更高效地沟通。</div></div>`);
   } else {
-    lines.push(`<div class="list-item"><div class="t">血压观察</div><div class="s">本周还没有足够血压数据，补 1-2 次就能看到更清晰变化。</div></div>`);
+    lines.push(`<div class="list-item"><div class="t">本周记录</div><div class="s">新的一周开始了，花 30 秒录一条，就能开始积累你的健康趋势。</div></div>`);
   }
+
+  // Streak - warm tone, never blame
+  if(streak >= 14){
+    lines.push(`<div class="list-item"><div class="t">连续记录</div><div class="s">已连续 ${streak} 天！你的坚持就是最好的随访习惯，医生会看到你的努力。</div></div>`);
+  } else if(streak >= 7){
+    lines.push(`<div class="list-item"><div class="t">连续记录</div><div class="s">连续 ${streak} 天了，你的坚持非常有价值，继续保持。</div></div>`);
+  } else if(streak >= 1){
+    lines.push(`<div class="list-item"><div class="t">连续记录</div><div class="s">已连续 ${streak} 天，慢慢来，按你的节奏就很好。</div></div>`);
+  } else {
+    lines.push(`<div class="list-item"><div class="t">连续记录</div><div class="s">没关系，随时可以重新开始，补录今天的记录就能继续你的坚持。</div></div>`);
+  }
+
+  // BP rate - positive first, suggestion second
+  if(bpRate){
+    const bpPct = parseInt(bpRate);
+    if(bpPct >= 80){
+      lines.push(`<div class="list-item"><div class="t">血压控制</div><div class="s">近7天达标率约 ${bpRate}，控制得非常好，复诊时给医生看会很有参考价值。</div></div>`);
+    } else if(bpPct >= 50){
+      lines.push(`<div class="list-item"><div class="t">血压观察</div><div class="s">近7天达标率约 ${bpRate}，继续坚持测量，趋势比单次更重要。</div></div>`);
+    } else {
+      lines.push(`<div class="list-item"><div class="t">血压观察</div><div class="s">近7天达标率约 ${bpRate}，建议复诊时和医生聊聊，看看有没有更好的控制方案。</div></div>`);
+    }
+  } else {
+    lines.push(`<div class="list-item"><div class="t">血压观察</div><div class="s">补 1-2 次血压记录，就能帮你看到更清晰的控制趋势。</div></div>`);
+  }
+
+  // Positive trend insights if available
+  try{
+    const wt7 = getSummaryPeriodRecords(state.vitals?.weight||[], 7);
+    if(wt7.length >= 2){
+      const first = toNum(wt7[0].kg), last = toNum(wt7[wt7.length-1].kg);
+      if(first !== null && last !== null){
+        const diff = Math.abs(last - first);
+        if(diff < 0.5){
+          lines.push(`<div class="list-item"><div class="t">体重稳定</div><div class="s">本周体重变化很小（±${diff.toFixed(1)}kg），保持得不错。</div></div>`);
+        }
+      }
+    }
+  }catch(_e){}
+
   box.innerHTML = lines.join("");
 }
 
@@ -1637,16 +1746,16 @@ function renderLightNudges(){
   const symCount = (state.symptoms||[]).length;
   const cards = [];
   if(bpCount >= 4 && wtCount === 0){
-    cards.push(`<div class="list-item"><div class="t">你最近很认真在记血压 👍</div><div class="s">顺手补一条体重，医生更容易判断是否有体液变化。</div></div>`);
+    cards.push(`<div class="list-item"><div class="t">血压记录做得很棒</div><div class="s">如果方便的话，顺手补一条体重，能帮医生更好地判断体液变化。不急，想起来的时候记就行。</div></div>`);
   }
   if(labCount >= 1 && symCount === 0){
-    cards.push(`<div class="list-item"><div class="t">化验已记录</div><div class="s">若最近有不适，可补一条症状，复诊时更容易对应化验变化。</div></div>`);
+    cards.push(`<div class="list-item"><div class="t">化验数据已归档</div><div class="s">如果最近有任何不舒服，可以随手记一条症状，复诊时方便和化验变化对应。</div></div>`);
   }
   if(!cards.length){
-    box.innerHTML = `<div class="note subtle">当前记录结构很完整，继续按你的节奏记录就很好。</div>`;
+    box.innerHTML = `<div class="note subtle">你的记录结构很完整，继续按自己的节奏来就好，不用追求完美。</div>`;
     return;
   }
-  box.innerHTML = cards.join("") + `<div class="note subtle" style="margin-top:8px;">这些只是提醒，你可以随时忽略，不影响主要流程。</div>`;
+  box.innerHTML = cards.join("") + `<div class="note subtle" style="margin-top:8px;">这些只是温和提醒，你可以随时忽略，不影响任何功能。</div>`;
 }
 
 function renderBackupStatus(){
