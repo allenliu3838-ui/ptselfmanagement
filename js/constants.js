@@ -6,7 +6,7 @@
 */
 // Versioning note (Netlify + PWA):
 // - Bump VERSION whenever you deploy to ensure SW cache separation and visible build identity.
-const VERSION = "10.0.0";
+const VERSION = "10.1.0";
 const STORAGE_KEY = "kidneyCareStateV7";
 
 const PROGRAMS = {
