@@ -1906,35 +1906,35 @@ function maybeShowPostRecordGuidance(type){
   const total = (state.vitals?.bp?.length||0) + (state.vitals?.weight?.length||0) + (state.labs?.length||0) + (state.symptoms?.length||0);
   const firstKeyDone = !state.ui?.seenSummaryNudge && total === 1;
   const knowMap = {
-    bp: { title:”测血压小技巧”, body:”固定时段、安静坐 5 分钟再测，连续测 2 次取平均值更准确。” },
-    weight: { title:”体重观察方法”, body:”建议每天同一时间称重，趋势比单次更有参考价值。” },
-    lab: { title:”怎么看化验变化”, body:”和上次对比着看，复诊时和医生一起讨论变化会更高效。” },
-    symptom: { title:”记录不适辛苦了”, body:”你今天不舒服辛苦了，先好好休息。如果症状持续加重，记得及时联系医生。” },
+    bp: { title:"测血压小技巧", body:"固定时段、安静坐 5 分钟再测，连续测 2 次取平均值更准确。" },
+    weight: { title:"体重观察方法", body:"建议每天同一时间称重，趋势比单次更有参考价值。" },
+    lab: { title:"怎么看化验变化", body:"和上次对比着看，复诊时和医生一起讨论变化会更高效。" },
+    symptom: { title:"记录不适辛苦了", body:"你今天不舒服辛苦了，先好好休息。如果症状持续加重，记得及时联系医生。" },
   };
   const k = knowMap[type];
   if(firstKeyDone){
     state.ui = state.ui || {};
     state.ui.seenSummaryNudge = true;
     saveState();
-    openSimpleModal(“太棒了，第一条记录完成！”, “你的复诊摘要已自动生成”, `
-      <div class=”note”>这条记录已经进入你的”一页摘要”，复诊前直接给医生看，不用再费心回忆。你迈出了最重要的第一步！</div>
-      ${k?`<div class=”note subtle” style=”margin-top:8px;”>温馨提示：${escapeHtml(k.body)}</div>`:””}
-    `, `<button class=”primary” id=”btnGoSummaryAfterRecord”>看看复诊摘要</button><button class=”ghost” data-close=”modalSimple”>稍后</button>`);
+    openSimpleModal("太棒了，第一条记录完成！", "你的复诊摘要已自动生成", `
+      <div class="note">这条记录已经进入你的"一页摘要"，复诊前直接给医生看，不用再费心回忆。你迈出了最重要的第一步！</div>
+      ${k?`<div class="note subtle" style="margin-top:8px;">温馨提示：${escapeHtml(k.body)}</div>`:""}
+    `, `<button class="primary" id="btnGoSummaryAfterRecord">看看复诊摘要</button><button class="ghost" data-close="modalSimple">稍后</button>`);
     setTimeout(()=>{
-      const b = qs(“#btnGoSummaryAfterRecord”);
-      if(b) b.onclick = ()=>{ closeModal(“modalSimple”); navigate(“summary”); };
-      qsa(“#modalSimple [data-close]”).forEach(x=>x.onclick=()=>closeModal(“modalSimple”));
+      const b = qs("#btnGoSummaryAfterRecord");
+      if(b) b.onclick = ()=>{ closeModal("modalSimple"); navigate("summary"); };
+      qsa("#modalSimple [data-close]").forEach(x=>x.onclick=()=>closeModal("modalSimple"));
     },0);
     return;
   }
-  // Positive encouragement messages instead of cold “已保存”
+  // Positive encouragement messages instead of cold "已保存"
   const encouragements = [
-    “记录完成，又积累了一笔健康数据”,
-    “已保存，你的复诊摘要更完整了”,
-    “做得好，每一次记录都有价值”,
+    "记录完成，又积累了一笔健康数据",
+    "已保存，你的复诊摘要更完整了",
+    "做得好，每一次记录都有价值",
   ];
   const enc = encouragements[total % encouragements.length];
-  if(k && type === “symptom”){
+  if(k && type === "symptom"){
     toast(`${k.body}`);
   } else if(k){
     toast(`${enc}。${k.title}：${k.body}`);
