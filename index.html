@@ -1262,5 +1262,8 @@
   <script src="js/ui.js?v=10.0"></script>
   <script src="js/educationContent.js?v=10.0"></script>
   <script src="js/app.js?v=10.0"></script>
+  <!-- Legacy monolithic app.js (root) removed: its 138 duplicate functions
+       overrode all modular js/ versions. All functions now live in js/*.js modules.
+       js/app.js provides init() + onboarding + service worker registration. -->
 </body>
 </html>

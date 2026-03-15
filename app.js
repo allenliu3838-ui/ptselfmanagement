@@ -2069,159 +2069,9 @@ function toggleHomeMore(){
   applyHomeMoreUI();
 }
 
-function renderHome(){
-  applyHomeMoreUI();
-  qs("#todayDate").textContent = niceDate(yyyyMMdd(new Date()));
-  const tasks = todayTasks();
-  const list = qs("#todayTasks");
-  list.innerHTML = "";
-  tasks.forEach(t=>{
-    const el = document.createElement("div");
-    el.className = "task" + (t.done ? " done":"");
-    el.innerHTML = `
-      <div class="left">
-        <div class="checkbox" role="checkbox" aria-checked="${t.done}" title="${t.autoDone?"已由记录自动完成":(t.manualDone?"已标记完成":"")}"></div>
-        <div>
-          <div class="title">${escapeHtml(t.title)}</div>
-          <div class="meta">${escapeHtml(t.meta||"")}${t.autoDone?` <span class="muted">· 已记录</span>`:""}</div>
-        </div>
-      </div>
-      <div class="right">
-        ${t.action ? `<button class="ghost small task-action" data-task-act="${escapeHtml(t.id)}">${escapeHtml(t.action.label)}</button>` : ``}
-        ${t.exp ? `<button class="info-btn small" data-exp="${escapeHtml(t.exp)}" aria-label="为什么要做">i</button>` : ``}
-        ${t.badge ? `<div class="badge ${badgeClass(t.badge.type)}">${escapeHtml(t.badge.text)}</div>` : ``}
-      </div>
-    `;
-    // Default row click: for action tasks -> go to action; otherwise toggle.
-    el.addEventListener("click", ()=>{
-      if(t.action && typeof t.action.onClick === "function"){
-        t.action.onClick();
-      }else{
-        toggleTask(t.id);
-      }
-    });
-
-    // Checkbox: keep manual toggle available for non-auto-done tasks
-    const cb = el.querySelector(".checkbox");
-    if(cb){
-      cb.onclick = (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        if(t.autoDone){
-          toast("该任务已由记录自动完成");
-          return;
-        }
-        toggleTask(t.id);
-      };
-    }
-
-    // Task action button: stop propagation so it doesn't toggle
-    const btn = el.querySelector("button.task-action");
-    if(btn){
-      btn.onclick = (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        if(t.action && typeof t.action.onClick === "function") t.action.onClick();
-      };
-    }
-    list.appendChild(el);
-  });
-
-  qs("#btnMarkAllDone").onclick = ()=>markAllTasksDone(tasks);
-  const bPlan = qs("#btnGoPlan");
-  if(bPlan) bPlan.onclick = ()=>navigate("followup");
-
-  // Safety
-  const safety = safetySignals();
-  const safetyBox = qs("#safetyContent");
-  safetyBox.innerHTML = safety.map(s => `
-    <div class="list-item">
-      <div class="t">${badgeDot(s.level)} ${escapeHtml(s.title)}</div>
-      <div class="s">${escapeHtml(s.detail)}</div>
-    </div>
-  `).join("");
-
-  // Program main card
-  renderProgramMainCard();
-
-  // Diet (v1 food library: 高钾/高磷食物库)
-  const diet = dietSignals();
-  const focus = dietFocus();
-  const dietBox = qs("#dietContent");
-
-  const badgesHtml = diet.length
-    ? `<div class="row">${diet.map(t=>`<div class="badge info">${escapeHtml(t.label)}</div>`).join("")}</div>`
-    : ``;
-
-  const focusLines = [];
-  if(focus.highK){
-    const kTxt = (focus.k===null) ? "" : String(focus.k);
-    focusLines.push(`血钾偏高${kTxt?`（${kTxt}）`:``}：本周优先关注“高钾食物/代盐避坑”。`);
-  }
-  if(focus.highP){
-    const pTxt = (focus.p===null) ? "" : String(focus.p);
-    focusLines.push(`血磷偏高${pTxt?`（${pTxt}）`:``}：本周优先减少“含磷添加剂”的加工食品。`);
-  }
-
-  const focusHtml = focusLines.length
-    ? `<div class="list-item"><div class="t">本周重点</div><div class="s">${escapeHtml(focusLines.join(" "))}</div></div>`
-    : `<div class="note">想知道“能不能吃”？点右上角【饮食中心】搜索食物；每个食物都有单独的解释与替代选择。</div>`;
-
-  dietBox.innerHTML = `
-    ${badgesHtml}
-    ${focusHtml}
-    <div class="row" style="margin-top:10px;">
-      <button class="ghost small" data-diet-open="highK">高钾食物</button>
-      <button class="ghost small" data-diet-open="highP">高磷食物</button>
-      <button class="ghost small" data-diet-open="both">钾+磷双高</button>
-      <button class="ghost small" data-diet-open="additiveP">磷添加剂避坑</button>
-    </div>
-    <div class="note subtle">提示：饮食仅做健康教育与避坑提醒；具体限制与目标请以医生/营养师个体化方案为准。</div>
-  `;
-
-  qsa('#dietContent [data-diet-open]').forEach(btn=>{
-    btn.onclick = (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      openDietModal(btn.getAttribute('data-diet-open'));
-    };
-  });
-
-  // Knowledge
-  const rec = recommendKnowledge();
-  const box = qs("#knowledgeContent");
-  if(!rec.length){
-    box.innerHTML = `<div class="note">暂无推荐（示意）。你可以先完善“资料/项目”，或录入一次化验后再看推荐。</div>`;
-  }else{
-    box.innerHTML = rec.map(a => `
-      <div class="list-item">
-        <div class="t">${escapeHtml(a.title)}</div>
-        <div class="s">${escapeHtml(a.body)}</div>
-        <div class="row" style="margin-top:10px;">
-          <button class="ghost small" data-knowledge="${a.id}">做一个行动：${escapeHtml(a.action.label)}</button>
-        </div>
-      </div>
-    `).join("");
-    qsa("button[data-knowledge]").forEach(btn=>{
-      btn.onclick = ()=>doKnowledgeAction(btn.getAttribute("data-knowledge"));
-    });
-  }
-
-  // Recent
-  const recentBox = qs("#recentContent");
-  recentBox.innerHTML = renderRecent();
-
-  // Dialysis card on Home: only show when dialysis program is enabled or active
-  const dCard = qs("#cardDialysisHome");
-  if(dCard) dCard.classList.toggle("hidden", !(state.activeProgram==="dialysis" || state.enabledPrograms?.dialysis));
-
-  // buttons
-  qs("#btnExport").onclick = ()=>copyExport();
-  qs("#btnDiet").onclick = ()=>openDietModal();
-  qs("#btnKnowledge").onclick = ()=>openKnowledgeModal();
-  qs("#btnProgramMainAction").onclick = ()=>openProgramMainModal();
-  qs("#btnTriage").onclick = ()=>openTriageModal();
-}
+// renderHome() is defined in js/render.js — do NOT redefine here.
+// The render.js version includes: updateStreak, renderGreeting, renderProgressRing,
+// renderCelebration, renderWeeklyWins, micro-goal feedback, and proper try-catch safety.
 
 function renderProgramMainCard(){
   const title = qs("#programMainTitle");
@@ -2870,31 +2720,11 @@ function renderFollowup(){
 // renderMe — now defined in js/render.js (modular version)
 
 
-function renderAI(){
-  const box = qs("#chatBox");
-  box.innerHTML = "";
-  state.chat.forEach(m=>{
-    const bub = document.createElement("div");
-    bub.className = "bubble" + (m.role==="me" ? " me":"");
-    bub.innerHTML = `${escapeHtml(m.text)}<div class="meta">${m.role==="me"?"我":"AI"} · ${nowISO()}</div>`;
-    box.appendChild(bub);
-  });
-  box.scrollTop = box.scrollHeight;
-}
+// renderAI() is defined in js/render.js — do NOT redefine here.
 
-function renderAll(){
-  renderHeader();
-  renderPremiumBadge();
-  renderHome();
-  renderRecords();
-  renderDocsPage();
-  renderFollowup();
-  renderMe();
-  renderAI();
-  renderExplainPage();
-  renderGuidePage();
-  renderUsagePage();
-}
+// renderAll() is defined in js/render.js — do NOT redefine here.
+// The render.js version includes all render functions plus education engine renders,
+// summary, quick-start, footer, and CTA.
 
 function navigate(pageKey){
   // Keep tab highlight stable when navigating to overlay pages (e.g., explain/guide).
