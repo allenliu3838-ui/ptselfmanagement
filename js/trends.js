@@ -306,6 +306,134 @@ function analyzeTrends(){
     }
   }
 
+  // --- Phosphorus trend ---
+  const pVals = (state.labs||[])
+    .filter(l=>l.p && l.date)
+    .sort((a,b)=>(a.date||"").localeCompare(b.date||""))
+    .map(l=>({ date: l.date, value: toNum(l.p) }))
+    .filter(d=>d.value!==null);
+
+  if(pVals.length >= 1){
+    const last = pVals[pVals.length-1];
+    var PT = THRESHOLDS.p;
+    var PM = TREND_MESSAGES.p;
+    if(last.value > PT.dangerHigh){
+      insights.push({ type:"p", level:"danger", title:PM.high,
+        detail:`最近血磷 ${last.value} mmol/L（>${PT.dangerHigh}）。${PM.highAdvice}`,
+        sparkData: pVals.map(d=>d.value) });
+    } else if(last.value > PT.warnHigh){
+      insights.push({ type:"p", level:"warn", title:PM.warnHigh,
+        detail:`最近血磷 ${last.value} mmol/L（接近 ${PT.dangerHigh}），建议注意饮食`,
+        sparkData: pVals.map(d=>d.value) });
+    }
+  }
+
+  // --- UPCR trend (from labs + urineTests) ---
+  const upcrVals = [];
+  (state.labs||[]).forEach(l=>{
+    if(l.upcr && l.date){ const v = toNum(l.upcr); if(v!==null) upcrVals.push({ date:l.date, value:v }); }
+  });
+  (state.urineTests||[]).forEach(u=>{
+    if(u.upcr && u.date){ const v = toNum(u.upcr); if(v!==null) upcrVals.push({ date:u.date, value:v }); }
+  });
+  upcrVals.sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+
+  if(upcrVals.length >= 2){
+    const first = upcrVals[0];
+    const last = upcrVals[upcrVals.length-1];
+    const diff = last.value - first.value;
+    var UM = TREND_MESSAGES.upcr;
+    if(diff < -50){
+      insights.push({ type:"upcr", level:"ok", title:UM.decrease,
+        detail:`从 ${first.value} 降至 ${last.value} mg/g（${first.date} → ${last.date}）`,
+        sparkData: upcrVals.map(d=>d.value) });
+    } else if(diff > 50){
+      insights.push({ type:"upcr", level:"warn", title:UM.increase,
+        detail:`从 ${first.value} 升至 ${last.value} mg/g（${first.date} → ${last.date}）。${UM.highAdvice}`,
+        sparkData: upcrVals.map(d=>d.value) });
+    } else {
+      insights.push({ type:"upcr", level:"ok", title:UM.stable,
+        detail:`维持在 ${last.value} mg/g 左右`,
+        sparkData: upcrVals.map(d=>d.value) });
+    }
+  }
+
+  // --- 24h Urine Protein trend (from labs + urineTests) ---
+  const upro24Vals = [];
+  (state.labs||[]).forEach(l=>{
+    if(l.upro24 && l.date){ const v = toNum(l.upro24); if(v!==null) upro24Vals.push({ date:l.date, value:v }); }
+  });
+  (state.urineTests||[]).forEach(u=>{
+    if(u.upro24 && u.date){ const v = toNum(u.upro24); if(v!==null) upro24Vals.push({ date:u.date, value:v }); }
+  });
+  upro24Vals.sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+
+  if(upro24Vals.length >= 2){
+    const first = upro24Vals[0];
+    const last = upro24Vals[upro24Vals.length-1];
+    const diff = last.value - first.value;
+    var U24M = TREND_MESSAGES.upro24;
+    if(diff < -0.2){
+      insights.push({ type:"upro24", level:"ok", title:U24M.decrease,
+        detail:`从 ${first.value} 降至 ${last.value} g/d（${first.date} → ${last.date}）`,
+        sparkData: upro24Vals.map(d=>d.value) });
+    } else if(diff > 0.2){
+      insights.push({ type:"upro24", level:"warn", title:U24M.increase,
+        detail:`从 ${first.value} 升至 ${last.value} g/d（${first.date} → ${last.date}）。${U24M.highAdvice}`,
+        sparkData: upro24Vals.map(d=>d.value) });
+    } else {
+      insights.push({ type:"upro24", level:"ok", title:U24M.stable,
+        detail:`维持在 ${last.value} g/d 左右`,
+        sparkData: upro24Vals.map(d=>d.value) });
+    }
+  }
+
+  // --- Hemoglobin trend ---
+  const hbVals = (state.labs||[])
+    .filter(l=>l.hb && l.date)
+    .sort((a,b)=>(a.date||"").localeCompare(b.date||""))
+    .map(l=>({ date: l.date, value: toNum(l.hb) }))
+    .filter(d=>d.value!==null);
+
+  if(hbVals.length >= 2){
+    const first = hbVals[0];
+    const last = hbVals[hbVals.length-1];
+    const diff = last.value - first.value;
+    var HM = TREND_MESSAGES.hb;
+    if(last.value < THRESHOLDS.hb.low){
+      insights.push({ type:"hb", level:"warn", title:HM.low,
+        detail:`最近 Hb ${last.value} g/L（<${THRESHOLDS.hb.low}）。${HM.lowAdvice}`,
+        sparkData: hbVals.map(d=>d.value) });
+    } else if(diff > 5){
+      insights.push({ type:"hb", level:"ok", title:HM.improving,
+        detail:`从 ${first.value} 升至 ${last.value} g/L`,
+        sparkData: hbVals.map(d=>d.value) });
+    }
+  }
+
+  // --- Albumin trend ---
+  const albVals = (state.labs||[])
+    .filter(l=>l.alb && l.date)
+    .sort((a,b)=>(a.date||"").localeCompare(b.date||""))
+    .map(l=>({ date: l.date, value: toNum(l.alb) }))
+    .filter(d=>d.value!==null);
+
+  if(albVals.length >= 2){
+    const first = albVals[0];
+    const last = albVals[albVals.length-1];
+    const diff = last.value - first.value;
+    var AM = TREND_MESSAGES.alb;
+    if(last.value < THRESHOLDS.alb.low){
+      insights.push({ type:"alb", level:"warn", title:AM.low,
+        detail:`最近白蛋白 ${last.value} g/L（<${THRESHOLDS.alb.low}）。${AM.lowAdvice}`,
+        sparkData: albVals.map(d=>d.value) });
+    } else if(diff > 3){
+      insights.push({ type:"alb", level:"ok", title:AM.improving,
+        detail:`从 ${first.value} 升至 ${last.value} g/L`,
+        sparkData: albVals.map(d=>d.value) });
+    }
+  }
+
   return insights;
 }
 
@@ -329,12 +457,52 @@ function renderTrendCard(){
   if(!box) return;
 
   const insights = analyzeTrends();
-  if(!insights.length){
+
+  // Build quick-access chart buttons (show all chart types with data)
+  const chartTypes = [];
+  const labs = state.labs || [];
+  const bpArr = state.vitals?.bp || [];
+  const wtArr = state.vitals?.weight || [];
+  const urineArr = state.urineTests || [];
+
+  if(labs.some(l=>l.egfr)) chartTypes.push({ type:"egfr", label:"eGFR", icon:"🫘" });
+  if(labs.some(l=>l.scr)) chartTypes.push({ type:"scr", label:"肌酐", icon:"🧪" });
+  if(bpArr.length >= 2) chartTypes.push({ type:"bp", label:"血压", icon:"💓" });
+  if(wtArr.length >= 2) chartTypes.push({ type:"weight", label:"体重", icon:"⚖️" });
+  if(labs.some(l=>l.k)) chartTypes.push({ type:"k", label:"血钾", icon:"⚡" });
+  if(labs.some(l=>l.p)) chartTypes.push({ type:"p", label:"血磷", icon:"🦴" });
+
+  // UPCR from labs or urine
+  const hasUpcr = labs.some(l=>l.upcr) || urineArr.some(u=>u.upcr);
+  if(hasUpcr) chartTypes.push({ type:"upcr", label:"UPCR", icon:"🔬" });
+
+  // 24h urine protein from labs or urine
+  const hasUpro24 = labs.some(l=>l.upro24) || urineArr.some(u=>u.upro24);
+  if(hasUpro24) chartTypes.push({ type:"upro24", label:"24h尿蛋白", icon:"🧫" });
+
+  // Qualitative proteinuria
+  if(urineArr.filter(u=>u.protein).length >= 2) chartTypes.push({ type:"protein", label:"尿蛋白定性", icon:"🩺" });
+
+  if(labs.some(l=>l.hb)) chartTypes.push({ type:"hb", label:"血红蛋白", icon:"🩸" });
+  if(labs.some(l=>l.alb)) chartTypes.push({ type:"alb", label:"白蛋白", icon:"💧" });
+
+  let html = "";
+
+  // Chart quick-access bar
+  if(chartTypes.length > 0){
+    html += `<div class="trend-chart-bar" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">`;
+    chartTypes.forEach(ct=>{
+      html += `<button class="ghost small trend-chart-btn" data-chart-type="${ct.type}" style="font-size:12px;padding:4px 10px;">${ct.icon} ${ct.label}</button>`;
+    });
+    html += `</div>`;
+  }
+
+  if(!insights.length && !chartTypes.length){
     box.innerHTML = `<div class="empty-cta"><div class="emoji">📊</div><div class="msg">录入 2 次以上化验或多次血压/体重后，自动生成趋势分析与图表</div></div>`;
     return;
   }
 
-  let html = "";
+  // Insights list
   insights.forEach(ins=>{
     const dot = ins.level === "danger" ? "danger" : ins.level === "warn" ? "warn" : "ok";
     const spark = ins.sparkData ? sparklineSVG(ins.sparkData, { width:60, height:18 }) : "";
@@ -350,9 +518,18 @@ function renderTrendCard(){
     </div>`;
   });
 
+  if(!insights.length && chartTypes.length){
+    html += `<div class="note subtle" style="text-align:center;padding:8px;">点击上方按钮查看趋势图表，录入更多数据后将自动生成智能分析</div>`;
+  }
+
   box.innerHTML = html;
 
-  // Click to open chart modal
+  // Bind chart buttons
+  qsa(".trend-chart-btn").forEach(btn=>{
+    btn.onclick = ()=> openTrendChartModal(btn.getAttribute("data-chart-type"));
+  });
+
+  // Click insights to open chart modal
   qsa(".trend-item").forEach(el=>{
     el.style.cursor = "pointer";
     el.onclick = ()=> openTrendChartModal(el.getAttribute("data-trend-type"));
@@ -408,11 +585,44 @@ function openTrendChartModal(type){
     const sorted = [...(state.vitals?.weight||[])].sort((a,b)=>(a.dateTime||"").localeCompare(b.dateTime||""));
     const data = sorted.map(v=>({ x: v.dateTime, y: toNum(v.kg) })).filter(d=>d.y!==null);
     chartSeries = [{ label:"体重 (kg)", color:"#138a4b", data }];
-    // Dry weight target for dialysis
     if(state.dialysis?.dryWeightKg){
       const dw = toNum(state.dialysis.dryWeightKg);
       if(dw) targets.push({ y: dw, label:"干体重", color:"#1a5fe6" });
     }
+  } else if(type === "p"){
+    title = "血磷趋势";
+    const data = (state.labs||[]).filter(l=>l.p && l.date)
+      .map(l=>({ x: l.date, y: toNum(l.p) })).filter(d=>d.y!==null);
+    chartSeries = [{ label:"P (mmol/L)", color:"#e67e22", data }];
+    targets = [{ y:1.45, label:"高", color:"#d93025" }, { y:1.3, label:"注意", color:"#f59e0b" }];
+  } else if(type === "upcr"){
+    title = "UPCR 趋势（尿蛋白/肌酐比值）";
+    const data = [];
+    (state.labs||[]).forEach(l=>{ if(l.upcr && l.date){ const v = toNum(l.upcr); if(v!==null) data.push({ x:l.date, y:v }); } });
+    (state.urineTests||[]).forEach(u=>{ if(u.upcr && u.date){ const v = toNum(u.upcr); if(v!==null) data.push({ x:u.date, y:v }); } });
+    data.sort((a,b)=>(a.x||"").localeCompare(b.x||""));
+    chartSeries = [{ label:"UPCR (mg/g)", color:"#8b5cf6", data }];
+    targets = [{ y:300, label:"显著蛋白尿", color:"#d93025" }];
+  } else if(type === "upro24"){
+    title = "24h尿蛋白趋势";
+    const data = [];
+    (state.labs||[]).forEach(l=>{ if(l.upro24 && l.date){ const v = toNum(l.upro24); if(v!==null) data.push({ x:l.date, y:v }); } });
+    (state.urineTests||[]).forEach(u=>{ if(u.upro24 && u.date){ const v = toNum(u.upro24); if(v!==null) data.push({ x:u.date, y:v }); } });
+    data.sort((a,b)=>(a.x||"").localeCompare(b.x||""));
+    chartSeries = [{ label:"24h尿蛋白 (g/d)", color:"#e67e22", data }];
+    targets = [{ y:1.0, label:"显著", color:"#f59e0b" }, { y:3.5, label:"肾病综合征", color:"#d93025" }];
+  } else if(type === "hb"){
+    title = "血红蛋白趋势";
+    const data = (state.labs||[]).filter(l=>l.hb && l.date)
+      .map(l=>({ x: l.date, y: toNum(l.hb) })).filter(d=>d.y!==null);
+    chartSeries = [{ label:"Hb (g/L)", color:"#d93025", data }];
+    targets = [{ y:110, label:"贫血", color:"#f59e0b" }];
+  } else if(type === "alb"){
+    title = "白蛋白趋势";
+    const data = (state.labs||[]).filter(l=>l.alb && l.date)
+      .map(l=>({ x: l.date, y: toNum(l.alb) })).filter(d=>d.y!==null);
+    chartSeries = [{ label:"Alb (g/L)", color:"#1a5fe6", data }];
+    targets = [{ y:35, label:"低", color:"#f59e0b" }];
   }
 
   const insights = analyzeTrends().filter(i=>i.type===type);
