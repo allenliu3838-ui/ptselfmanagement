@@ -981,7 +981,21 @@ function openAddLab(){
       <label class="field"><span>血糖 Glu（mmol/L）</span><input id="labGlu" type="number" inputmode="decimal" placeholder="例如：6.1"></label>
     </div>
 
-    <label class="field"><span>HbA1c（%）</span><input id="labHbA1c" type="number" inputmode="decimal" placeholder="例如：6.5"></label>
+    <div class="two">
+      <label class="field"><span>HbA1c（%）</span><input id="labHbA1c" type="number" inputmode="decimal" placeholder="例如：6.5"></label>
+      <label class="field"><span>血红蛋白 Hb（g/L）</span><input id="labHb" type="number" inputmode="decimal" placeholder="例如：120"></label>
+    </div>
+
+    <div class="two">
+      <label class="field"><span>白蛋白 Alb（g/L）</span><input id="labAlb" type="number" inputmode="decimal" placeholder="例如：38"></label>
+      <label class="field"><span>尿酸 UA（μmol/L）</span><input id="labUa" type="number" inputmode="decimal" placeholder="例如：380"></label>
+    </div>
+
+    <div class="note" style="margin:8px 0 4px;font-weight:600;">尿蛋白定量（如有）</div>
+    <div class="two">
+      <label class="field"><span>UPCR（mg/g）</span><input id="labUpcr" type="number" inputmode="decimal" placeholder="例如：500"></label>
+      <label class="field"><span>24h尿蛋白（g/d）</span><input id="labUpro24" type="number" inputmode="decimal" step="0.01" placeholder="例如：1.5"></label>
+    </div>
   `;
   openSimpleModal("新增化验","录入后会触发：饮食提醒/安全提醒/计划建议", body,
     `<button class="primary" id="btnSaveLab">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
@@ -1000,6 +1014,11 @@ function openAddLab(){
       mg: qs("#labMg").value,
       glu: qs("#labGlu").value,
       hba1c: qs("#labHbA1c").value,
+      hb: qs("#labHb").value,
+      alb: qs("#labAlb").value,
+      ua: qs("#labUa").value,
+      upcr: qs("#labUpcr").value,
+      upro24: qs("#labUpro24").value,
       flags: {}
     };
 
@@ -1054,18 +1073,28 @@ function openAddUrine(){
         </select>
       </label>
     </div>
+    <div class="note" style="margin:8px 0 4px;font-weight:600;">定量结果（如有，更精确）</div>
+    <div class="two">
+      <label class="field"><span>UPCR（mg/g）</span><input id="uUpcr" type="number" inputmode="decimal" placeholder="尿蛋白/肌酐比值"></label>
+      <label class="field"><span>24h尿蛋白（g/d）</span><input id="uUpro24" type="number" inputmode="decimal" step="0.01" placeholder="24小时尿蛋白定量"></label>
+    </div>
     <div class="note subtle">提示：仅做随访记录；如出现肉眼血尿、少尿、明显水肿等，请及时联系医生。</div>
   `;
   openSimpleModal("新增尿检记录","肾小球病/ADPKD 建议做时间线记录", body,
     `<button class="primary" id="btnSaveUrine">保存</button><button class="ghost" data-close="modalSimple">取消</button>`);
   qs("#btnSaveUrine").onclick = ()=>{
     const recordDate = qs("#uDate").value || yyyyMMdd(new Date());
-    state.urineTests.push({
+    const urineEntry = {
       date: recordDate,
       protein: qs("#uProtein").value,
       blood: qs("#uBlood").value,
       note: qs("#uNote").value.trim()
-    });
+    };
+    const upcr = qs("#uUpcr").value;
+    const upro24 = qs("#uUpro24").value;
+    if(upcr) urineEntry.upcr = upcr;
+    if(upro24) urineEntry.upro24 = upro24;
+    state.urineTests.push(urineEntry);
     saveState();
     closeModal("modalSimple");
     renderAll();

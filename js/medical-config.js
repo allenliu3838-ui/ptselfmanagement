@@ -57,6 +57,31 @@ var THRESHOLDS = {
   weight: {
     significantChangeKg: 2,  // ±2kg = noteworthy
   },
+
+  // UPCR (mg/g)
+  upcr: {
+    high: 300,       // >300 mg/g = 显著蛋白尿
+    moderate: 150,   // 150-300 = 微量白蛋白尿偏高
+  },
+
+  // 24h Urine Protein (g/d)
+  upro24: {
+    high: 1.0,       // >1g/d = 显著
+    nephrotic: 3.5,  // >3.5g/d = 肾病综合征范围
+  },
+
+  // Hemoglobin (g/L)
+  hb: {
+    lowMale: 120,    // <120 g/L 男性贫血
+    lowFemale: 110,  // <110 g/L 女性贫血
+    low: 110,        // general threshold (conservative)
+  },
+
+  // Albumin (g/L)
+  alb: {
+    low: 35,         // <35 g/L = 低白蛋白
+    veryLow: 25,     // <25 g/L = 严重低白蛋白
+  },
 };
 
 // ──────────────────────────────────────────────
@@ -231,6 +256,36 @@ var TREND_MESSAGES = {
     decrease: "体重有所下降",
     stable:   "体重保持稳定，管理得不错",
     fluctuationNote: "短期体重波动可能反映水钠变化，持续观察更有价值",
+  },
+  p: {
+    high:     "血磷偏高，注意饮食控磷",
+    warnHigh: "血磷接近临界值，留意高磷食物",
+    normal:   "血磷控制得不错，继续保持",
+    highAdvice: "建议复诊时与医生讨论磷结合剂方案",
+  },
+  upcr: {
+    decrease: "UPCR 下降，治疗方向在起效",
+    increase: "UPCR 上升，建议复诊时和医生讨论",
+    stable:   "UPCR 保持稳定，继续监测",
+    highAdvice: "UPCR 持续偏高提示蛋白尿需关注，建议尽早复诊",
+  },
+  upro24: {
+    decrease: "24h尿蛋白下降，你的坚持在起效",
+    increase: "24h尿蛋白上升，建议复诊时沟通",
+    stable:   "24h尿蛋白稳定，继续观察趋势",
+    highAdvice: "24h尿蛋白偏高，建议尽早复诊评估",
+  },
+  hb: {
+    low:      "血红蛋白偏低，可能存在贫血",
+    improving:"血红蛋白在改善，坚持治疗有效果",
+    normal:   "血红蛋白正常，很好",
+    lowAdvice:"肾性贫血常见，建议复诊时评估是否需要 EPO 等治疗",
+  },
+  alb: {
+    low:      "白蛋白偏低，注意营养状况",
+    improving:"白蛋白在改善中",
+    normal:   "白蛋白正常",
+    lowAdvice:"白蛋白偏低可能与蛋白尿或营养不足有关，建议复诊讨论",
   },
 };
 

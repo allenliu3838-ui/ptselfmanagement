@@ -201,14 +201,14 @@ function seedDemoData(){
 
   // Labs: 2 entries (6 weeks ago + 3 days ago)
   s.labs = [
-    { date:daysAgo(42), scrUnit:"umolL", scr:"128", egfr:"58", k:"4.8", na:"139", ca:"2.25", mg:"0.82", p:"1.35", glu:"5.6", hba1c:"", flags:{} },
-    { date:daysAgo(3), scrUnit:"umolL", scr:"122", egfr:"61", k:"4.5", na:"141", ca:"2.30", mg:"0.85", p:"1.28", glu:"5.3", hba1c:"", flags:{} },
+    { date:daysAgo(42), scrUnit:"umolL", scr:"128", egfr:"58", k:"4.8", na:"139", ca:"2.25", mg:"0.82", p:"1.35", glu:"5.6", hba1c:"", hb:"108", alb:"34", upcr:"650", upro24:"1.8", flags:{} },
+    { date:daysAgo(3), scrUnit:"umolL", scr:"122", egfr:"61", k:"4.5", na:"141", ca:"2.30", mg:"0.85", p:"1.28", glu:"5.3", hba1c:"", hb:"115", alb:"36", upcr:"420", upro24:"1.2", flags:{} },
   ];
 
   // Urine tests
   s.urineTests = [
-    { date:daysAgo(42), protein:"2+", blood:"1+", note:"晨尿" },
-    { date:daysAgo(3), protein:"1+", blood:"±", note:"晨尿，运动后" },
+    { date:daysAgo(42), protein:"2+", blood:"1+", note:"晨尿", upcr:"650" },
+    { date:daysAgo(3), protein:"1+", blood:"±", note:"晨尿，运动后", upcr:"420" },
   ];
 
   // Blood pressure: 18 readings over 3 weeks
