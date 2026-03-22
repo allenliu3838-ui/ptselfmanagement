@@ -1956,6 +1956,28 @@ function maybeShowPostRecordGuidance(type){
     },0);
     return;
   }
+  // Simple mode: show richer benefit-oriented feedback
+  if(state.ui && state.ui.simpleMode){
+    var bpCount = (state.vitals && state.vitals.bp) ? state.vitals.bp.length : 0;
+    var wtCount = (state.vitals && state.vitals.weight) ? state.vitals.weight.length : 0;
+    var recordTotal = bpCount + wtCount;
+    var benefitMsg = "";
+    if(recordTotal <= 1) benefitMsg = "第一条记录！复诊时医生就能看到你在家的数据了。";
+    else if(recordTotal <= 3) benefitMsg = "已经有 " + recordTotal + " 条记录了。再记几次，医生就能看到你的趋势变化。";
+    else if(recordTotal <= 7) benefitMsg = "很棒！已有 " + recordTotal + " 条记录，复诊摘要越来越完整了。";
+    else benefitMsg = "太好了！已有 " + recordTotal + " 条记录，下次复诊直接给医生看摘要就行。";
+
+    var typeLabel = type === "bp" ? "血压" : type === "weight" ? "体重" : "数据";
+    openSimpleModal("记好了", typeLabel + "已保存", '<div class="benefit-after-record"><div class="benefit-check">✅</div><div class="benefit-title">' + escapeHtml(benefitMsg) + '</div><div class="benefit-hint">' + (k ? escapeHtml(k.body) : '') + '</div></div>',
+      '<button class="primary" id="btnBenefitSummary">看看复诊摘要</button><button class="ghost" data-close="modalSimple">继续记录</button>');
+    setTimeout(function(){
+      var bs = qs("#btnBenefitSummary");
+      if(bs) bs.onclick = function(){ closeModal("modalSimple"); navigate("summary"); };
+      qsa("#modalSimple [data-close]").forEach(function(x){ x.onclick = function(){ closeModal("modalSimple"); }; });
+    }, 0);
+    return;
+  }
+
   // Positive encouragement messages instead of cold "已保存"
   const encouragements = [
     "记录完成，又积累了一笔健康数据",

@@ -57,10 +57,16 @@
       <!-- Step 3: First action -->
       <div class="onboard hidden" id="obStep3">
         <h1>开始你的第一次记录</h1>
-        <p>试试记录一次血压，只需 10 秒。也可以跳过，稍后再来。</p>
+        <p>试试记录一次血压，只需 10 秒。<br><b>不需要化验单</b>，先量血压和体重就行，化验等复诊后再补。</p>
         <div class="steps"><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot active"></div></div>
         <button class="primary" id="btnOb3Record" style="min-width:200px;">记录一次血压</button>
         <button class="ghost" id="btnOb3Skip" style="margin-top:8px;">跳过，进入首页</button>
+        <div style="margin-top:16px;padding:12px 16px;background:#f0f7ff;border-radius:12px;text-align:left;max-width:320px;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:15px;">
+            <input type="checkbox" id="obSimpleMode" style="width:20px;height:20px;" />
+            <span><b>简洁模式</b>（推荐长辈使用）<br><span style="font-size:12px;color:#5d6b85;">大按钮、少内容、只显示最重要的操作</span></span>
+          </label>
+        </div>
       </div>
     </section>
 
@@ -74,6 +80,42 @@
         <div id="homeGreeting">
           <div class="greeting" id="greetingText">你好</div>
           <div class="greeting-sub" id="greetingSub">随访记录更轻松，趋势一目了然</div>
+        </div>
+
+        <!-- SIMPLE MODE: big-button elderly-friendly view -->
+        <div id="simpleModeHome" class="simple-mode-section" style="display:none;">
+          <div class="simple-benefit-banner">
+            <div class="simple-benefit-icon">📋</div>
+            <div class="simple-benefit-text">
+              <b>记几次血压，复诊时直接给医生看</b>
+              <span>不用背数字，不用翻化验单</span>
+            </div>
+          </div>
+
+          <button class="simple-big-btn" id="btnSimpleBP" type="button">
+            <span class="simple-big-icon">💓</span>
+            <span class="simple-big-label">量血压</span>
+            <span class="simple-big-hint">填两个数字，10秒完成</span>
+          </button>
+
+          <button class="simple-big-btn" id="btnSimpleWeight" type="button">
+            <span class="simple-big-icon">⚖️</span>
+            <span class="simple-big-label">称体重</span>
+            <span class="simple-big-hint">填一个数字就行</span>
+          </button>
+
+          <button class="simple-big-btn simple-big-btn-secondary" id="btnSimpleSummary" type="button">
+            <span class="simple-big-icon">📄</span>
+            <span class="simple-big-label">看复诊摘要</span>
+            <span class="simple-big-hint">把你记的数据整理好，给医生看</span>
+          </button>
+
+          <div class="simple-progress" id="simpleProgress"></div>
+
+          <div class="simple-more-link">
+            <button class="ghost small" id="btnSimpleShowMore">想记更多内容（化验、症状等）</button>
+            <button class="ghost small" id="btnSimpleModeOff">切换到完整模式</button>
+          </div>
         </div>
 
         <!-- 3-step quick start (P0-1) -->
@@ -698,6 +740,7 @@
             </div>
           </div>
           <div class="content">
+            <div class="kv" style="background:#f0f7ff;padding:8px 10px;border-radius:10px;margin-bottom:6px;"><span><b>简洁模式</b>（大按钮、少内容）</span><span><input type="checkbox" id="toggleSimpleMode" /></span></div>
             <div class="kv"><span>显示 AI 标签</span><span><input type="checkbox" id="toggleShowAI" /></span></div>
             <div class="kv"><span>首页默认展开更多内容</span><span><input type="checkbox" id="toggleHomeMoreDefault" /></span></div>
             <div style="border-top:1px solid var(--border);margin:10px 0;padding-top:10px;">

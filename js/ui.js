@@ -131,6 +131,15 @@ function bindUI(){
     renderAll();
     renderTabbar();
   });
+  const tSimple = qs("#toggleSimpleMode");
+  if(tSimple) tSimple.addEventListener("change", ()=>{
+    state.ui = state.ui || {};
+    state.ui.simpleMode = !!tSimple.checked;
+    saveState();
+    applySimpleMode();
+    renderAll();
+  });
+
   const tHome = qs("#toggleHomeMoreDefault");
   if(tHome) tHome.addEventListener("change", ()=>{
     state.ui = state.ui || {};

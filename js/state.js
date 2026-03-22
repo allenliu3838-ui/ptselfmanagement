@@ -11,7 +11,7 @@ function defaultState(){
     version: VERSION,
     activeProgram: "kidney",
     enabledPrograms: { kidney: true, stone: false, peds: false, dialysis: false, htn: false, dm: false },
-    ui: { overlayReturn: 'home', explainerId: '', showAI: true, homeMoreDefault: false, seenSummaryNudge: false },
+    ui: { overlayReturn: 'home', explainerId: '', showAI: true, homeMoreDefault: false, seenSummaryNudge: false, simpleMode: false },
     engagement: { onboarded: false, streak: 0, lastActiveDate: "", longestStreak: 0 },
     comorbid: { htn:false, dm:false, masld:false, hf:false, aki:false },
     diet: { favorites: [], lastFilter: "", lastQuery: "" },
@@ -113,6 +113,7 @@ function loadState(){
     if(st.ui && typeof st.ui.showAI === 'undefined') st.ui.showAI = true;
     if(st.ui && typeof st.ui.homeMoreDefault === 'undefined') st.ui.homeMoreDefault = false;
     if(st.ui && typeof st.ui.seenSummaryNudge === "undefined") st.ui.seenSummaryNudge = false;
+    if(st.ui && typeof st.ui.simpleMode === "undefined") st.ui.simpleMode = false;
     if(!st.kidney) st.kidney = defaultState().kidney;
     if(!st.htn) st.htn = defaultState().htn;
     if(!st.dm) st.dm = defaultState().dm;
