@@ -100,13 +100,23 @@ function init(){
   // Step 3: First record or skip
   const btnOb3Record = qs("#btnOb3Record");
   const btnOb3Skip = qs("#btnOb3Skip");
+  function applyOnboardSimpleMode(){
+    var cb = qs("#obSimpleMode");
+    if(cb && cb.checked){
+      state.ui = state.ui || {};
+      state.ui.simpleMode = true;
+      saveState();
+    }
+  }
   if(btnOb3Record) btnOb3Record.addEventListener("click", ()=>{
+    applyOnboardSimpleMode();
     completeOnboarding(obProg);
     renderAll();
     navigate("home");
     setTimeout(()=>openQuickBP(), 200);
   });
   if(btnOb3Skip) btnOb3Skip.addEventListener("click", ()=>{
+    applyOnboardSimpleMode();
     completeOnboarding(obProg);
     renderAll();
     navigate("home");

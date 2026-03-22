@@ -608,3 +608,83 @@ button{transition:transform .12s ease, background .12s ease;}
 /* Followup Education Sections */
 .edu-followup-section{margin-top:12px;padding:12px;background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
 .edu-followup-section-title{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text);}
+
+/* ========== SIMPLE MODE (elderly-friendly) ========== */
+.simple-mode-section{padding:4px 0;}
+
+.simple-benefit-banner{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;margin-bottom:16px;
+  background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 100%);
+  border-radius:14px;border:1px solid #c8e6c9;
+}
+.simple-benefit-icon{font-size:28px;flex-shrink:0;}
+.simple-benefit-text{display:flex;flex-direction:column;gap:3px;}
+.simple-benefit-text b{font-size:16px;color:#2e7d32;line-height:1.35;}
+.simple-benefit-text span{font-size:13px;color:#558b2f;line-height:1.3;}
+
+.simple-big-btn{
+  display:flex;align-items:center;gap:14px;
+  width:100%;padding:18px 20px;margin-bottom:12px;
+  background:var(--card);border:2px solid var(--border);
+  border-radius:16px;box-shadow:0 4px 16px rgba(11,18,32,.06);
+  cursor:pointer;text-align:left;
+  transition:border-color .15s,box-shadow .15s;
+}
+.simple-big-btn:active{border-color:var(--primary);box-shadow:0 2px 8px rgba(26,95,230,.15);transform:scale(.98);}
+.simple-big-icon{font-size:32px;flex-shrink:0;}
+.simple-big-label{font-size:20px;font-weight:800;color:var(--text);flex:1;}
+.simple-big-hint{font-size:13px;color:var(--muted);max-width:140px;text-align:right;line-height:1.3;}
+.simple-big-btn-secondary{background:#f8f9ff;border-color:#d6e5ff;}
+
+.simple-progress{
+  padding:14px 16px;margin:8px 0 12px;
+  background:var(--card);border-radius:14px;border:1px solid var(--border);
+  font-size:15px;line-height:1.5;color:var(--text);
+}
+.simple-progress-count{font-weight:800;color:var(--primary);font-size:18px;}
+.simple-progress-msg{color:var(--muted);font-size:13px;margin-top:4px;}
+
+.simple-more-link{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px;padding-bottom:8px;}
+
+/* Simple mode: hide non-essential home cards */
+body.simple-mode #quickStartCard,
+body.simple-mode #cardTopConcerns,
+body.simple-mode #cardRedFlagsEdu,
+body.simple-mode #cardSummaryEntry,
+body.simple-mode #cardWeeklyWins,
+body.simple-mode #cardLightNudges,
+body.simple-mode #cardTodayTasks,
+body.simple-mode #cardDiet,
+body.simple-mode #cardKnowledge,
+body.simple-mode #cardRecent,
+body.simple-mode #cardDialysisHome,
+body.simple-mode #btnHomeMoreToggle,
+body.simple-mode #homeCtaRemote{display:none !important;}
+
+/* Simple mode: keep safety + program cards visible but full width */
+body.simple-mode .disclaimer-top{font-size:13px;}
+body.simple-mode .grid{grid-template-columns:1fr;}
+
+/* Simple mode: larger text globally */
+body.simple-mode .card-title{font-size:17px;}
+body.simple-mode .card-subtitle{font-size:13px;}
+body.simple-mode .content{font-size:15px;}
+body.simple-mode .tile{height:60px;font-size:16px;}
+body.simple-mode .tab{font-size:13px;}
+body.simple-mode .topbar{padding-bottom:12px;}
+body.simple-mode .brand-title{font-size:18px;}
+body.simple-mode .brand-subtitle{font-size:13px;}
+
+/* Simple mode: make modal inputs bigger */
+body.simple-mode .sheet input,
+body.simple-mode .sheet select{font-size:18px;padding:12px;min-height:48px;}
+body.simple-mode .sheet .field span{font-size:15px;}
+body.simple-mode .sheet button.primary{font-size:18px;padding:14px 24px;min-height:52px;}
+
+/* Post-record benefit modal */
+.benefit-after-record{text-align:center;padding:8px 0;}
+.benefit-after-record .benefit-check{font-size:48px;margin-bottom:8px;}
+.benefit-after-record .benefit-title{font-size:18px;font-weight:800;color:var(--ok);margin-bottom:6px;}
+.benefit-after-record .benefit-body{font-size:15px;color:var(--text);line-height:1.5;margin-bottom:8px;}
+.benefit-after-record .benefit-hint{font-size:13px;color:var(--muted);line-height:1.4;}

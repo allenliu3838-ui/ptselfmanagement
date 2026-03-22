@@ -752,7 +752,56 @@ function renderCelebration(tasks){
   }
 }
 
+function applySimpleMode(){
+  var on = !!(state.ui && state.ui.simpleMode);
+  document.body.classList.toggle("simple-mode", on);
+  var section = qs("#simpleModeHome");
+  if(section) section.style.display = on ? "" : "none";
+  if(!on) return;
+
+  // Render simple progress info
+  var bpCount = (state.vitals && state.vitals.bp) ? state.vitals.bp.length : 0;
+  var wtCount = (state.vitals && state.vitals.weight) ? state.vitals.weight.length : 0;
+  var total = bpCount + wtCount;
+  var box = qs("#simpleProgress");
+  if(box){
+    if(total === 0){
+      box.innerHTML = '<div style="text-align:center;color:var(--muted);padding:6px 0;">还没有记录。<b>量一次血压试试？</b>只需10秒。</div>';
+    } else {
+      var msgs = [];
+      if(bpCount > 0) msgs.push('血压 <span class="simple-progress-count">' + bpCount + '</span> 次');
+      if(wtCount > 0) msgs.push('体重 <span class="simple-progress-count">' + wtCount + '</span> 次');
+      var encouragement = total >= 7
+        ? '复诊摘要已经很充实了，医生看了会很清楚你的情况。'
+        : total >= 3
+          ? '再记几次，复诊摘要会更完整。'
+          : '继续记录，积累够了复诊时直接给医生看。';
+      box.innerHTML = '已记录：' + msgs.join('、') + '<div class="simple-progress-msg">' + encouragement + '</div>';
+    }
+  }
+
+  // Bind simple mode buttons
+  var btnBP = qs("#btnSimpleBP");
+  if(btnBP) btnBP.onclick = function(){ openQuickBP(); };
+  var btnWt = qs("#btnSimpleWeight");
+  if(btnWt) btnWt.onclick = function(){ openQuickWeight(); };
+  var btnSum = qs("#btnSimpleSummary");
+  if(btnSum) btnSum.onclick = function(){ navigate("summary"); };
+  var btnMore = qs("#btnSimpleShowMore");
+  if(btnMore) btnMore.onclick = function(){ navigate("records"); };
+  var btnOff = qs("#btnSimpleModeOff");
+  if(btnOff) btnOff.onclick = function(){
+    state.ui.simpleMode = false;
+    saveState();
+    applySimpleMode();
+    renderAll();
+  };
+}
+
 function renderHome(){
+  // Apply simple mode first
+  try{ applySimpleMode(); }catch(_e){ console.warn("renderHome: simpleMode error", _e); }
+
   // Bind button handlers FIRST — before any rendering that might throw.
   // This ensures navigation / action buttons always work even if a render section errors.
   try{
@@ -1780,6 +1829,9 @@ function renderMe(){
 
   const tAI = qs("#toggleShowAI");
   if(tAI) tAI.checked = showAITab();
+
+  const tSimple = qs("#toggleSimpleMode");
+  if(tSimple) tSimple.checked = !!(state.ui && state.ui.simpleMode);
 
   const tHome = qs("#toggleHomeMoreDefault");
   if(tHome) tHome.checked = !!(state.ui && state.ui.homeMoreDefault);
